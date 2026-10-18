@@ -1,0 +1,70 @@
+[hidden] {
+  display: none !important;
+}
+
+.caja-formulario.ancha {
+  max-width: 560px;
+}
+
+.caja-formulario textarea {
+  width: 100%;
+  min-height: 130px;
+  padding: 12px;
+  border: 2px solid #e6d9fb;
+  border-radius: 12px;
+  font-size: 16px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.caja-formulario textarea:focus {
+  outline: none;
+  border-color: var(--rosa);
+}
+
+.caja-formulario input[type="file"] {
+  padding: 10px;
+  background: #faf6ff;
+}
+
+.etiqueta {
+  margin: 14px 0 6px;
+  font-weight: bold;
+}
+
+.generos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.caja-formulario .generos label.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.caja-formulario .generos input {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--violeta);
+}
+
+.caja-formulario .generos label.chip:has(input:checked) {
+  border-color: var(--rosa);
+  background: #fff0f7;
+}
+
+.vista-previa {
+  display: block;
+  max-width: 160px;
+  margin: 12px auto 0;
+  border-radius: 12px;
+}
