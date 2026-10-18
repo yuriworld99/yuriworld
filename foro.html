@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comunidad - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+  <link rel="stylesheet" href="css/publicar.css">
+  <link rel="stylesheet" href="css/foro.css">
+</head>
+<body>
+  <main class="foro">
+    <a href="index.html" class="enlace-volver">← Volver al inicio</a>
+    <h1>Comunidad</h1>
+    <p class="foro-intro">Conversá con otros fans de manga Yuri/GL, manhwa y webtoon GL.</p>
+
+    <section class="caja-formulario ancha">
+      <h2>Nueva publicación</h2>
+      <form id="form-publicacion">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" maxlength="150" required>
+
+        <label for="contenido">Mensaje</label>
+        <textarea id="contenido" maxlength="5000" required></textarea>
+
+        <button type="submit" id="boton-publicar" class="boton">Publicar</button>
+      </form>
+      <p id="aviso-sesion" hidden>
+        Para publicar necesitás
+        <a href="iniciar-sesion.html">iniciar sesión</a>.
+      </p>
+      <p id="mensaje" class="mensaje"></p>
+    </section>
+
+    <h2 class="titulo-seccion">Últimas publicaciones</h2>
+    <section id="lista-publicaciones">Cargando publicaciones...</section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/foro.js"></script>
+</body>
+          </html>
