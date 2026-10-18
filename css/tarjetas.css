@@ -1,5 +1,6 @@
 .titulo-seccion {
   margin: 8px 0 16px;
+  font-size: 1.5rem;
   color: var(--violeta);
 }
 
@@ -9,6 +10,19 @@
   gap: 14px;
 }
 
+@media (min-width: 700px) {
+  .lista-recomendaciones {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 22px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .lista-recomendaciones {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+}
+
 .tarjeta {
   display: flex;
   flex-direction: column;
@@ -16,6 +30,12 @@
   background: var(--blanco);
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(123, 63, 228, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tarjeta:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(123, 63, 228, 0.28);
 }
 
 .tarjeta img {
@@ -75,4 +95,4 @@
   padding-top: 6px;
   font-size: 0.75rem;
   opacity: 0.7;
-}
+  }
