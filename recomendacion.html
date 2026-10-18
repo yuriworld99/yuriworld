@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recomendación - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+  <link rel="stylesheet" href="css/tarjetas.css">
+  <link rel="stylesheet" href="css/detalle.css">
+</head>
+<body>
+  <main class="detalle">
+    <a href="index.html" class="enlace-volver">← Volver al inicio</a>
+
+    <p id="estado-detalle">Cargando...</p>
+
+    <article id="contenido" hidden>
+      <img id="detalle-portada" class="detalle-portada" alt="">
+      <h1 id="detalle-titulo"></h1>
+      <p id="detalle-autor" class="detalle-autor"></p>
+      <div id="detalle-generos" class="tarjeta-generos"></div>
+      <p id="detalle-sinopsis" class="detalle-sinopsis"></p>
+      <p id="detalle-pie" class="tarjeta-pie"></p>
+
+      <section class="bloque">
+        <h2>Calificación</h2>
+        <p id="promedio">Cargando...</p>
+        <div id="estrellas" class="estrellas"></div>
+        <p id="mensaje-estrellas" class="mensaje"></p>
+      </section>
+
+      <section class="bloque">
+        <h2>Comentarios</h2>
+        <form id="form-comentario">
+          <textarea id="texto-comentario" maxlength="1000" placeholder="Escribí tu comentario..." required></textarea>
+          <button type="submit" id="boton-comentar" class="boton">Comentar</button>
+        </form>
+        <p id="aviso-comentar" hidden>
+          Para comentar y calificar necesitás
+          <a href="iniciar-sesion.html">iniciar sesión</a>.
+        </p>
+        <p id="mensaje-comentario" class="mensaje"></p>
+        <div id="lista-comentarios"></div>
+      </section>
+    </article>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/detalle.js"></script>
+</body>
+</html>
