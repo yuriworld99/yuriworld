@@ -1,4 +1,4 @@
-function crearTarjeta(rec) {
+function crearTarjeta(rec, resumen) {
   const tarjeta = document.createElement("a");
   tarjeta.className = "tarjeta";
   tarjeta.href = "recomendacion.html?id=" + encodeURIComponent(rec.id);
@@ -20,6 +20,18 @@ function crearTarjeta(rec) {
   autor.className = "tarjeta-autor";
   autor.textContent = "de " + rec.autor;
 
+  const estrellas = document.createElement("p");
+  estrellas.className = "tarjeta-autor";
+  estrellas.style.fontWeight = "bold";
+  estrellas.style.color = "#b0245f";
+  if (resumen) {
+    estrellas.textContent =
+      "★ " + resumen.promedio + " · " + resumen.cantidad +
+      (resumen.cantidad === 1 ? " voto" : " votos");
+  } else {
+    estrellas.textContent = "☆ Sin calificaciones";
+  }
+
   const sinopsis = document.createElement("p");
   sinopsis.className = "tarjeta-sinopsis";
   sinopsis.textContent = rec.sinopsis;
@@ -40,6 +52,7 @@ function crearTarjeta(rec) {
 
   cuerpo.appendChild(titulo);
   cuerpo.appendChild(autor);
+  cuerpo.appendChild(estrellas);
   cuerpo.appendChild(sinopsis);
   cuerpo.appendChild(generos);
   cuerpo.appendChild(pie);
@@ -68,9 +81,23 @@ async function cargarRecomendaciones() {
     return;
   }
 
+  const ids = data.map(function (rec) {
+    return rec.id;
+  });
+
+  const { data: resumenes } = await supabaseClient
+    .from("resumen_calificaciones")
+    .select("recomendacion_id, promedio, cantidad")
+    .in("recomendacion_id", ids);
+
+  const porRecomendacion = {};
+  (resumenes || []).forEach(function (resumen) {
+    porRecomendacion[resumen.recomendacion_id] = resumen;
+  });
+
   lista.textContent = "";
   data.forEach(function (rec) {
-    lista.appendChild(crearTarjeta(rec));
+    lista.appendChild(crearTarjeta(rec, porRecomendacion[rec.id]));
   });
 }
 
