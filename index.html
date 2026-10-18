@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YuriWorld</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/cabecera.css">
-  <link rel="stylesheet" href="css/tarjetas.css">
+  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/cabecera.css?v=2">
+  <link rel="stylesheet" href="css/tarjetas.css?v=2">
+  <link rel="stylesheet" href="css/inicio.css">
 </head>
 <body>
   <header class="cabecera">
@@ -18,13 +19,25 @@
     </div>
   </header>
 
-  <main>
-    <p>Comunidad de manga Yuri/GL, manhwa y webtoon GL.</p>
-    <h2 class="titulo-seccion">Últimas recomendaciones</h2>
+  <section class="portada-inicio">
+    <h2>Tu rincón del manga Yuri/GL, manhwa y webtoon GL 💜</h2>
+    <p>Descubrí recomendaciones de la comunidad, calificalas con estrellas y conversá con todos los fans del género.</p>
+    <div class="portada-botones">
+      <a href="publicar.html" class="boton-principal">Publicar una recomendación</a>
+      <a href="foro.html" class="boton-secundario">Ir a la comunidad</a>
+    </div>
+  </section>
+
+  <main class="contenido-inicio">
+    <h2 class="titulo-seccion" id="recomendaciones">Últimas recomendaciones</h2>
     <section id="lista-recomendaciones" class="lista-recomendaciones">
       Cargando recomendaciones...
     </section>
   </main>
+
+  <footer class="pie-pagina">
+    YuriWorld · Hecho con 💜 para la comunidad Yuri/GL
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
