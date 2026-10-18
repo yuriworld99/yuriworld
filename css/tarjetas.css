@@ -1,0 +1,78 @@
+.titulo-seccion {
+  margin: 8px 0 16px;
+  color: var(--violeta);
+}
+
+.lista-recomendaciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--blanco);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(123, 63, 228, 0.15);
+}
+
+.tarjeta img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  background: #f3ebff;
+}
+
+.tarjeta-cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+}
+
+.tarjeta h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--violeta);
+}
+
+.tarjeta-autor {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.tarjeta-sinopsis {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  font-size: 0.85rem;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.tarjeta-generos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.etiqueta-genero {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff0f7;
+  color: #b0245f;
+  font-size: 0.72rem;
+  font-weight: bold;
+}
+
+.tarjeta-pie {
+  margin: auto 0 0;
+  padding-top: 6px;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
