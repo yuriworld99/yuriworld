@@ -6,19 +6,28 @@
   <title>YuriWorld</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/cabecera.css">
+  <link rel="stylesheet" href="css/tarjetas.css">
 </head>
 <body>
   <header class="cabecera">
     <h1 class="logo">YuriWorld</h1>
-    <nav class="zona-usuario" id="zona-usuario"></nav>
+    <div class="zona-usuario">
+      <a href="publicar.html" class="enlace-nav">Publicar</a>
+      <div class="zona-usuario" id="zona-usuario"></div>
+    </div>
   </header>
 
   <main>
     <p>Comunidad de manga Yuri/GL, manhwa y webtoon GL.</p>
+    <h2 class="titulo-seccion">Últimas recomendaciones</h2>
+    <section id="lista-recomendaciones" class="lista-recomendaciones">
+      Cargando recomendaciones...
+    </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/inicio.js"></script>
+  <script src="js/recomendaciones.js"></script>
 </body>
 </html>
