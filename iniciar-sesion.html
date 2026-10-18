@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+</head>
+<body>
+  <main class="caja-formulario">
+    <h1>Iniciar sesión</h1>
+    <form id="form-login">
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" required>
+
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" autocomplete="current-password" required>
+
+      <button type="submit" id="boton-login" class="boton">Entrar</button>
+    </form>
+    <p id="mensaje" class="mensaje"></p>
+    <p class="enlace-secundario">¿No tenés cuenta? <a href="registro.html">Crear cuenta</a></p>
+    <p class="enlace-secundario"><a href="index.html">Volver al inicio</a></p>
+  </main>
+
+  <p id="estado-conexion" hidden></p>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
