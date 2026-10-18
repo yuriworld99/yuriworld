@@ -636,4 +636,113 @@ recPortada.addEventListener("change", async function () {
     portadaAdjunta = await prepararImagen(archivo);
     portadaPrevia.src = URL.createObjectURL(portadaAdjunta);
     portadaPrevia.hidden = false;
-    mostrarMensaje
+       mostrarMensaje("", "");
+  } catch (error) {
+    portadaAdjunta = null;
+    portadaPrevia.hidden = true;
+    recPortada.value = "";
+    mostrarMensaje(error.message, "error");
+  }
+});
+
+botonPublicar.addEventListener("click", async function () {
+  if (!sesion) return;
+
+  const texto = textoPublicacion.value.trim();
+  const conRecomendacion = !panelRecomendacion.hidden;
+
+  let recTitulo = "";
+  let recAutor = "";
+  let recSinopsis = "";
+  let recGeneros = [];
+
+  if (conRecomendacion) {
+    recTitulo = document.getElementById("rec-titulo").value.trim();
+    recAutor = document.getElementById("rec-autor").value.trim();
+    recSinopsis = document.getElementById("rec-sinopsis").value.trim();
+    recGeneros = Array.from(document.querySelectorAll('input[name="genero"]:checked')).map(
+      function (casilla) {
+        return casilla.value;
+      }
+    );
+
+    if (!recTitulo || !recAutor || !recSinopsis) {
+      mostrarMensaje("Completá el título, el autor y la sinopsis de la recomendación.", "error");
+      return;
+    }
+    if (recGeneros.length === 0) {
+      mostrarMensaje("Elegí al menos un género.", "error");
+      return;
+    }
+    if (!portadaAdjunta) {
+      mostrarMensaje("Elegí la portada de la recomendación.", "error");
+      return;
+    }
+  } else if (!texto && !imagenAdjunta) {
+    mostrarMensaje("Escribí algo o adjuntá una imagen.", "error");
+    return;
+  }
+
+  botonPublicar.disabled = true;
+  mostrarMensaje("Publicando...", "");
+
+  const subidos = [];
+
+  try {
+    const fila = { contenido: texto || null };
+
+    if (imagenAdjunta) {
+      fila.imagen_url = await subirArchivo("muro", imagenAdjunta, subidos);
+    }
+
+    if (conRecomendacion) {
+      fila.rec_titulo = recTitulo;
+      fila.rec_autor = recAutor;
+      fila.rec_sinopsis = recSinopsis;
+      fila.rec_generos = recGeneros;
+      fila.rec_portada_url = await subirArchivo("portadas", portadaAdjunta, subidos);
+    }
+
+    const { error } = await supabaseClient.from("publicaciones").insert(fila);
+    if (error) throw error;
+  } catch (error) {
+    for (const subido of subidos) {
+      await supabaseClient.storage.from(subido.bucket).remove([subido.ruta]);
+    }
+    mostrarMensaje("No se pudo publicar: " + (error.message || "error desconocido"), "error");
+    botonPublicar.disabled = false;
+    return;
+  }
+
+  limpiarCompositor();
+  mostrarMensaje("¡Publicado! 💜", "ok");
+  botonPublicar.disabled = false;
+  cargarMuro();
+});
+
+botonCargarMas.addEventListener("click", function () {
+  cantidadVisible += PAGINA;
+  cargarMuro();
+});
+
+async function iniciar() {
+  const { data } = await supabaseClient.auth.getSession();
+  sesion = data.session;
+
+  if (sesion) {
+    const { data: perfil } = await supabaseClient
+      .from("profiles")
+      .select("username")
+      .eq("id", sesion.user.id)
+      .maybeSingle();
+    const miNombre = perfil ? perfil.username : "usuario";
+    avatarCompositor.replaceWith(crearAvatar(miNombre));
+    compositor.hidden = false;
+  } else {
+    aviso.hidden = false;
+  }
+
+  await cargarMuro();
+}
+
+iniciar();
