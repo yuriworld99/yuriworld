@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicar recomendación - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+  <link rel="stylesheet" href="css/publicar.css">
+</head>
+<body>
+  <main class="caja-formulario ancha">
+    <h1>Publicar recomendación</h1>
+
+    <div id="aviso-sesion" hidden>
+      <p>Para publicar necesitás iniciar sesión.</p>
+      <p class="enlace-secundario">
+        <a href="iniciar-sesion.html">Iniciar sesión</a> ·
+        <a href="registro.html">Crear cuenta</a>
+      </p>
+    </div>
+
+    <form id="form-publicar">
+      <label for="titulo">Título</label>
+      <input type="text" id="titulo" maxlength="120" required>
+
+      <label for="autor">Autor/a</label>
+      <input type="text" id="autor" maxlength="120" required>
+
+      <label for="sinopsis">Sinopsis</label>
+      <textarea id="sinopsis" maxlength="2000" required></textarea>
+
+      <p class="etiqueta">Géneros</p>
+      <div class="generos">
+        <label class="chip"><input type="checkbox" name="genero" value="Romance"> Romance</label>
+        <label class="chip"><input type="checkbox" name="genero" value="Drama"> Drama</label>
+        <label class="chip"><input type="checkbox" name="genero" value="Comedia"> Comedia</label>
+        <label class="chip"><input type="checkbox" name="genero" value="Fantasía"> Fantasía</label>
+        <label class="chip"><input type="checkbox" name="genero" value="Escolar"> Escolar</label>
+        <label class="chip"><input type="checkbox" name="genero" value="Slice of life"> Slice of life</label>
+        <label class="chip"><input type="checkbox" name="genero" value="Ciencia ficción"> Ciencia ficción</label>
+        <label class="chip"><input type="checkbox" name="genero" value="Misterio"> Misterio</label>
+        <label class="chip"><input type="checkbox" name="genero" value="Histórico"> Histórico</label>
+        <label class="chip"><input type="checkbox" name="genero" value="Sobrenatural"> Sobrenatural</label>
+      </div>
+
+      <label for="portada">Portada (JPG, PNG o WEBP, máximo 2 MB)</label>
+      <input type="file" id="portada" accept="image/jpeg,image/png,image/webp" required>
+      <img id="vista-previa" class="vista-previa" alt="Vista previa de la portada" hidden>
+
+      <button type="submit" id="boton-publicar" class="boton">Publicar</button>
+    </form>
+
+    <p id="mensaje" class="mensaje"></p>
+    <p class="enlace-secundario"><a href="index.html">Volver al inicio</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/publicar.js"></script>
+</body>
+</html>
