@@ -10,14 +10,44 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   padding: 20px;
-  font-family: Arial, sans-serif;
-  background: var(--fondo);
+  min-height: 100vh;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.5;
+  background: linear-gradient(180deg, #fff5fa 0%, #f6efff 100%);
   color: var(--texto);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
 }
 
 h1 {
   color: var(--violeta);
+}
+
+a {
+  color: var(--violeta);
+}
+
+img {
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--rosa);
+  color: var(--blanco);
+}
+
+:focus-visible {
+  outline: 3px solid var(--rosa);
+  outline-offset: 2px;
 }
