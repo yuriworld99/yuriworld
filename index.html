@@ -5,12 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YuriWorld</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/cabecera.css">
 </head>
 <body>
-  <h1>YuriWorld</h1>
-  <p>Comunidad de manga Yuri/GL, manhwa y webtoon GL.</p>
-  <p id="estado-conexion">Probando conexión...</p>
+  <header class="cabecera">
+    <h1 class="logo">YuriWorld</h1>
+    <nav class="zona-usuario" id="zona-usuario"></nav>
+  </header>
+
+  <main>
+    <p>Comunidad de manga Yuri/GL, manhwa y webtoon GL.</p>
+  </main>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
+  <script src="js/inicio.js"></script>
 </body>
 </html>
