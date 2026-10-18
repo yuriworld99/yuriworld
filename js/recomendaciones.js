@@ -1,6 +1,9 @@
 function crearTarjeta(rec) {
-  const tarjeta = document.createElement("article");
+  const tarjeta = document.createElement("a");
   tarjeta.className = "tarjeta";
+  tarjeta.href = "recomendacion.html?id=" + encodeURIComponent(rec.id);
+  tarjeta.style.color = "inherit";
+  tarjeta.style.textDecoration = "none";
 
   const imagen = document.createElement("img");
   imagen.src = rec.portada_url;
