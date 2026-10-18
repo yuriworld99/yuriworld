@@ -5,40 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comunidad - YuriWorld</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/formularios.css">
-  <link rel="stylesheet" href="css/publicar.css">
-  <link rel="stylesheet" href="css/foro.css">
+  <link rel="stylesheet" href="css/muro.css">
 </head>
 <body>
-  <main class="foro">
-    <a href="index.html" class="enlace-volver">← Volver al inicio</a>
-    <h1>Comunidad</h1>
-    <p class="foro-intro">Conversá con otros fans de manga Yuri/GL, manhwa y webtoon GL.</p>
+  <main class="muro">
+    <h1 class="muro-titulo">Comunidad</h1>
 
-    <section class="caja-formulario ancha">
-      <h2>Nueva publicación</h2>
-      <form id="form-publicacion">
-        <label for="titulo">Título</label>
-        <input type="text" id="titulo" maxlength="150" required>
-
-        <label for="contenido">Mensaje</label>
-        <textarea id="contenido" maxlength="5000" required></textarea>
-
-        <button type="submit" id="boton-publicar" class="boton">Publicar</button>
-      </form>
-      <p id="aviso-sesion" hidden>
-        Para publicar necesitás
-        <a href="iniciar-sesion.html">iniciar sesión</a>.
+    <section id="aviso-sesion" class="muro-aviso" hidden>
+      <p>
+        Para publicar, dar Me gusta o repostear necesitás
+        <a href="iniciar-sesion.html">iniciar sesión</a> o
+        <a href="registro.html">crear una cuenta</a>.
       </p>
-      <p id="mensaje" class="mensaje"></p>
     </section>
 
-    <h2 class="titulo-seccion">Últimas publicaciones</h2>
-    <section id="lista-publicaciones">Cargando publicaciones...</section>
+    <section id="compositor" class="compositor" hidden>
+      <div class="compositor-fila">
+        <div id="avatar-compositor"></div>
+        <textarea id="texto-publicacion" maxlength="500" rows="3" placeholder="¿Qué querés compartir con la comunidad?"></textarea>
+      </div>
+
+      <div id="vista-imagen" class="vista-imagen" hidden>
+        <img id="imagen-previa" alt="Vista previa de la imagen">
+        <button type="button" id="quitar-imagen" class="quitar" aria-label="Quitar imagen">✕</button>
+      </div>
+
+      <div id="panel-recomendacion" class="panel-recomendacion" hidden>
+        <h2>Compartir una recomendación</h2>
+
+        <label for="rec-titulo">Título</label>
+        <input type="text" id="rec-titulo" maxlength="120">
+
+        <label for="rec-autor">Autor/a</label>
+        <input type="text" id="rec-autor" maxlength="120">
+
+        <label for="rec-sinopsis">Sinopsis</label>
+        <textarea id="rec-sinopsis" maxlength="2000" rows="4"></textarea>
+
+        <p class="etiqueta-campo">Géneros</p>
+        <div class="generos">
+          <label class="chip"><input type="checkbox" name="genero" value="Romance"> Romance</label>
+          <label class="chip"><input type="checkbox" name="genero" value="Drama"> Drama</label>
+          <label class="chip"><input type="checkbox" name="genero" value="Comedia"> Comedia</label>
+          <label class="chip"><input type="checkbox" name="genero" value="Fantasía"> Fantasía</label>
+          <label class="chip"><input type="checkbox" name="genero" value="Escolar"> Escolar</label>
+          <label class="chip"><input type="checkbox" name="genero" value="Slice of life"> Slice of life</label>
+          <label class="chip"><input type="checkbox" name="genero" value="Ciencia ficción"> Ciencia ficción</label>
+          <label class="chip"><input type="checkbox" name="genero" value="Misterio"> Misterio</label>
+          <label class="chip"><input type="checkbox" name="genero" value="Histórico"> Histórico</label>
+          <label class="chip"><input type="checkbox" name="genero" value="Sobrenatural"> Sobrenatural</label>
+        </div>
+
+        <label for="rec-portada">Portada</label>
+        <input type="file" id="rec-portada" accept="image/*">
+        <img id="portada-previa" class="portada-previa" alt="Vista previa de la portada" hidden>
+      </div>
+
+      <input type="file" id="archivo-imagen" accept="image/*" hidden>
+
+      <p id="mensaje-compositor" class="muro-mensaje"></p>
+
+      <div class="compositor-acciones">
+        <button type="button" id="boton-imagen" class="icono-boton">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Imagen
+        </button>
+        <button type="button" id="boton-recomendacion" class="icono-boton">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Recomendación
+        </button>
+        <span id="contador" class="contador">0/500</span>
+        <button type="button" id="boton-publicar" class="boton-publicar">Publicar</button>
+      </div>
+    </section>
+
+    <section id="muro-lista" class="muro-lista">Cargando publicaciones...</section>
+    <button type="button" id="cargar-mas" class="cargar-mas" hidden>Cargar más</button>
   </main>
+
+  <div id="aviso-flotante" class="aviso-flotante" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/foro.js?v=2"></script>
+  <script src="js/muro.js"></script>
 </body>
-</html>
+      </html>
