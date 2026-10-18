@@ -1,0 +1,51 @@
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 20px;
+  margin: -20px -20px 24px;
+  background: linear-gradient(90deg, var(--rosa), var(--violeta));
+  color: var(--blanco);
+}
+
+.cabecera .logo {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--blanco);
+}
+
+.zona-usuario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.saludo {
+  font-weight: bold;
+}
+
+.enlace-nav {
+  color: var(--blanco);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.boton-nav {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 2px solid var(--blanco);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--blanco);
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.boton-nav:hover {
+  background: var(--blanco);
+  color: var(--violeta);
+}
