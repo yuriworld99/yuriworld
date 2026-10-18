@@ -1,13 +1,17 @@
 .cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px 16px;
   padding: 14px 20px;
-  margin: -20px -20px 24px;
+  margin: -20px -20px 0;
   background: linear-gradient(90deg, var(--rosa), var(--violeta));
   color: var(--blanco);
+  box-shadow: 0 4px 20px rgba(123, 63, 228, 0.25);
 }
 
 .cabecera .logo {
@@ -19,6 +23,7 @@
 .zona-usuario {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
@@ -30,6 +35,10 @@
   color: var(--blanco);
   font-weight: bold;
   text-decoration: none;
+}
+
+.enlace-nav:hover {
+  text-decoration: underline;
 }
 
 .boton-nav {
