@@ -48,6 +48,22 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/detalle.js"></script>
+  <script src="js/detalle.js?v=3"></script>
+  <script>
+    setTimeout(async function () {
+      const estado = document.getElementById("estado-detalle");
+      if (estado.hidden) return;
+      const id = new URLSearchParams(window.location.search).get("id");
+      const { data, error } = await supabaseClient
+        .from("recomendaciones")
+        .select("id, titulo, profiles!recomendaciones_user_id_fkey(username)")
+        .eq("id", id)
+        .maybeSingle();
+      estado.textContent =
+        "Diagnóstico → id: " + id +
+        " | error: " + (error ? error.message : "ninguno") +
+        " | datos: " + (data ? "sí" : "no");
+    }, 2500);
+  </script>
 </body>
-</html>
+</html>    
