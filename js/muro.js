@@ -301,14 +301,23 @@ async function borrarPublicacion(post) {
   }
 
   await borrarArchivo("muro", post.imagen_url);
-  await borrarArchivo("portadas", post.rec_portada_url);
+  if (!post.recomendacion_id) {
+    await borrarArchivo("portadas", post.rec_portada_url);
+  }
   avisar("Publicación borrada.");
   cargarMuro();
 }
 
 function crearBloqueRecomendacion(post) {
-  const bloque = document.createElement("div");
+  const enlazada = !!post.recomendacion_id;
+  const bloque = document.createElement(enlazada ? "a" : "div");
   bloque.className = "rec-tarjeta";
+
+  if (enlazada) {
+    bloque.href = "recomendacion.html?id=" + encodeURIComponent(post.recomendacion_id);
+    bloque.style.color = "inherit";
+    bloque.style.textDecoration = "none";
+  }
 
   if (post.rec_portada_url) {
     const portada = document.createElement("img");
@@ -352,6 +361,16 @@ function crearBloqueRecomendacion(post) {
   info.appendChild(autor);
   info.appendChild(sinopsis);
   info.appendChild(generos);
+
+  if (enlazada) {
+    const ver = document.createElement("p");
+    ver.className = "rec-autor";
+    ver.style.color = "#7b3fe4";
+    ver.style.fontWeight = "700";
+    ver.textContent = "Ver y calificar →";
+    info.appendChild(ver);
+  }
+
   bloque.appendChild(info);
 
   return bloque;
@@ -636,7 +655,7 @@ recPortada.addEventListener("change", async function () {
     portadaAdjunta = await prepararImagen(archivo);
     portadaPrevia.src = URL.createObjectURL(portadaAdjunta);
     portadaPrevia.hidden = false;
-       mostrarMensaje("", "");
+    mostrarMensaje("", "");
   } catch (error) {
     portadaAdjunta = null;
     portadaPrevia.hidden = true;
@@ -687,6 +706,7 @@ botonPublicar.addEventListener("click", async function () {
   mostrarMensaje("Publicando...", "");
 
   const subidos = [];
+  let recomendacionId = null;
 
   try {
     const fila = { contenido: texto || null };
@@ -696,16 +716,37 @@ botonPublicar.addEventListener("click", async function () {
     }
 
     if (conRecomendacion) {
+      const urlPortada = await subirArchivo("portadas", portadaAdjunta, subidos);
+
+      const { data: recomendacion, error: errorRecomendacion } = await supabaseClient
+        .from("recomendaciones")
+        .insert({
+          titulo: recTitulo,
+          autor: recAutor,
+          sinopsis: recSinopsis,
+          generos: recGeneros,
+          portada_url: urlPortada
+        })
+        .select("id")
+        .single();
+
+      if (errorRecomendacion) throw errorRecomendacion;
+      recomendacionId = recomendacion.id;
+
+      fila.recomendacion_id = recomendacionId;
       fila.rec_titulo = recTitulo;
       fila.rec_autor = recAutor;
       fila.rec_sinopsis = recSinopsis;
       fila.rec_generos = recGeneros;
-      fila.rec_portada_url = await subirArchivo("portadas", portadaAdjunta, subidos);
+      fila.rec_portada_url = urlPortada;
     }
 
     const { error } = await supabaseClient.from("publicaciones").insert(fila);
     if (error) throw error;
   } catch (error) {
+    if (recomendacionId) {
+      await supabaseClient.from("recomendaciones").delete().eq("id", recomendacionId);
+    }
     for (const subido of subidos) {
       await supabaseClient.storage.from(subido.bucket).remove([subido.ruta]);
     }
