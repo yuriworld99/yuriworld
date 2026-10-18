@@ -13,8 +13,15 @@ function crearPublicacion(pub) {
   const tarjeta = document.createElement("article");
   tarjeta.className = "publicacion-card";
 
+  const direccion = "publicacion.html?id=" + encodeURIComponent(pub.id);
+
   const titulo = document.createElement("h3");
-  titulo.textContent = pub.titulo;
+  const enlaceTitulo = document.createElement("a");
+  enlaceTitulo.href = direccion;
+  enlaceTitulo.textContent = pub.titulo;
+  enlaceTitulo.style.color = "inherit";
+  enlaceTitulo.style.textDecoration = "none";
+  titulo.appendChild(enlaceTitulo);
 
   const meta = document.createElement("p");
   meta.className = "publicacion-meta";
@@ -26,9 +33,17 @@ function crearPublicacion(pub) {
   texto.className = "publicacion-texto";
   texto.textContent = pub.contenido;
 
+  const leer = document.createElement("a");
+  leer.href = direccion;
+  leer.className = "enlace-volver";
+  leer.style.marginTop = "8px";
+  leer.style.marginBottom = "0";
+  leer.textContent = "Leer y responder →";
+
   tarjeta.appendChild(titulo);
   tarjeta.appendChild(meta);
   tarjeta.appendChild(texto);
+  tarjeta.appendChild(leer);
 
   return tarjeta;
 }
