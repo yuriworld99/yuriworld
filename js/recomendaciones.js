@@ -54,7 +54,7 @@ async function cargarRecomendaciones() {
 
   const { data, error } = await supabaseClient
     .from("recomendaciones")
-    .select("id, titulo, autor, sinopsis, generos, portada_url, created_at, profiles(username)")
+    .select("id, titulo, autor, sinopsis, generos, portada_url, created_at, profiles!recomendaciones_user_id_fkey(username)")
     .order("created_at", { ascending: false })
     .limit(30);
 
