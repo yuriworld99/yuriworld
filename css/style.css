@@ -1,0 +1,23 @@
+:root {
+  --rosa: #ff5fa2;
+  --violeta: #7b3fe4;
+  --blanco: #ffffff;
+  --fondo: #fff5fa;
+  --texto: #2b1a3d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+h1 {
+  color: var(--violeta);
+}
