@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicación - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+  <link rel="stylesheet" href="css/tarjetas.css">
+  <link rel="stylesheet" href="css/detalle.css">
+  <link rel="stylesheet" href="css/foro.css">
+</head>
+<body>
+  <main class="detalle">
+    <a href="foro.html" class="enlace-volver">← Volver a la comunidad</a>
+
+    <p id="estado-detalle">Cargando...</p>
+
+    <article id="contenido" hidden>
+      <h1 id="pub-titulo"></h1>
+      <p id="pub-meta" class="tarjeta-pie"></p>
+      <p id="pub-texto" class="detalle-sinopsis"></p>
+      <div id="acciones-publicacion"></div>
+
+      <section class="bloque">
+        <h2>Respuestas</h2>
+        <form id="form-comentario">
+          <textarea id="texto-comentario" maxlength="1000" placeholder="Escribí tu respuesta..." required></textarea>
+          <button type="submit" id="boton-comentar" class="boton">Responder</button>
+        </form>
+        <p id="aviso-comentar" hidden>
+          Para responder necesitás
+          <a href="iniciar-sesion.html">iniciar sesión</a>.
+        </p>
+        <p id="mensaje-comentario" class="mensaje"></p>
+        <div id="lista-comentarios"></div>
+      </section>
+    </article>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/publicacion.js"></script>
+</body>
+</html>
