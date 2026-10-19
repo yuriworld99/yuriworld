@@ -1,0 +1,67 @@
+.hilo {
+  margin-bottom: 10px;
+}
+
+.hilo-hijas {
+  margin-left: 28px;
+  padding-left: 10px;
+  border-left: 3px solid #f0e6fb;
+}
+
+.respuesta-acciones {
+  display: flex;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.respuesta-acciones .respuesta-borrar {
+  margin-top: 0;
+}
+
+.respuesta-responder {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--violeta);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.formulario-respuesta {
+  margin: 0 0 8px 28px;
+  padding: 10px;
+  background: #faf6ff;
+  border: 1px solid #e6d9fb;
+  border-radius: 14px;
+}
+
+.formulario-respuesta textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 2px solid #e6d9fb;
+  border-radius: 12px;
+  background: var(--blanco);
+  color: var(--texto);
+  font: inherit;
+  font-size: 16px;
+  resize: vertical;
+}
+
+.formulario-respuesta-acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.boton-cancelar {
+  padding: 10px 20px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  background: var(--blanco);
+  color: var(--texto);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
