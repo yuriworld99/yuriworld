@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/tarjetas.css">
   <link rel="stylesheet" href="css/muro.css">
   <link rel="stylesheet" href="css/perfil.css">
+  <link rel="stylesheet" href="css/perfil-editar.css">
 </head>
 <body>
   <main class="perfil">
@@ -21,6 +22,25 @@
         <h1 id="perfil-nombre" class="perfil-nombre"></h1>
         <span id="perfil-propio" class="perfil-propio" hidden>Este es tu perfil</span>
         <p id="perfil-desde" class="perfil-desde"></p>
+        <p id="perfil-descripcion" class="perfil-descripcion" hidden></p>
+
+        <button type="button" id="boton-editar-perfil" class="boton-editar-perfil" hidden>Editar perfil</button>
+
+        <form id="form-editar-perfil" class="form-editar-perfil" hidden>
+          <label for="archivo-avatar">Foto de perfil</label>
+          <input type="file" id="archivo-avatar" accept="image/*">
+          <img id="vista-avatar" class="vista-avatar" alt="Vista previa de tu foto" hidden>
+
+          <label for="texto-descripcion">Descripción (hasta 160 caracteres)</label>
+          <textarea id="texto-descripcion" maxlength="160" rows="3" placeholder="Contá algo sobre vos y tus obras favoritas"></textarea>
+
+          <div class="acciones-edicion">
+            <button type="submit" class="boton-publicar">Guardar</button>
+            <button type="button" id="cancelar-edicion" class="boton-cancelar">Cancelar</button>
+          </div>
+          <p id="mensaje-edicion" class="muro-mensaje"></p>
+        </form>
+
         <div class="perfil-cuentas">
           <div class="perfil-cuenta">
             <strong id="cuenta-publicaciones">0</strong>
@@ -46,5 +66,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/perfil.js"></script>
+  <script src="js/perfil-editar.js"></script>
 </body>
 </html>
