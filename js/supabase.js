@@ -6,3 +6,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const scriptLayout = document.createElement("script");
 scriptLayout.src = "js/layout.js?v=1";
 document.head.appendChild(scriptLayout);
+
+const scriptAvatares = document.createElement("script");
+scriptAvatares.src = "js/avatares.js?v=1";
+document.head.appendChild(scriptAvatares);
