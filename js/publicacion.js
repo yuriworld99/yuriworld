@@ -28,6 +28,7 @@ const avisoFlotante = document.getElementById("aviso-flotante");
 let sesion = null;
 let numeroComentarios = null;
 let temporizadorAviso = null;
+let formularioAbierto = null;
 
 function avisar(texto) {
   avisoFlotante.textContent = texto;
@@ -376,9 +377,78 @@ function construirPublicacion(post, nombre, meGustaInicial, repostInicial) {
   contenedorPublicacion.appendChild(fila);
 }
 
-function crearRespuesta(respuesta, nombre) {
+function cerrarFormularioAbierto() {
+  if (formularioAbierto) {
+    formularioAbierto.remove();
+    formularioAbierto = null;
+  }
+}
+
+function abrirFormularioRespuesta(hilo, padreId, mencion) {
+  cerrarFormularioAbierto();
+
+  const formulario = document.createElement("div");
+  formulario.className = "formulario-respuesta";
+
+  const texto = document.createElement("textarea");
+  texto.maxLength = 1000;
+  texto.rows = 2;
+  texto.placeholder = "Escribí tu respuesta...";
+  texto.value = mencion ? "@" + mencion + " " : "";
+
+  const acciones = document.createElement("div");
+  acciones.className = "formulario-respuesta-acciones";
+
+  const enviar = document.createElement("button");
+  enviar.type = "button";
+  enviar.className = "boton-publicar";
+  enviar.textContent = "Responder";
+
+  const cancelar = document.createElement("button");
+  cancelar.type = "button";
+  cancelar.className = "boton-cancelar";
+  cancelar.textContent = "Cancelar";
+
+  enviar.addEventListener("click", async function () {
+    const valor = texto.value.trim();
+    if (!valor || (mencion && valor === "@" + mencion)) {
+      avisar("Escribí algo antes de responder.");
+      return;
+    }
+
+    enviar.disabled = true;
+
+    const { error } = await supabaseClient
+      .from("respuestas")
+      .insert({ publicacion_id: publicacionId, texto: valor, respuesta_a: padreId });
+
+    enviar.disabled = false;
+
+    if (error) {
+      avisar("No se pudo publicar la respuesta.");
+      return;
+    }
+
+    cerrarFormularioAbierto();
+    cargarRespuestas();
+  });
+
+  cancelar.addEventListener("click", cerrarFormularioAbierto);
+
+  acciones.appendChild(enviar);
+  acciones.appendChild(cancelar);
+  formulario.appendChild(texto);
+  formulario.appendChild(acciones);
+  hilo.appendChild(formulario);
+  formularioAbierto = formulario;
+  texto.focus();
+}
+
+function crearRespuesta(respuesta, nombre, padreId, hilo) {
+  const esHija = !!padreId;
+
   const caja = document.createElement("div");
-  caja.className = "respuesta";
+  caja.className = "respuesta" + (esHija ? " hija" : "");
   caja.appendChild(crearAvatar(nombre, respuesta.user_id, true));
 
   const cuerpo = document.createElement("div");
@@ -407,34 +477,60 @@ function crearRespuesta(respuesta, nombre) {
   cuerpo.appendChild(cabecera);
   cuerpo.appendChild(texto);
 
+  const acciones = document.createElement("div");
+  acciones.className = "respuesta-acciones";
+
+  const responder = document.createElement("button");
+  responder.type = "button";
+  responder.className = "respuesta-responder";
+  responder.textContent = "Responder";
+  responder.addEventListener("click", function () {
+    if (!sesion) {
+      avisar("Iniciá sesión para responder.");
+      return;
+    }
+    abrirFormularioRespuesta(
+      hilo,
+      esHija ? padreId : respuesta.id,
+      esHija ? nombre : null
+    );
+  });
+  acciones.appendChild(responder);
+
   if (sesion && sesion.user.id === respuesta.user_id) {
     const borrar = document.createElement("button");
     borrar.type = "button";
     borrar.className = "respuesta-borrar";
     borrar.textContent = "Borrar";
     borrar.addEventListener("click", async function () {
-      if (!confirm("¿Borrar tu comentario?")) return;
+      const aviso = esHija
+        ? "¿Borrar tu respuesta?"
+        : "¿Borrar tu comentario? También se borrarán sus respuestas.";
+      if (!confirm(aviso)) return;
       const { error } = await supabaseClient
         .from("respuestas")
         .delete()
         .eq("id", respuesta.id);
       if (error) {
-        avisar("No se pudo borrar el comentario.");
+        avisar("No se pudo borrar.");
         return;
       }
       cargarRespuestas();
     });
-    cuerpo.appendChild(borrar);
+    acciones.appendChild(borrar);
   }
 
+  cuerpo.appendChild(acciones);
   caja.appendChild(cuerpo);
   return caja;
 }
 
 async function cargarRespuestas() {
+  formularioAbierto = null;
+
   const { data, error } = await supabaseClient
     .from("respuestas")
-    .select("id, texto, created_at, user_id")
+    .select("id, texto, created_at, user_id, respuesta_a")
     .eq("publicacion_id", publicacionId)
     .order("created_at", { ascending: true });
 
@@ -467,10 +563,43 @@ async function cargarRespuestas() {
     nombres[perfil.id] = perfil.username;
   });
 
-  const fragmento = document.createDocumentFragment();
-  data.forEach(function (respuesta) {
-    fragmento.appendChild(crearRespuesta(respuesta, nombres[respuesta.user_id] || "usuario"));
+  const principales = data.filter(function (respuesta) {
+    return !respuesta.respuesta_a;
   });
+
+  const hijasPorPadre = {};
+  data.forEach(function (respuesta) {
+    if (respuesta.respuesta_a) {
+      if (!hijasPorPadre[respuesta.respuesta_a]) hijasPorPadre[respuesta.respuesta_a] = [];
+      hijasPorPadre[respuesta.respuesta_a].push(respuesta);
+    }
+  });
+
+  const fragmento = document.createDocumentFragment();
+
+  principales.forEach(function (principal) {
+    const hilo = document.createElement("div");
+    hilo.className = "hilo";
+
+    hilo.appendChild(
+      crearRespuesta(principal, nombres[principal.user_id] || "usuario", null, hilo)
+    );
+
+    const hijas = hijasPorPadre[principal.id] || [];
+    if (hijas.length > 0) {
+      const contenedorHijas = document.createElement("div");
+      contenedorHijas.className = "hilo-hijas";
+      hijas.forEach(function (hija) {
+        contenedorHijas.appendChild(
+          crearRespuesta(hija, nombres[hija.user_id] || "usuario", principal.id, hilo)
+        );
+      });
+      hilo.appendChild(contenedorHijas);
+    }
+
+    fragmento.appendChild(hilo);
+  });
+
   listaRespuestas.replaceChildren(fragmento);
 }
 
@@ -527,7 +656,7 @@ async function iniciar() {
   }
 
   const { data: autor } = await supabaseClient
-    .from("profiles")
+  .from("profiles")
     .select("username")
     .eq("id", post.user_id)
     .maybeSingle();
