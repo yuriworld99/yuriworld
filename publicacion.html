@@ -5,41 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Publicación - YuriWorld</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/formularios.css">
-  <link rel="stylesheet" href="css/tarjetas.css">
-  <link rel="stylesheet" href="css/detalle.css">
-  <link rel="stylesheet" href="css/foro.css">
+  <link rel="stylesheet" href="css/muro.css">
+  <link rel="stylesheet" href="css/publicacion.css">
 </head>
 <body>
-  <main class="detalle">
+  <main class="detalle-publicacion">
     <a href="foro.html" class="enlace-volver">← Volver a la comunidad</a>
 
     <p id="estado-detalle">Cargando...</p>
 
-    <article id="contenido" hidden>
-      <h1 id="pub-titulo"></h1>
-      <p id="pub-meta" class="tarjeta-pie"></p>
-      <p id="pub-texto" class="detalle-sinopsis"></p>
-      <div id="acciones-publicacion"></div>
+    <div id="contenido" hidden>
+      <article id="publicacion" class="post"></article>
 
-      <section class="bloque">
-        <h2>Respuestas</h2>
-        <form id="form-comentario">
-          <textarea id="texto-comentario" maxlength="1000" placeholder="Escribí tu respuesta..." required></textarea>
-          <button type="submit" id="boton-comentar" class="boton">Responder</button>
-        </form>
-        <p id="aviso-comentar" hidden>
-          Para responder necesitás
-          <a href="iniciar-sesion.html">iniciar sesión</a>.
+      <section>
+        <h2 class="titulo-respuestas">Comentarios</h2>
+
+        <div id="compositor-respuesta" class="compositor-respuesta" hidden>
+          <div id="avatar-respuesta"></div>
+          <textarea id="texto-respuesta" maxlength="1000" rows="2" placeholder="Escribí tu comentario..."></textarea>
+          <button type="button" id="boton-responder" class="boton-publicar">Comentar</button>
+        </div>
+
+        <p id="aviso-respuesta" class="muro-aviso" hidden>
+          Para comentar necesitás
+          <a href="iniciar-sesion.html">iniciar sesión</a> o
+          <a href="registro.html">crear una cuenta</a>.
         </p>
-        <p id="mensaje-comentario" class="mensaje"></p>
-        <div id="lista-comentarios"></div>
+
+        <p id="mensaje-respuesta" class="muro-mensaje"></p>
+        <div id="lista-respuestas"></div>
       </section>
-    </article>
+    </div>
   </main>
+
+  <div id="aviso-flotante" class="aviso-flotante" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/publicacion.js"></script>
+  <script src="js/publicacion.js?v=2"></script>
 </body>
 </html>
