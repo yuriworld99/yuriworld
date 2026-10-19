@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/tarjetas.css">
+  <link rel="stylesheet" href="css/muro.css">
+  <link rel="stylesheet" href="css/perfil.css">
+</head>
+<body>
+  <main class="perfil">
+    <a href="foro.html" class="enlace-volver">← Volver a la comunidad</a>
+
+    <p id="estado-perfil">Cargando perfil...</p>
+
+    <div id="contenido-perfil" hidden>
+      <section class="perfil-cabecera">
+        <div id="perfil-avatar"></div>
+        <h1 id="perfil-nombre" class="perfil-nombre"></h1>
+        <span id="perfil-propio" class="perfil-propio" hidden>Este es tu perfil</span>
+        <p id="perfil-desde" class="perfil-desde"></p>
+        <div class="perfil-cuentas">
+          <div class="perfil-cuenta">
+            <strong id="cuenta-publicaciones">0</strong>
+            <span>Publicaciones</span>
+          </div>
+          <div class="perfil-cuenta">
+            <strong id="cuenta-recomendaciones">0</strong>
+            <span>Recomendaciones</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="pestanas">
+        <button type="button" id="pestana-publicaciones" class="pestana activa">Publicaciones</button>
+        <button type="button" id="pestana-recomendaciones" class="pestana">Recomendaciones</button>
+      </div>
+
+      <section id="panel-publicaciones">Cargando...</section>
+      <section id="panel-recomendaciones" class="lista-recomendaciones" hidden>Cargando...</section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/perfil.js"></script>
+</body>
+</html>
