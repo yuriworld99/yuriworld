@@ -3,60 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Publicar recomendación - YuriWorld</title>
+  <title>Publicación - YuriWorld</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/formularios.css">
-  <link rel="stylesheet" href="css/publicar.css">
+  <link rel="stylesheet" href="css/muro.css">
+  <link rel="stylesheet" href="css/publicacion.css">
 </head>
 <body>
-  <main class="caja-formulario ancha">
-    <h1>Publicar recomendación</h1>
+  <main class="detalle-publicacion">
+    <a href="foro.html" class="enlace-volver">← Volver a la comunidad</a>
 
-    <div id="aviso-sesion" hidden>
-      <p>Para publicar necesitás iniciar sesión.</p>
-      <p class="enlace-secundario">
-        <a href="iniciar-sesion.html">Iniciar sesión</a> ·
-        <a href="registro.html">Crear cuenta</a>
-      </p>
+    <p id="estado-detalle">Cargando...</p>
+
+    <div id="contenido" hidden>
+      <article id="publicacion" class="post"></article>
+
+      <section>
+        <h2 class="titulo-respuestas">Comentarios</h2>
+
+        <div id="compositor-respuesta" class="compositor-respuesta" hidden>
+          <div id="avatar-respuesta"></div>
+          <textarea id="texto-respuesta" maxlength="1000" rows="2" placeholder="Escribí tu comentario..."></textarea>
+          <button type="button" id="boton-responder" class="boton-publicar">Comentar</button>
+        </div>
+
+        <p id="aviso-respuesta" class="muro-aviso" hidden>
+          Para comentar necesitás
+          <a href="iniciar-sesion.html">iniciar sesión</a> o
+          <a href="registro.html">crear una cuenta</a>.
+        </p>
+
+        <p id="mensaje-respuesta" class="muro-mensaje"></p>
+        <div id="lista-respuestas"></div>
+      </section>
     </div>
-
-    <form id="form-publicar">
-      <label for="titulo">Título</label>
-      <input type="text" id="titulo" maxlength="120" required>
-
-      <label for="autor">Autor/a</label>
-      <input type="text" id="autor" maxlength="120" required>
-
-      <label for="sinopsis">Sinopsis</label>
-      <textarea id="sinopsis" maxlength="2000" required></textarea>
-
-      <p class="etiqueta">Géneros</p>
-      <div class="generos">
-        <label class="chip"><input type="checkbox" name="genero" value="Romance"> Romance</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Drama"> Drama</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Comedia"> Comedia</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Fantasía"> Fantasía</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Escolar"> Escolar</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Slice of life"> Slice of life</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Ciencia ficción"> Ciencia ficción</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Misterio"> Misterio</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Histórico"> Histórico</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Sobrenatural"> Sobrenatural</label>
-      </div>
-
-      <label for="portada">Portada (JPG, PNG o WEBP, máximo 2 MB)</label>
-      <input type="file" id="portada" accept="image/jpeg,image/png,image/webp" required>
-      <img id="vista-previa" class="vista-previa" alt="Vista previa de la portada" hidden>
-
-      <button type="submit" id="boton-publicar" class="boton">Publicar</button>
-    </form>
-
-    <p id="mensaje" class="mensaje"></p>
-    <p class="enlace-secundario"><a href="index.html">Volver al inicio</a></p>
   </main>
+
+  <div id="aviso-flotante" class="aviso-flotante" hidden></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/publicar.js"></script>
+  <script src="js/publicacion.js?v=2"></script>
 </body>
 </html>
