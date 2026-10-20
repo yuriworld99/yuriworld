@@ -34,8 +34,11 @@
       .eq("id", sesion.user.id)
       .maybeSingle();
 
-    const saludo = document.createElement("span");
+    const saludo = document.createElement("a");
     saludo.className = "saludo";
+    saludo.href = "perfil.html?mi=" + Date.now();
+    saludo.style.color = "#ffffff";
+    saludo.style.textDecoration = "none";
     saludo.textContent = "Hola, " + (perfil ? perfil.username : "usuario");
 
     const salir = document.createElement("button");
