@@ -2,70 +2,107 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Perfil - YuriWorld</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/tarjetas.css">
   <link rel="stylesheet" href="css/muro.css">
-  <link rel="stylesheet" href="css/perfil.css">
+  <link rel="stylesheet" href="css/comunidad.css">
   <link rel="stylesheet" href="css/perfil-editar.css">
+  <link rel="stylesheet" href="css/perfil-x.css">
 </head>
-<body>
-  <main class="perfil">
-    <a href="foro.html" class="enlace-volver">← Volver a la comunidad</a>
+<body class="pagina-perfil">
+  <div id="perfil-barra" class="perfil-barra">
+    <button type="button" id="perfil-volver" class="perfil-volver" aria-label="Volver">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div class="perfil-barra-titulo">
+      <strong id="barra-nombre"></strong>
+      <span id="barra-cuenta"></span>
+    </div>
+  </div>
 
-    <p id="estado-perfil">Cargando perfil...</p>
+  <main class="perfil">
+    <p id="estado-perfil" style="padding: 80px 16px 0;">Cargando perfil...</p>
 
     <div id="contenido-perfil" hidden>
       <section class="perfil-cabecera">
-        <div id="perfil-avatar"></div>
-        <h1 id="perfil-nombre" class="perfil-nombre"></h1>
-        <span id="perfil-propio" class="perfil-propio" hidden>Este es tu perfil</span>
-        <p id="perfil-desde" class="perfil-desde"></p>
-        <p id="perfil-descripcion" class="perfil-descripcion" hidden></p>
+        <div id="perfil-banner" class="perfil-banner"></div>
 
-        <button type="button" id="boton-editar-perfil" class="boton-editar-perfil" hidden>Editar perfil</button>
+        <div class="perfil-avatar-fila">
+          <div id="perfil-avatar"></div>
+        </div>
 
-        <form id="form-editar-perfil" class="form-editar-perfil" hidden>
-          <label for="archivo-avatar">Foto de perfil</label>
-          <input type="file" id="archivo-avatar" accept="image/*">
-          <img id="vista-avatar" class="vista-avatar" alt="Vista previa de tu foto" hidden>
+        <div class="perfil-datos">
+          <h1 id="perfil-nombre" class="perfil-nombre"></h1>
+          <p id="perfil-usuario" class="perfil-usuario"></p>
+          <p id="perfil-descripcion" class="perfil-descripcion" hidden></p>
+          <p id="perfil-desde" class="perfil-desde"></p>
+          <p class="perfil-cuentas">
+            <span><strong id="cuenta-publicaciones">0</strong> publicaciones</span>
+            <span><strong id="cuenta-recomendaciones">0</strong> recomendaciones</span>
+          </p>
 
-          <label for="texto-descripcion">Descripción (hasta 160 caracteres)</label>
-          <textarea id="texto-descripcion" maxlength="160" rows="3" placeholder="Contá algo sobre vos y tus obras favoritas"></textarea>
-
-          <div class="acciones-edicion">
-            <button type="submit" class="boton-publicar">Guardar</button>
-            <button type="button" id="cancelar-edicion" class="boton-cancelar">Cancelar</button>
+          <div id="perfil-botones" class="perfil-botones">
+            <button type="button" id="boton-compartir-perfil" class="boton-perfil">Compartir</button>
+            <button type="button" id="boton-editar-perfil" class="boton-perfil" hidden>Editar perfil</button>
           </div>
-          <p id="mensaje-edicion" class="muro-mensaje"></p>
-        </form>
 
-        <div class="perfil-cuentas">
-          <div class="perfil-cuenta">
-            <strong id="cuenta-publicaciones">0</strong>
-            <span>Publicaciones</span>
-          </div>
-          <div class="perfil-cuenta">
-            <strong id="cuenta-recomendaciones">0</strong>
-            <span>Recomendaciones</span>
-          </div>
+          <form id="form-editar-perfil" class="form-editar-perfil" hidden>
+            <label for="archivo-banner">Banner (imagen ancha de portada)</label>
+            <input type="file" id="archivo-banner" accept="image/*">
+            <img id="vista-banner" class="vista-banner" alt="Vista previa del banner" hidden>
+
+            <label for="archivo-avatar">Foto de perfil</label>
+            <input type="file" id="archivo-avatar" accept="image/*">
+            <img id="vista-avatar" class="vista-avatar" alt="Vista previa de tu foto" hidden>
+
+            <label for="texto-descripcion">Descripción (hasta 160 caracteres)</label>
+            <textarea id="texto-descripcion" maxlength="160" rows="3" placeholder="Contá algo sobre vos y tus obras favoritas"></textarea>
+
+            <div class="acciones-edicion">
+              <button type="submit" class="boton-publicar">Guardar</button>
+              <button type="button" id="cancelar-edicion" class="boton-cancelar">Cancelar</button>
+            </div>
+            <p id="mensaje-edicion" class="muro-mensaje"></p>
+          </form>
         </div>
       </section>
 
-      <div class="pestanas">
-        <button type="button" id="pestana-publicaciones" class="pestana activa">Publicaciones</button>
-        <button type="button" id="pestana-recomendaciones" class="pestana">Recomendaciones</button>
-      </div>
+      <nav class="perfil-pestanas">
+        <button type="button" id="pestana-publicaciones" class="perfil-pestana activa">Publicaciones</button>
+        <button type="button" id="pestana-recomendaciones" class="perfil-pestana">Recomendaciones</button>
+      </nav>
 
       <section id="panel-publicaciones">Cargando...</section>
       <section id="panel-recomendaciones" class="lista-recomendaciones" hidden>Cargando...</section>
     </div>
   </main>
 
+  <nav class="nav-inferior" aria-label="Navegación principal">
+    <a href="foro.html" class="nav-item">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Comunidad</span>
+    </a>
+    <a href="index.html" class="nav-item">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Catálogo</span>
+    </a>
+    <a href="publicar.html" class="nav-item">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+      <span>Recomendar</span>
+    </a>
+    <a href="iniciar-sesion.html" id="nav-perfil" class="nav-item activo">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Perfil</span>
+    </a>
+  </nav>
+
+  <div id="aviso-flotante" class="aviso-flotante" hidden></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/perfil.js"></script>
-  <script src="js/perfil-editar.js"></script>
+  <script src="js/perfil.js?v=3"></script>
+  <script src="js/perfil-editar.js?v=3"></script>
 </body>
-</html>
+  </html>
