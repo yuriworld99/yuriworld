@@ -7,7 +7,8 @@ function icono(ruta) {
 const ICONOS = {
   comentario: icono('<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/>'),
   repost: icono('<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>'),
-  corazon: icono('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>')
+  corazon: icono('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>'),
+  calendario: icono('<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>')
 };
 
 const parametros = new URLSearchParams(window.location.search);
@@ -15,16 +16,37 @@ let perfilId = parametros.get("id");
 
 const estado = document.getElementById("estado-perfil");
 const contenido = document.getElementById("contenido-perfil");
+const barra = document.getElementById("perfil-barra");
+const barraNombre = document.getElementById("barra-nombre");
+const barraCuenta = document.getElementById("barra-cuenta");
+const botonVolver = document.getElementById("perfil-volver");
+const banner = document.getElementById("perfil-banner");
 const contenedorAvatar = document.getElementById("perfil-avatar");
 const nombrePerfil = document.getElementById("perfil-nombre");
+const usuarioPerfil = document.getElementById("perfil-usuario");
 const desdePerfil = document.getElementById("perfil-desde");
-const etiquetaPropio = document.getElementById("perfil-propio");
 const cuentaPublicaciones = document.getElementById("cuenta-publicaciones");
 const cuentaRecomendaciones = document.getElementById("cuenta-recomendaciones");
+const botonesPerfil = document.getElementById("perfil-botones");
+const botonCompartir = document.getElementById("boton-compartir-perfil");
+const navPerfil = document.getElementById("nav-perfil");
 const pestanaPublicaciones = document.getElementById("pestana-publicaciones");
 const pestanaRecomendaciones = document.getElementById("pestana-recomendaciones");
 const panelPublicaciones = document.getElementById("panel-publicaciones");
 const panelRecomendaciones = document.getElementById("panel-recomendaciones");
+const avisoFlotante = document.getElementById("aviso-flotante");
+
+let temporizadorAviso = null;
+let nombreActual = "usuario";
+
+function avisar(texto) {
+  avisoFlotante.textContent = texto;
+  avisoFlotante.hidden = false;
+  clearTimeout(temporizadorAviso);
+  temporizadorAviso = setTimeout(function () {
+    avisoFlotante.hidden = true;
+  }, 3000);
+}
 
 function colorDe(texto) {
   let valor = 0;
@@ -34,11 +56,18 @@ function colorDe(texto) {
   return COLORES_AVATAR[valor % COLORES_AVATAR.length];
 }
 
-function crearAvatar(nombre) {
+function crearAvatar(nombre, direccion) {
   const elemento = document.createElement("div");
-  elemento.className = "avatar grande";
+  elemento.className = "avatar";
+  elemento.dataset.foto = "1";
   elemento.style.background = colorDe(nombre);
   elemento.textContent = nombre.charAt(0).toUpperCase();
+  if (direccion) {
+    elemento.style.backgroundImage = 'url("' + direccion + '")';
+    elemento.style.backgroundSize = "cover";
+    elemento.style.backgroundPosition = "center";
+    elemento.textContent = "";
+  }
   return elemento;
 }
 
@@ -198,8 +227,8 @@ function crearPost(post) {
   comentarios.querySelector(".accion-num").textContent = Number(post.comentarios);
 
   acciones.appendChild(comentarios);
-  acciones.appendChild(crearContador(ICONOS.corazon, Number(post.me_gusta), "Me gusta"));
   acciones.appendChild(crearContador(ICONOS.repost, Number(post.reposts), "Reposts"));
+  acciones.appendChild(crearContador(ICONOS.corazon, Number(post.me_gusta), "Me gusta"));
 
   tarjeta.appendChild(acciones);
   return tarjeta;
@@ -328,9 +357,49 @@ async function cargarRecomendaciones() {
   panelRecomendaciones.replaceChildren(fragmento);
 }
 
+async function compartirPerfil() {
+  const direccion = new URL(
+    "perfil.html?id=" + encodeURIComponent(perfilId),
+    window.location.href
+  ).href;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: nombreActual + " en YuriWorld", url: direccion });
+      return;
+    } catch (error) {
+      if (error.name === "AbortError") return;
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(direccion);
+    avisar("Enlace copiado.");
+  } catch (error) {
+    avisar("No se pudo copiar el enlace.");
+  }
+}
+
+function actualizarBarra() {
+  const limite = banner.offsetHeight - 52;
+  barra.classList.toggle("compacta", window.scrollY > limite);
+}
+
+botonVolver.addEventListener("click", function () {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = "foro.html";
+  }
+});
+
+botonCompartir.addEventListener("click", compartirPerfil);
+
 async function iniciar() {
   const { data: datosSesion } = await supabaseClient.auth.getSession();
   const sesion = datosSesion.session;
+
+  navPerfil.href = sesion ? "perfil.html?mi=" + Date.now() : "iniciar-sesion.html";
 
   if (!perfilId && sesion) {
     perfilId = sesion.user.id;
@@ -341,24 +410,49 @@ async function iniciar() {
     return;
   }
 
-  const { data: perfil, error } = await supabaseClient
+  let { data: perfil, error } = await supabaseClient
     .from("profiles")
-    .select("id, username, created_at")
+    .select("id, username, created_at, avatar_url, banner_url")
     .eq("id", perfilId)
     .maybeSingle();
+
+  if (error) {
+    const respaldo = await supabaseClient
+      .from("profiles")
+      .select("id, username, created_at, avatar_url")
+      .eq("id", perfilId)
+      .maybeSingle();
+    perfil = respaldo.data;
+    error = respaldo.error;
+  }
 
   if (error || !perfil) {
     estado.textContent = "No encontramos ese perfil.";
     return;
   }
 
+  nombreActual = perfil.username;
   document.title = perfil.username + " - YuriWorld";
-  contenedorAvatar.replaceWith(crearAvatar(perfil.username));
+
+  if (perfil.banner_url) {
+    banner.style.backgroundImage = 'url("' + perfil.banner_url + '")';
+  }
+
+  contenedorAvatar.replaceWith(crearAvatar(perfil.username, perfil.avatar_url));
+
   nombrePerfil.textContent = perfil.username;
-  desdePerfil.textContent =
-    "Miembro desde " +
+  usuarioPerfil.textContent = "@" + perfil.username;
+  barraNombre.textContent = perfil.username;
+
+  desdePerfil.innerHTML = ICONOS.calendario;
+  const textoDesde = document.createElement("span");
+  textoDesde.textContent =
+    "Se unió en " +
     new Date(perfil.created_at).toLocaleDateString("es", { month: "long", year: "numeric" });
-  etiquetaPropio.hidden = !(sesion && sesion.user.id === perfil.id);
+  desdePerfil.appendChild(textoDesde);
+
+  const esPropio = !!sesion && sesion.user.id === perfil.id;
+  botonesPerfil.classList.toggle("uno", !esPropio);
 
   const { count: totalPublicaciones } = await supabaseClient
     .from("publicaciones")
@@ -373,9 +467,13 @@ async function iniciar() {
 
   cuentaPublicaciones.textContent = totalPublicaciones || 0;
   cuentaRecomendaciones.textContent = totalRecomendaciones || 0;
+  barraCuenta.textContent = (totalPublicaciones || 0) + " publicaciones";
 
   estado.hidden = true;
   contenido.hidden = false;
+
+  window.addEventListener("scroll", actualizarBarra, { passive: true });
+  actualizarBarra();
 
   pestanaPublicaciones.addEventListener("click", function () {
     mostrarPestana("publicaciones");
