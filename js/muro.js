@@ -8,7 +8,9 @@ function icono(ruta) {
 const ICONOS = {
   comentario: icono('<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z"/>'),
   repost: icono('<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>'),
-  corazon: icono('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>')
+  corazon: icono('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>'),
+  compartir: icono('<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>'),
+  puntos: icono('<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>')
 };
 
 const aviso = document.getElementById("aviso-sesion");
@@ -36,6 +38,7 @@ let imagenAdjunta = null;
 let portadaAdjunta = null;
 let cantidadVisible = PAGINA;
 let temporizadorAviso = null;
+let soloRecomendaciones = false;
 
 function avisar(texto) {
   avisoFlotante.textContent = texto;
@@ -287,6 +290,29 @@ function configurarRepost(boton, post, contexto) {
   });
 }
 
+async function compartirPublicacion(id) {
+  const direccion = new URL(
+    "publicacion.html?id=" + encodeURIComponent(id),
+    window.location.href
+  ).href;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "YuriWorld", url: direccion });
+      return;
+    } catch (error) {
+      if (error.name === "AbortError") return;
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(direccion);
+    avisar("Enlace copiado.");
+  } catch (error) {
+    avisar("No se pudo copiar el enlace.");
+  }
+}
+
 async function borrarPublicacion(post) {
   if (!confirm("¿Borrar esta publicación? También se borrarán sus comentarios, Me gusta y reposts.")) return;
 
@@ -307,6 +333,14 @@ async function borrarPublicacion(post) {
   avisar("Publicación borrada.");
   cargarMuro();
 }
+
+function cerrarMenus() {
+  document.querySelectorAll(".post-menu").forEach(function (menu) {
+    menu.hidden = true;
+  });
+}
+
+document.addEventListener("click", cerrarMenus);
 
 function crearBloqueRecomendacion(post) {
   const enlazada = !!post.recomendacion_id;
@@ -420,6 +454,38 @@ function crearPost(item, contexto) {
 
   cabecera.appendChild(enlaceNombre);
   cabecera.appendChild(fecha);
+
+  if (!esRepost && sesion && post.user_id === sesion.user.id) {
+    const botonMenu = document.createElement("button");
+    botonMenu.type = "button";
+    botonMenu.className = "post-menu-boton";
+    botonMenu.setAttribute("aria-label", "Más opciones");
+    botonMenu.innerHTML = ICONOS.puntos;
+
+    const menu = document.createElement("div");
+    menu.className = "post-menu";
+    menu.hidden = true;
+
+    const borrar = document.createElement("button");
+    borrar.type = "button";
+    borrar.textContent = "Borrar publicación";
+    borrar.addEventListener("click", function () {
+      menu.hidden = true;
+      borrarPublicacion(post);
+    });
+    menu.appendChild(borrar);
+
+    botonMenu.addEventListener("click", function (evento) {
+      evento.stopPropagation();
+      const estabaAbierto = !menu.hidden;
+      cerrarMenus();
+      menu.hidden = estabaAbierto;
+    });
+
+    cabecera.appendChild(botonMenu);
+    cabecera.appendChild(menu);
+  }
+
   cuerpo.appendChild(cabecera);
 
   if (post.titulo) {
@@ -464,26 +530,20 @@ function crearPost(item, contexto) {
   comentar.innerHTML = ICONOS.comentario + '<span class="accion-num"></span>';
   comentar.querySelector(".accion-num").textContent = Number(post.comentarios);
 
-  const botonMeGusta = crearBotonAccion("me-gusta", ICONOS.corazon, Number(post.me_gusta), "Me gusta");
   const botonRepost = crearBotonAccion("repost", ICONOS.repost, Number(post.reposts), "Repostear");
+  const botonMeGusta = crearBotonAccion("me-gusta", ICONOS.corazon, Number(post.me_gusta), "Me gusta");
+  const botonCompartir = crearBotonAccion("compartir", ICONOS.compartir, "", "Compartir");
 
-  configurarMeGusta(botonMeGusta, post, contexto);
   configurarRepost(botonRepost, post, contexto);
+  configurarMeGusta(botonMeGusta, post, contexto);
+  botonCompartir.addEventListener("click", function () {
+    compartirPublicacion(post.id);
+  });
 
   acciones.appendChild(comentar);
-  acciones.appendChild(botonMeGusta);
   acciones.appendChild(botonRepost);
-
-  if (!esRepost && sesion && post.user_id === sesion.user.id) {
-    const borrar = document.createElement("button");
-    borrar.type = "button";
-    borrar.className = "accion borrar";
-    borrar.textContent = "Borrar";
-    borrar.addEventListener("click", function () {
-      borrarPublicacion(post);
-    });
-    acciones.appendChild(borrar);
-  }
+  acciones.appendChild(botonMeGusta);
+  acciones.appendChild(botonCompartir);
 
   cuerpo.appendChild(acciones);
   fila.appendChild(cuerpo);
@@ -493,9 +553,13 @@ function crearPost(item, contexto) {
 }
 
 async function cargarMuro() {
-  const { data: items, error } = await supabaseClient
-    .from("muro_publicaciones")
-    .select("*")
+  let consulta = supabaseClient.from("muro_publicaciones").select("*");
+
+  if (soloRecomendaciones) {
+    consulta = consulta.not("rec_titulo", "is", null).is("repost_de", null);
+  }
+
+  const { data: items, error } = await consulta
     .order("created_at", { ascending: false })
     .range(0, cantidadVisible - 1);
 
@@ -508,7 +572,9 @@ async function cargarMuro() {
   if (items.length === 0) {
     const vacio = document.createElement("p");
     vacio.className = "muro-vacio";
-    vacio.textContent = "Todavía no hay publicaciones. ¡Sé la primera persona en publicar!";
+    vacio.textContent = soloRecomendaciones
+      ? "Todavía no hay recomendaciones en la comunidad."
+      : "Todavía no hay publicaciones. ¡Sé la primera persona en publicar!";
     lista.replaceChildren(vacio);
     botonCargarMas.hidden = true;
     return;
@@ -558,7 +624,7 @@ async function cargarMuro() {
 
   const idsPosts = [];
   items.forEach(function (item) {
-    const id = item.repost_de ? item.repost_de : item.id;
+        const id = item.repost_de ? item.repost_de : item.id;
     if (!idsPosts.includes(id)) idsPosts.push(id);
   });
 
@@ -759,6 +825,10 @@ botonPublicar.addEventListener("click", async function () {
   mostrarMensaje("¡Publicado! 💜", "ok");
   botonPublicar.disabled = false;
   cargarMuro();
+
+  if (typeof window.alPublicar === "function") {
+    window.alPublicar();
+  }
 });
 
 botonCargarMas.addEventListener("click", function () {
