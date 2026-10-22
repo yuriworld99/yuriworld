@@ -12,9 +12,7 @@
 
   const ICONOS_MENU = {
     perfil: icono('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
-    catalogo: icono('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>'),
     recomendar: icono('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'),
-    comunidad: icono('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'),
     salir: icono('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>')
   };
 
@@ -142,7 +140,6 @@
     menu.className = "drawer-menu";
     menu.appendChild(crearEnlaceDrawer("Entrar", "iniciar-sesion.html", ICONOS_MENU.perfil));
     menu.appendChild(crearEnlaceDrawer("Crear cuenta", "registro.html", ICONOS_MENU.recomendar));
-    menu.appendChild(crearEnlaceDrawer("Catálogo", "index.html", ICONOS_MENU.catalogo));
 
     drawerCuerpo.appendChild(titulo);
     drawerCuerpo.appendChild(subtitulo);
@@ -164,6 +161,12 @@
 
   pintarAvatar(avatarMenu, nombre, foto);
 
+  const enlacePerfil = document.createElement("a");
+  enlacePerfil.href = direccionPerfil();
+  enlacePerfil.style.display = "block";
+  enlacePerfil.style.color = "inherit";
+  enlacePerfil.style.textDecoration = "none";
+
   const avatarGrande = document.createElement("div");
   avatarGrande.className = "avatar";
   pintarAvatar(avatarGrande, nombre, foto);
@@ -175,6 +178,10 @@
   const usuarioMenu = document.createElement("p");
   usuarioMenu.className = "drawer-usuario";
   usuarioMenu.textContent = "@" + nombre;
+
+  enlacePerfil.appendChild(avatarGrande);
+  enlacePerfil.appendChild(nombreMenu);
+  enlacePerfil.appendChild(usuarioMenu);
 
   const cuentas = document.createElement("div");
   cuentas.className = "drawer-cuentas";
@@ -201,10 +208,6 @@
 
   const menu = document.createElement("div");
   menu.className = "drawer-menu";
-  menu.appendChild(crearEnlaceDrawer("Perfil", direccionPerfil(), ICONOS_MENU.perfil));
-  menu.appendChild(crearEnlaceDrawer("Comunidad", "foro.html", ICONOS_MENU.comunidad));
-  menu.appendChild(crearEnlaceDrawer("Catálogo", "index.html", ICONOS_MENU.catalogo));
-  menu.appendChild(crearEnlaceDrawer("Recomendar una obra", "publicar.html", ICONOS_MENU.recomendar));
 
   const botonSalir = document.createElement("button");
   botonSalir.type = "button";
@@ -219,9 +222,7 @@
   });
   menu.appendChild(botonSalir);
 
-  drawerCuerpo.appendChild(avatarGrande);
-  drawerCuerpo.appendChild(nombreMenu);
-  drawerCuerpo.appendChild(usuarioMenu);
+  drawerCuerpo.appendChild(enlacePerfil);
   drawerCuerpo.appendChild(cuentas);
   drawerCuerpo.appendChild(menu);
 })();
