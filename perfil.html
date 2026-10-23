@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/comunidad.css">
   <link rel="stylesheet" href="css/perfil-editar.css">
   <link rel="stylesheet" href="css/perfil-x.css">
+  <link rel="stylesheet" href="css/perfil-tabs.css">
 </head>
 <body class="pagina-perfil">
   <div id="perfil-barra" class="perfil-barra">
@@ -71,10 +72,16 @@
 
       <nav class="perfil-pestanas">
         <button type="button" id="pestana-publicaciones" class="perfil-pestana activa">Publicaciones</button>
+        <button type="button" id="pestana-respuestas" class="perfil-pestana">Respuestas</button>
+        <button type="button" id="pestana-reposts" class="perfil-pestana">Reposts</button>
+        <button type="button" id="pestana-multimedia" class="perfil-pestana">Multimedia</button>
         <button type="button" id="pestana-recomendaciones" class="perfil-pestana">Recomendaciones</button>
       </nav>
 
       <section id="panel-publicaciones">Cargando...</section>
+      <section id="panel-respuestas" hidden>Cargando...</section>
+      <section id="panel-reposts" hidden>Cargando...</section>
+      <section id="panel-multimedia" hidden>Cargando...</section>
       <section id="panel-recomendaciones" class="lista-recomendaciones" hidden>Cargando...</section>
     </div>
   </main>
@@ -102,7 +109,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/perfil.js?v=3"></script>
+  <script src="js/perfil.js?v=4"></script>
   <script src="js/perfil-editar.js?v=3"></script>
 </body>
-  </html>
+        </html>
