@@ -656,4 +656,54 @@ async function iniciar() {
   }
 
   const { data: autor } = await supabaseClient
-  
+      .from("profiles")
+    .select("username")
+    .eq("id", post.user_id)
+    .maybeSingle();
+  const nombre = autor ? autor.username : "usuario";
+
+  let meGustaInicial = false;
+  let repostInicial = false;
+
+  if (sesion) {
+    const { data: miMeGusta } = await supabaseClient
+      .from("me_gusta")
+      .select("publicacion_id")
+      .eq("publicacion_id", post.id)
+      .eq("user_id", sesion.user.id)
+      .maybeSingle();
+    meGustaInicial = !!miMeGusta;
+
+    const { data: miRepost } = await supabaseClient
+      .from("publicaciones")
+      .select("id")
+      .eq("repost_de", post.id)
+      .eq("user_id", sesion.user.id)
+      .maybeSingle();
+    repostInicial = !!miRepost;
+
+    const { data: miPerfil } = await supabaseClient
+      .from("profiles")
+      .select("username")
+      .eq("id", sesion.user.id)
+      .maybeSingle();
+    avatarRespuesta.replaceWith(
+      crearAvatar(miPerfil ? miPerfil.username : "usuario", null, true)
+    );
+    compositorRespuesta.hidden = false;
+  } else {
+    avisoRespuesta.hidden = false;
+  }
+
+  const resumen = post.contenido ? post.contenido.slice(0, 40) : "publicación";
+  document.title = nombre + ": " + resumen + " - YuriWorld";
+
+  construirPublicacion(post, nombre, meGustaInicial, repostInicial);
+
+  estado.hidden = true;
+  contenido.hidden = false;
+
+  cargarRespuestas();
+}
+
+iniciar();
