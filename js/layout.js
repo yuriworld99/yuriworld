@@ -8,19 +8,6 @@
     document.head.appendChild(enlace);
   }
 
-    async function esAdministradora(userId) {
-    const rpc = await supabaseClient.rpc("es_administrador");
-    if (!rpc.error) return rpc.data === true;
-
-    const tabla = await supabaseClient
-      .from("administradores")
-      .select("user_id")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    return !!tabla.data;
-  }
-
   async function mostrarSesion(zona) {
     const { data } = await supabaseClient.auth.getSession();
     const sesion = data.session;
@@ -63,13 +50,6 @@
       window.location.reload();
     });
 
-    if (await esAdministradora(sesion.user.id)) {
-      const admin = document.createElement("a");
-      admin.href = "admin.html";
-      admin.className = "enlace-nav";
-      admin.textContent = "Admin";
-      zona.appendChild(admin);
-    }
     zona.appendChild(saludo);
     zona.appendChild(salir);
   }
