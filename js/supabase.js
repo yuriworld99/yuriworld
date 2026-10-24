@@ -12,5 +12,5 @@ scriptAvatares.src = "js/avatares.js?v=1";
 document.head.appendChild(scriptAvatares);
 
 const scriptDenunciar = document.createElement("script");
-scriptDenunciar.src = "js/denunciar.js?v=1";
+scriptDenunciar.src = "js/denunciar.js?v=2";
 document.head.appendChild(scriptDenunciar);
