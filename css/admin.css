@@ -1,0 +1,148 @@
+[hidden] {
+  display: none !important;
+}
+
+.admin {
+  max-width: 760px;
+  margin: 20px auto 0;
+}
+
+.admin h1 {
+  margin: 0 0 6px;
+}
+
+.admin-pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.admin-pestana {
+  padding: 10px 16px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  background: var(--blanco);
+  color: var(--violeta);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-pestana.activa {
+  border-color: transparent;
+  background: linear-gradient(90deg, var(--rosa), var(--violeta));
+  color: #ffffff;
+}
+
+.denuncia {
+  margin-bottom: 14px;
+  padding: 16px;
+  background: var(--blanco);
+  border: 1px solid #e6d9fb;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(123, 63, 228, 0.1);
+}
+
+.den-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.den-tipo {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--violeta);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.den-motivo {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #fff0f7;
+  color: #b0245f;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.den-fecha {
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: #6d5d7d;
+}
+
+.den-por {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  color: #6d5d7d;
+}
+
+.den-detalle {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border-left: 3px solid #e6d9fb;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.den-objeto {
+  margin: 10px 0;
+  padding: 12px;
+  background: #faf6ff;
+  border: 1px solid #e6d9fb;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+
+.den-objeto p {
+  margin: 0 0 6px;
+}
+
+.den-objeto img {
+  display: block;
+  max-width: 140px;
+  max-height: 140px;
+  margin-top: 8px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.den-ausente {
+  color: #6d5d7d;
+  font-style: italic;
+}
+
+.den-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.den-boton {
+  padding: 8px 14px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  background: var(--blanco);
+  color: var(--texto);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.den-boton.peligro {
+  border-color: #d6336c;
+  color: #d6336c;
+}
+
+.den-boton.principal {
+  border-color: var(--violeta);
+  color: var(--violeta);
+  }
