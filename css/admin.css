@@ -1,0 +1,175 @@
+.admin-panel {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.admin-panel h1 {
+  margin: 8px 0 4px;
+  font-size: 1.5rem;
+  color: #2b1a3d;
+}
+
+.admin-sub {
+  margin: 0 0 14px;
+  color: #6d5d7d;
+  font-size: 0.95rem;
+}
+
+.admin-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.admin-filtro {
+  padding: 8px 14px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #2b1a3d;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-filtro.activo {
+  background: linear-gradient(90deg, #ff5fa2, #7b3fe4);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.admin-mensaje {
+  min-height: 1.2em;
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+}
+
+.admin-mensaje.error {
+  color: #d6336c;
+}
+
+.admin-mensaje.ok {
+  color: #2f9e44;
+}
+
+.admin-tarjeta {
+  margin-bottom: 12px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #e6d9fb;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(123, 63, 228, 0.08);
+}
+
+.admin-fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.admin-etiqueta {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #f3ebff;
+  color: #7b3fe4;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.admin-etiqueta.pendiente {
+  background: #fff0f7;
+  color: #d6336c;
+}
+
+.admin-etiqueta.revisada {
+  background: #ebfbee;
+  color: #2f9e44;
+}
+
+.admin-etiqueta.descartada {
+  background: #f1f3f5;
+  color: #6d5d7d;
+}
+
+.admin-fecha {
+  margin-left: auto;
+  color: #6d5d7d;
+  font-size: 0.8rem;
+}
+
+.admin-motivo {
+  margin: 0 0 4px;
+  font-weight: 700;
+  color: #2b1a3d;
+}
+
+.admin-detalle,
+.admin-quien {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  color: #6d5d7d;
+  overflow-wrap: anywhere;
+}
+
+.admin-vista {
+  margin: 8px 0;
+  padding: 10px 12px;
+  background: #faf6ff;
+  border-left: 4px solid #c9a8f5;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  color: #2b1a3d;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.admin-vista.vacia {
+  color: #6d5d7d;
+  font-style: italic;
+}
+
+.admin-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.admin-boton {
+  padding: 8px 14px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #2b1a3d;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.admin-boton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.admin-boton.peligro {
+  border-color: #d6336c;
+  background: #d6336c;
+  color: #ffffff;
+}
+
+.admin-boton.ok {
+  border-color: #2f9e44;
+  color: #2f9e44;
+}
+
+.admin-vacio {
+  padding: 24px 8px;
+  text-align: center;
+  color: #6d5d7d;
+  }
