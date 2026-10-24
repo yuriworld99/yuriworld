@@ -63,6 +63,13 @@
       window.location.reload();
     });
 
+    if (await esAdministradora(sesion.user.id)) {
+      const admin = document.createElement("a");
+      admin.href = "admin.html";
+      admin.className = "enlace-nav";
+      admin.textContent = "Admin";
+      zona.appendChild(admin);
+    }
     zona.appendChild(saludo);
     zona.appendChild(salir);
   }
