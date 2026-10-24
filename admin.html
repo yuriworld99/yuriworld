@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <main class="admin">
+    <h1>Panel de administración</h1>
+    <p id="estado-admin">Comprobando permisos...</p>
+
+    <div id="contenido-admin" hidden>
+      <nav class="admin-pestanas">
+        <button type="button" class="admin-pestana activa" data-estado="pendiente">
+          Pendientes (<span id="conteo-pendiente">0</span>)
+        </button>
+        <button type="button" class="admin-pestana" data-estado="revisada">
+          Revisadas (<span id="conteo-revisada">0</span>)
+        </button>
+        <button type="button" class="admin-pestana" data-estado="descartada">
+          Descartadas (<span id="conteo-descartada">0</span>)
+        </button>
+      </nav>
+
+      <section id="lista-denuncias">Cargando denuncias...</section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
