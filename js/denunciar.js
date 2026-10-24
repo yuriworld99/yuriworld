@@ -162,6 +162,7 @@
     document.body.style.overflow = "hidden";
   }
 
+  window.abrirDenuncia = abrirDenuncia;
   function crearMenuDenuncia(tipo, objetoId, nombreObjeto) {
     const grupo = document.createDocumentFragment();
 
