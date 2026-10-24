@@ -10,3 +10,7 @@ document.head.appendChild(scriptLayout);
 const scriptAvatares = document.createElement("script");
 scriptAvatares.src = "js/avatares.js?v=1";
 document.head.appendChild(scriptAvatares);
+
+const scriptDenunciar = document.createElement("script");
+scriptDenunciar.src = "js/denunciar.js?v=1";
+document.head.appendChild(scriptDenunciar);
