@@ -8,6 +8,19 @@
     document.head.appendChild(enlace);
   }
 
+    async function esAdministradora(userId) {
+    const rpc = await supabaseClient.rpc("es_administrador");
+    if (!rpc.error) return rpc.data === true;
+
+    const tabla = await supabaseClient
+      .from("administradores")
+      .select("user_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    return !!tabla.data;
+  }
+
   async function mostrarSesion(zona) {
     const { data } = await supabaseClient.auth.getSession();
     const sesion = data.session;
