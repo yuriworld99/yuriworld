@@ -496,6 +496,20 @@ function crearRespuesta(respuesta, nombre, padreId, hilo) {
     );
   });
   acciones.appendChild(responder);
+    if (sesion && sesion.user.id !== respuesta.user_id) {
+    const denunciar = document.createElement("button");
+    denunciar.type = "button";
+    denunciar.className = "respuesta-responder";
+    denunciar.textContent = "Denunciar";
+    denunciar.addEventListener("click", function () {
+      if (window.abrirDenuncia) {
+        window.abrirDenuncia("comentario", respuesta.id, "comentario");
+      } else {
+        avisar("Probá de nuevo en unos segundos.");
+      }
+    });
+    acciones.appendChild(denunciar);
+    }
 
   if (sesion && sesion.user.id === respuesta.user_id) {
     const borrar = document.createElement("button");
