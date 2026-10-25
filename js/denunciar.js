@@ -12,9 +12,19 @@
   let sesionId = null;
   let programado = false;
   let recomendacionRevisada = false;
+  const bloqueados = new Set();
 
-  const promesaSesion = supabaseClient.auth.getSession().then(function (respuesta) {
+  const promesaSesion = supabaseClient.auth.getSession().then(async function (respuesta) {
     sesionId = respuesta.data.session ? respuesta.data.session.user.id : null;
+    if (sesionId) {
+      const { data } = await supabaseClient
+        .from("bloqueos")
+        .select("bloqueado_id")
+        .eq("bloqueador_id", sesionId);
+      (data || []).forEach(function (fila) {
+        bloqueados.add(fila.bloqueado_id);
+      });
+    }
   });
 
   function agregarEstilos(ruta) {
@@ -46,6 +56,40 @@
     const fondo = document.querySelector(".den-fondo");
     if (fondo) fondo.remove();
     document.body.style.overflow = "";
+  }
+
+  async function bloquear(usuarioId, nombre) {
+    const mensaje =
+      "¿Bloquear a @" + nombre + "? No vas a ver sus publicaciones ni sus comentarios, y no va a poder interactuar con lo tuyo.";
+    if (!confirm(mensaje)) return;
+
+    const { error } = await supabaseClient
+      .from("bloqueos")
+      .insert({ bloqueado_id: usuarioId });
+
+    if (error && error.code !== "23505") {
+      alert("No se pudo bloquear a este usuario.");
+      return;
+    }
+
+    window.location.reload();
+  }
+
+  async function desbloquear(usuarioId, nombre) {
+    if (!confirm("¿Desbloquear a @" + nombre + "?")) return;
+
+    const { error } = await supabaseClient
+      .from("bloqueos")
+      .delete()
+      .eq("bloqueador_id", sesionId)
+      .eq("bloqueado_id", usuarioId);
+
+    if (error) {
+      alert("No se pudo desbloquear a este usuario.");
+      return;
+    }
+
+    window.location.reload();
   }
 
   function abrirDenuncia(tipo, objetoId, nombreObjeto) {
@@ -162,7 +206,7 @@
     document.body.style.overflow = "hidden";
   }
 
-  function crearMenuDenuncia(tipo, objetoId, nombreObjeto) {
+  function crearMenu(opciones) {
     const grupo = document.createDocumentFragment();
 
     const boton = document.createElement("button");
@@ -175,14 +219,16 @@
     menu.className = "den-menu";
     menu.hidden = true;
 
-    const opcion = document.createElement("button");
-    opcion.type = "button";
-    opcion.textContent = "Denunciar " + nombreObjeto;
-    opcion.addEventListener("click", function () {
-      menu.hidden = true;
-      abrirDenuncia(tipo, objetoId, nombreObjeto);
+    opciones.forEach(function (opcion) {
+      const elemento = document.createElement("button");
+      elemento.type = "button";
+      elemento.textContent = opcion.texto;
+      elemento.addEventListener("click", function () {
+        menu.hidden = true;
+        opcion.accion();
+      });
+      menu.appendChild(elemento);
     });
-    menu.appendChild(opcion);
 
     boton.addEventListener("click", function (evento) {
       evento.stopPropagation();
@@ -194,6 +240,23 @@
     grupo.appendChild(boton);
     grupo.appendChild(menu);
     return grupo;
+  }
+
+  function opcionesDeAutor(tipo, objetoId, nombreObjeto, autorId, autorNombre) {
+    return [
+      {
+        texto: "Denunciar " + nombreObjeto,
+        accion: function () {
+          abrirDenuncia(tipo, objetoId, nombreObjeto);
+        }
+      },
+      {
+        texto: "Bloquear a @" + autorNombre,
+        accion: function () {
+          bloquear(autorId, autorNombre);
+        }
+      }
+    ];
   }
 
   function decorarPublicaciones() {
@@ -209,13 +272,18 @@
       post.dataset.denuncia = "1";
 
       const autorId = idDesdeHref(avatar.getAttribute("href") || "", "id=");
-      if (autorId === sesionId) return;
+      if (!autorId || autorId === sesionId) return;
 
       const publicacionId = idDesdeHref(enlaceComentarios.getAttribute("href"), "id=");
       if (!publicacionId) return;
 
+      const enlaceNombre = post.querySelector(".post-nombre");
+      const autorNombre = enlaceNombre ? enlaceNombre.textContent : "usuario";
+
       cabecera.style.position = "relative";
-      cabecera.appendChild(crearMenuDenuncia("publicacion", publicacionId, "publicación"));
+      cabecera.appendChild(
+        crearMenu(opcionesDeAutor("publicacion", publicacionId, "publicación", autorId, autorNombre))
+      );
     });
   }
 
@@ -230,27 +298,105 @@
 
     const avatar = articulo.querySelector("a.avatar");
     const autorId = avatar ? idDesdeHref(avatar.getAttribute("href") || "", "id=") : null;
-    if (autorId === sesionId) return;
+    if (!autorId || autorId === sesionId) return;
 
     const idPublicacion = new URLSearchParams(window.location.search).get("id");
     if (!idPublicacion) return;
 
+    const enlaceNombre = articulo.querySelector(".post-nombre");
+    const autorNombre = enlaceNombre ? enlaceNombre.textContent : "usuario";
+
     cabecera.style.position = "relative";
-    cabecera.appendChild(crearMenuDenuncia("publicacion", idPublicacion, "publicación"));
+    cabecera.appendChild(
+      crearMenu(opcionesDeAutor("publicacion", idPublicacion, "publicación", autorId, autorNombre))
+    );
+  }
+
+  function decorarComentarios() {
+    document.querySelectorAll(".respuesta[data-id]:not([data-denuncia])").forEach(function (caja) {
+      caja.dataset.denuncia = "1";
+
+      const autorId = caja.dataset.autor;
+      const nombre = caja.dataset.nombre || "usuario";
+      const acciones = caja.querySelector(".respuesta-acciones");
+      if (!acciones || !autorId || autorId === sesionId) return;
+
+      function crearEnlace(texto, accion) {
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.className = "respuesta-responder";
+        boton.style.color = "#d6336c";
+        boton.textContent = texto;
+        boton.addEventListener("click", accion);
+        return boton;
+      }
+
+      acciones.appendChild(
+        crearEnlace("Denunciar", function () {
+          abrirDenuncia("comentario", caja.dataset.id, "comentario");
+        })
+      );
+      acciones.appendChild(
+        crearEnlace("Bloquear", function () {
+          bloquear(autorId, nombre);
+        })
+      );
+    });
   }
 
   function decorarPerfil() {
     if (!/perfil\.html$/.test(window.location.pathname)) return;
 
     const barra = document.getElementById("perfil-barra");
-    if (!barra || barra.dataset.denuncia) return;
+    const elementoNombre = document.getElementById("perfil-nombre");
+    if (!barra || barra.dataset.denuncia || !elementoNombre || !elementoNombre.textContent) return;
 
     barra.dataset.denuncia = "1";
 
-    const idPerfil = new URLSearchParams(window.location.search).get("id");
-    if (!idPerfil || idPerfil === sesionId) return;
+    const nombre = elementoNombre.textContent;
+    const idUrl = new URLSearchParams(window.location.search).get("id");
+    const idPerfil = idUrl || sesionId;
 
-    barra.appendChild(crearMenuDenuncia("perfil", idPerfil, "perfil"));
+    if (idPerfil === sesionId) {
+      barra.appendChild(
+        crearMenu([
+          {
+            texto: "Usuarios bloqueados",
+            accion: function () {
+              window.location.href = "bloqueados.html";
+            }
+          }
+        ])
+      );
+      return;
+    }
+
+    const opciones = [
+      {
+        texto: "Denunciar perfil",
+        accion: function () {
+          abrirDenuncia("perfil", idPerfil, "perfil");
+        }
+      }
+    ];
+
+    if (bloqueados.has(idPerfil)) {
+      opciones.push({
+        texto: "Desbloquear a @" + nombre,
+        accion: function () {
+          desbloquear(idPerfil, nombre);
+        }
+      });
+    } else {
+      opciones.push({
+        texto: "Bloquear a @" + nombre,
+        accion: function () {
+          bloquear(idPerfil, nombre);
+        }
+      });
+    }
+
+    barra.appendChild(crearMenu(opciones));
   }
 
   async function decorarRecomendacion() {
@@ -288,6 +434,7 @@
 
     decorarPublicaciones();
     decorarDetalle();
+    decorarComentarios();
     decorarPerfil();
     decorarRecomendacion();
   }
