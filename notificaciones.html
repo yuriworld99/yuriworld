@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notificaciones - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/notificaciones.css">
+</head>
+<body>
+  <main class="notif-pagina">
+    <p id="estado-notificaciones">Cargando...</p>
+
+    <div id="contenido-notificaciones" hidden>
+      <div class="notif-cabecera">
+        <h1>Notificaciones</h1>
+        <button type="button" id="marcar-todas" class="notif-marcar">Marcar todas como leídas</button>
+      </div>
+      <section id="lista-notificaciones" class="notif-lista">Cargando...</section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/notificaciones.js"></script>
+</body>
+</html>
