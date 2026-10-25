@@ -1,0 +1,135 @@
+[hidden] {
+  display: none !important;
+}
+
+.notif-pagina {
+  max-width: 620px;
+  margin: 20px auto 0;
+}
+
+.notif-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.notif-cabecera h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.notif-marcar {
+  padding: 8px 14px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #7b3fe4;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.notif-lista {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e6d9fb;
+  border-radius: 16px;
+}
+
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 12px;
+  border-bottom: 1px solid #f0e6fb;
+  color: #2b1a3d;
+  text-decoration: none;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item.nueva {
+  background: #fff0f7;
+}
+
+.notif-icono {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #ffffff;
+}
+
+.notif-icono.me_gusta {
+  background: #e0529a;
+}
+
+.notif-icono.comentario {
+  background: #7b3fe4;
+}
+
+.notif-icono.respuesta {
+  background: #6a35c9;
+}
+
+.notif-icono.repost {
+  background: #b8387f;
+}
+
+.notif-cuerpo {
+  min-width: 0;
+}
+
+.notif-texto {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.notif-cita {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #6d5d7d;
+  overflow-wrap: anywhere;
+}
+
+.notif-fecha {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: #6d5d7d;
+}
+
+.notif-vacio {
+  padding: 24px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.notif-insignia {
+  min-width: 22px;
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ff5fa2;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.punto-notificaciones {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #ff5fa2;
+  }
