@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios bloqueados - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <main class="admin">
+    <h1>Usuarios bloqueados</h1>
+    <p id="estado-bloqueados">Cargando...</p>
+
+    <div id="contenido-bloqueados" hidden>
+      <p>No ves lo que publican las personas bloqueadas, y ellas no pueden interactuar con lo tuyo. No se enteran de que las bloqueaste.</p>
+      <section id="lista-bloqueados">Cargando...</section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/bloqueados.js"></script>
+</body>
+</html>
