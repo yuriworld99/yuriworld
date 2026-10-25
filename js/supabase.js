@@ -14,3 +14,7 @@ document.head.appendChild(scriptAvatares);
 const scriptDenunciar = document.createElement("script");
 scriptDenunciar.src = "js/denunciar.js?v=2";
 document.head.appendChild(scriptDenunciar);
+
+const scriptNotificaciones = document.createElement("script");
+scriptNotificaciones.src = "js/notificaciones-menu.js?v=1";
+document.head.appendChild(scriptNotificaciones);
