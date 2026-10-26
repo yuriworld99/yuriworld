@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seguidores - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/seguidores.css">
+</head>
+<body>
+  <main class="seg-pagina">
+    <p id="estado-seguidores">Cargando...</p>
+
+    <div id="contenido-seguidores" hidden>
+      <h1 id="titulo-seguidores"></h1>
+      <nav class="seg-pestanas">
+        <button type="button" id="pestana-seguidores" class="seg-pestana activa">Seguidores</button>
+        <button type="button" id="pestana-siguiendo" class="seg-pestana">Siguiendo</button>
+      </nav>
+      <section id="lista-seguidores" class="seg-lista">Cargando...</section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/seguidores-lista.js"></script>
+</body>
+</html>
