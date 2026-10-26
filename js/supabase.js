@@ -18,3 +18,11 @@ document.head.appendChild(scriptDenunciar);
 const scriptNotificaciones = document.createElement("script");
 scriptNotificaciones.src = "js/notificaciones-menu.js?v=1";
 document.head.appendChild(scriptNotificaciones);
+
+const scriptSeguidores = document.createElement("script");
+scriptSeguidores.src = "js/seguidores.js?v=1";
+document.head.appendChild(scriptSeguidores);
+
+const scriptSiguiendo = document.createElement("script");
+scriptSiguiendo.src = "js/siguiendo.js?v=1";
+document.head.appendChild(scriptSiguiendo);
