@@ -1,0 +1,109 @@
+[hidden] {
+  display: none !important;
+}
+
+.pestanas-comunidad .pestana-com {
+  padding-right: 4px;
+  padding-left: 4px;
+  font-size: 0.92rem;
+}
+
+.seg-pagina {
+  max-width: 620px;
+  margin: 20px auto 0;
+}
+
+.seg-pagina h1 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+}
+
+.seg-pestanas {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.seg-pestana {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #7b3fe4;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.seg-pestana.activa {
+  border-color: transparent;
+  background: linear-gradient(90deg, #ff5fa2, #7b3fe4);
+  color: #ffffff;
+}
+
+.seg-lista {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e6d9fb;
+  border-radius: 16px;
+}
+
+.seg-fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid #f0e6fb;
+}
+
+.seg-fila:last-child {
+  border-bottom: none;
+}
+
+.seg-avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.seg-nombre {
+  flex: 1;
+  min-width: 0;
+  color: #2b1a3d;
+  font-weight: 700;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.seg-boton {
+  padding: 8px 16px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #2b1a3d;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.seg-boton.seguir {
+  border-color: transparent;
+  background: linear-gradient(90deg, #ff5fa2, #7b3fe4);
+  color: #ffffff;
+}
+
+.seg-vacio {
+  padding: 24px;
+  text-align: center;
+  opacity: 0.7;
+  }
