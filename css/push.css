@@ -1,0 +1,53 @@
+.push-zona {
+  max-width: 620px;
+  margin: 0 auto;
+  background: #ffffff;
+}
+
+@media (min-width: 640px) {
+  .push-zona {
+    border-right: 1px solid #eadcf8;
+    border-left: 1px solid #eadcf8;
+  }
+}
+
+.push-caja {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #faf3ff;
+  border-bottom: 1px solid #f0e6fb;
+}
+
+.push-texto {
+  flex: 1;
+  min-width: 200px;
+  margin: 0;
+  font-size: 0.92rem;
+  color: #2b1a3d;
+}
+
+.push-boton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff5fa2, #7b3fe4);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.push-boton.suave {
+  border: 2px solid #e6d9fb;
+  background: #ffffff;
+  color: #7b3fe4;
+}
+
+.push-boton:disabled {
+  opacity: 0.5;
+  cursor: default;
+    }
