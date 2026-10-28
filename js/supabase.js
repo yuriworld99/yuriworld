@@ -26,3 +26,7 @@ document.head.appendChild(scriptSeguidores);
 const scriptSiguiendo = document.createElement("script");
 scriptSiguiendo.src = "js/siguiendo.js?v=1";
 document.head.appendChild(scriptSiguiendo);
+
+const scriptPush = document.createElement("script");
+scriptPush.src = "js/push.js?v=1";
+document.head.appendChild(scriptPush);
