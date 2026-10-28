@@ -30,3 +30,7 @@ document.head.appendChild(scriptSiguiendo);
 const scriptPush = document.createElement("script");
 scriptPush.src = "js/push.js?v=1";
 document.head.appendChild(scriptPush);
+
+const scriptNavExplorar = document.createElement("script");
+scriptNavExplorar.src = "js/nav-explorar.js?v=1";
+document.head.appendChild(scriptNavExplorar);
