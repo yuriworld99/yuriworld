@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar contraseña - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+</head>
+<body>
+  <main class="caja-formulario">
+    <h1>Recuperar contraseña</h1>
+    <p>Escribí el email de tu cuenta y te enviamos un enlace para elegir una contraseña nueva.</p>
+
+    <form id="form-recuperar">
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" required>
+      <button type="submit" id="boton-recuperar" class="boton">Enviar enlace</button>
+    </form>
+
+    <p id="mensaje" class="mensaje"></p>
+    <p class="enlace-secundario"><a href="iniciar-sesion.html">Volver a iniciar sesión</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    const formulario = document.getElementById("form-recuperar");
+    const mensaje = document.getElementById("mensaje");
+    const boton = document.getElementById("boton-recuperar");
+
+    function mostrar(texto, tipo) {
+      mensaje.textContent = texto;
+      mensaje.className = "mensaje " + tipo;
+    }
+
+    formulario.addEventListener("submit", async function (evento) {
+      evento.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      boton.disabled = true;
+      mostrar("Enviando...", "");
+
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: "https://yuriworld99.github.io/yuriworld/nueva-contrasena.html"
+      });
+
+      boton.disabled = false;
+
+      if (error) {
+        mostrar("No se pudo enviar el email. Esperá un minuto y probá de nuevo.", "error");
+        return;
+      }
+
+      mostrar("Si el email está registrado, te enviamos un enlace. Revisá también la carpeta de spam.", "ok");
+    });
+  </script>
+</body>
+</html>
