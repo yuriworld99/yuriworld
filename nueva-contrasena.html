@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nueva contraseña - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+</head>
+<body>
+  <main class="caja-formulario">
+    <h1>Nueva contraseña</h1>
+    <p id="aviso-enlace">Comprobando tu enlace...</p>
+
+    <form id="form-nueva" hidden>
+      <label for="password">Contraseña nueva (mínimo 8 caracteres)</label>
+      <input type="password" id="password" autocomplete="new-password" required>
+
+      <label for="password2">Repetí la contraseña</label>
+      <input type="password" id="password2" autocomplete="new-password" required>
+
+      <button type="submit" id="boton-guardar" class="boton">Guardar contraseña</button>
+    </form>
+
+    <p id="mensaje" class="mensaje"></p>
+    <p class="enlace-secundario"><a href="iniciar-sesion.html">Ir a iniciar sesión</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    const venia = window.location.hash.indexOf("type=recovery") !== -1;
+    const aviso = document.getElementById("aviso-enlace");
+    const formulario = document.getElementById("form-nueva");
+    const mensaje = document.getElementById("mensaje");
+    const boton = document.getElementById("boton-guardar");
+    let listo = false;
+
+    function mostrar(texto, tipo) {
+      mensaje.textContent = texto;
+      mensaje.className = "mensaje " + tipo;
+    }
+
+    function mostrarFormulario() {
+      listo = true;
+      aviso.hidden = true;
+      formulario.hidden = false;
+    }
+
+    supabaseClient.auth.onAuthStateChange(function (evento) {
+      if (evento === "PASSWORD_RECOVERY") mostrarFormulario();
+    });
+
+    supabaseClient.auth.getSession().then(function (respuesta) {
+      if (venia && respuesta.data.session) mostrarFormulario();
+    });
+
+    setTimeout(function () {
+      if (!listo) {
+        aviso.textContent =
+          "El enlace no es válido o ya venció. Pedí uno nuevo desde «Recuperar contraseña».";
+      }
+    }, 4000);
+
+    formulario.addEventListener("submit", async function (evento) {
+      evento.preventDefault();
+
+      const password = document.getElementById("password").value;
+      const repetida = document.getElementById("password2").value;
+
+      if (password.length < 8) {
+        mostrar("La contraseña debe tener al menos 8 caracteres.", "error");
+        return;
+      }
+      if (password !== repetida) {
+        mostrar("Las contraseñas no coinciden.", "error");
+        return;
+      }
+
+      boton.disabled = true;
+      mostrar("Guardando...", "");
+
+      const { error } = await supabaseClient.auth.updateUser({ password: password });
+
+      if (error) {
+        boton.disabled = false;
+        mostrar("No se pudo cambiar la contraseña. Pedí un enlace nuevo e intentá de nuevo.", "error");
+        return;
+      }
+
+      mostrar("¡Contraseña actualizada! Te llevamos a la comunidad.", "ok");
+      setTimeout(function () {
+        window.location.href = "foro.html";
+      }, 1800);
+    });
+  </script>
+</body>
+</html>
