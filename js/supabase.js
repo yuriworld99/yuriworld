@@ -34,3 +34,7 @@ document.head.appendChild(scriptPush);
 const scriptNavExplorar = document.createElement("script");
 scriptNavExplorar.src = "js/nav-explorar.js?v=1";
 document.head.appendChild(scriptNavExplorar);
+
+const scriptLegal = document.createElement("script");
+scriptLegal.src = "js/legal.js?v=1";
+document.head.appendChild(scriptLegal);
