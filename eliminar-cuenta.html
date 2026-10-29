@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eliminar mi cuenta - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+</head>
+<body>
+  <main class="caja-formulario">
+    <h1>Eliminar mi cuenta</h1>
+    <p id="aviso">Comprobando tu sesión...</p>
+
+    <div id="contenido" hidden>
+      <p>Esto es <strong>permanente</strong> y no se puede deshacer. Se borrarán:</p>
+      <ul>
+        <li>tu perfil (foto, banner y descripción)</li>
+        <li>tus publicaciones, imágenes, comentarios y respuestas</li>
+        <li>tus recomendaciones y calificaciones</li>
+        <li>tus Me gusta, seguidores, bloqueos y notificaciones</li>
+        <li>tus avisos del celular, tu email y tu cuenta</li>
+      </ul>
+      <p>También se borran los comentarios y reposts de otras personas que estén dentro de tus publicaciones.</p>
+
+      <form id="form-eliminar">
+        <label for="password">Tu contraseña</label>
+        <input type="password" id="password" autocomplete="current-password" required>
+
+        <label for="palabra">Escribí ELIMINAR para confirmar</label>
+        <input type="text" id="palabra" autocomplete="off" autocapitalize="characters" required>
+
+        <button type="submit" id="boton-eliminar" class="boton" style="background: #c0264b;">Eliminar mi cuenta para siempre</button>
+      </form>
+    </div>
+
+    <p id="mensaje" class="mensaje"></p>
+    <p class="enlace-secundario"><a href="foro.html">Cancelar y volver a la comunidad</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/eliminar-cuenta.js"></script>
+</body>
+                                                                       </html>
