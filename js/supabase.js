@@ -38,3 +38,7 @@ document.head.appendChild(scriptNavExplorar);
 const scriptLegal = document.createElement("script");
 scriptLegal.src = "js/legal.js?v=1";
 document.head.appendChild(scriptLegal);
+
+const scriptCuenta = document.createElement("script");
+scriptCuenta.src = "js/cuenta.js?v=1";
+document.head.appendChild(scriptCuenta);
