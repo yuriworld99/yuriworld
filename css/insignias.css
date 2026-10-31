@@ -1,0 +1,72 @@
+.yw-insignias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+
+.yw-ins {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.yw-ins.tipo-manga { background: #4a63d8; }
+.yw-ins.tipo-manhwa { background: #2f9e5b; }
+.yw-ins.tipo-manhua { background: #8a5a34; }
+.yw-ins.tipo-webtoon { background: #d9822b; }
+.yw-ins.estado-en_emision { background: #1e9e4a; }
+.yw-ins.estado-finalizado { background: #6b6b7b; }
+.yw-ins.mas18 { background: #c0264b; }
+
+/* Portadas +18: borrosas hasta que la persona las toque en la página de la obra.
+   Para quitar el desenfoque, borrá esta regla. */
+.yw-borroso {
+  clip-path: inset(0);
+  filter: blur(16px);
+}
+
+.yw-borroso.yw-revelada {
+  filter: none;
+}
+
+.yw-aviso-18 {
+  margin: 0 0 12px;
+  color: #8f1d47;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.yw-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #e6d9fb;
+  border-radius: 14px;
+  background: #faf5ff;
+  color: #2b1a3d;
+  font: inherit;
+}
+
+.yw-extra {
+  margin: 4px 0 8px;
+}
+
+.yw-18 {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 12px 14px;
+  border: 2px solid #f3c1d6;
+  border-radius: 14px;
+  background: #fff0f7;
+  color: #8f1d47;
+  font-weight: 700;
+  cursor: pointer;
+  }
