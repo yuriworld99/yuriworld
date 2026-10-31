@@ -55,6 +55,10 @@ const scriptExplorarTipos = document.createElement("script");
 scriptExplorarTipos.src = "js/explorar-tipos.js?v=1";
 document.head.appendChild(scriptExplorarTipos);
 
+const scriptEditarBoton = document.createElement("script");
+scriptEditarBoton.src = "js/editar-rec-boton.js?v=1";
+document.head.appendChild(scriptEditarBoton);
+
 const scriptGeneros = document.createElement("script");
 scriptGeneros.src = "js/generos.js?v=3";
 scriptGeneros.onload = function () {
