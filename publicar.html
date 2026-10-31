@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/formularios.css">
   <link rel="stylesheet" href="css/publicar.css">
+  <link rel="stylesheet" href="css/insignias.css?v=1">
 </head>
 <body>
   <main class="caja-formulario ancha">
@@ -30,19 +31,19 @@
       <label for="sinopsis">Sinopsis</label>
       <textarea id="sinopsis" maxlength="2000" required></textarea>
 
+      <label for="tipo">Tipo de obra</label>
+      <select id="tipo" class="yw-select" required></select>
+
+      <label for="estado">Estado</label>
+      <select id="estado" class="yw-select" required></select>
+
+      <label class="yw-18" for="es18">
+        <input type="checkbox" id="es18" style="width: auto; margin-top: 3px;">
+        <span>Es una obra +18 (contenido para mayores de 18 años)</span>
+      </label>
+
       <p class="etiqueta">Géneros</p>
-      <div class="generos">
-        <label class="chip"><input type="checkbox" name="genero" value="Romance"> Romance</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Drama"> Drama</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Comedia"> Comedia</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Fantasía"> Fantasía</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Escolar"> Escolar</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Slice of life"> Slice of life</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Ciencia ficción"> Ciencia ficción</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Misterio"> Misterio</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Histórico"> Histórico</label>
-        <label class="chip"><input type="checkbox" name="genero" value="Sobrenatural"> Sobrenatural</label>
-      </div>
+      <div id="lista-generos" class="generos"></div>
 
       <label for="portada">Portada (JPG, PNG o WEBP, máximo 2 MB)</label>
       <input type="file" id="portada" accept="image/jpeg,image/png,image/webp" required>
@@ -57,6 +58,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/publicar.js"></script>
+  <script src="js/generos.js?v=1"></script>
+  <script src="js/publicar.js?v=2"></script>
 </body>
 </html>
