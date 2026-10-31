@@ -13,7 +13,7 @@
     document.head.appendChild(enlace);
   }
 
-  agregarEstilos("css/insignias.css?v=1");
+  agregarEstilos("css/insignias.css?v=2");
 
   function idDeEnlace(elemento) {
     const direccion = elemento.getAttribute("href") || "";
@@ -48,11 +48,6 @@
       : elemento.querySelector(".ex-info");
 
     if (caja && destino) destino.insertBefore(caja, destino.firstChild);
-
-    if (datos.es_18) {
-      const imagen = elemento.querySelector("img");
-      if (imagen) imagen.classList.add("yw-borroso");
-    }
   }
 
   async function procesar() {
@@ -98,9 +93,8 @@
 
   async function decorarDetalle() {
     const autor = document.getElementById("detalle-autor");
-    const portada = document.getElementById("detalle-portada");
     const id = new URLSearchParams(window.location.search).get("id");
-    if (!autor || !portada || !id) return;
+    if (!autor || !id) return;
 
     const { data } = await supabaseClient
       .from("recomendaciones")
@@ -114,20 +108,6 @@
     if (caja) {
       caja.style.margin = "6px 0 10px";
       autor.insertAdjacentElement("afterend", caja);
-    }
-
-    if (data.es_18) {
-      portada.classList.add("yw-borroso");
-      portada.style.cursor = "pointer";
-
-      const aviso = document.createElement("p");
-      aviso.className = "yw-aviso-18";
-      aviso.textContent = "Esta obra es +18. Tocá la portada para verla.";
-      (caja || autor).insertAdjacentElement("afterend", aviso);
-
-      portada.addEventListener("click", function () {
-        portada.classList.toggle("yw-revelada");
-      });
     }
   }
 
