@@ -21,6 +21,7 @@
 .yw-ins.tipo-manhwa { background: #2f9e5b; }
 .yw-ins.tipo-manhua { background: #8a5a34; }
 .yw-ins.tipo-webtoon { background: #d9822b; }
+.yw-ins.tipo-novela_ligera { background: #b0368f; }
 .yw-ins.estado-en_emision { background: #1e9e4a; }
 .yw-ins.estado-finalizado { background: #6b6b7b; }
 .yw-ins.mas18 { background: #c0264b; }
@@ -51,4 +52,4 @@
   color: #8f1d47;
   font-weight: 700;
   cursor: pointer;
-}
+    }
