@@ -29,7 +29,8 @@ window.YW.TIPOS = [
   { valor: "manga", etiqueta: "Manga (Japón)" },
   { valor: "manhwa", etiqueta: "Manhwa (Corea)" },
   { valor: "manhua", etiqueta: "Manhua (China)" },
-  { valor: "webtoon", etiqueta: "Webtoon" }
+  { valor: "webtoon", etiqueta: "Webtoon" },
+  { valor: "novela_ligera", etiqueta: "Novela ligera" }
 ];
 
 window.YW.ESTADOS = [
