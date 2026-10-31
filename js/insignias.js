@@ -1,5 +1,11 @@
 (function () {
-  const TIPOS = { manga: "Manga", manhwa: "Manhwa", manhua: "Manhua", webtoon: "Webtoon" };
+  const TIPOS = {
+    manga: "Manga",
+    manhwa: "Manhwa",
+    manhua: "Manhua",
+    webtoon: "Webtoon",
+    novela_ligera: "Novela ligera"
+  };
   const ESTADOS = { en_emision: "En emisión", finalizado: "Finalizado" };
   const cache = {};
   let pendiente = false;
@@ -13,7 +19,7 @@
     document.head.appendChild(enlace);
   }
 
-  agregarEstilos("css/insignias.css?v=2");
+  agregarEstilos("css/insignias.css?v=3");
 
   function idDeEnlace(elemento) {
     const direccion = elemento.getAttribute("href") || "";
@@ -40,14 +46,17 @@
   }
 
   function decorar(elemento, datos) {
+    if (elemento.dataset.ywHecho === "1") return;
     elemento.dataset.ywHecho = "1";
 
-    const caja = crearInsignias(datos);
     const destino = elemento.classList.contains("tarjeta")
       ? elemento.querySelector(".tarjeta-cuerpo")
       : elemento.querySelector(".ex-info");
 
-    if (caja && destino) destino.insertBefore(caja, destino.firstChild);
+    if (!destino || destino.querySelector(".yw-insignias")) return;
+
+    const caja = crearInsignias(datos);
+    if (caja) destino.insertBefore(caja, destino.firstChild);
   }
 
   async function procesar() {
@@ -74,7 +83,7 @@
         .in("id", faltan);
 
       faltan.forEach(function (id) {
-        cache[id] = null;
+        if (!(id in cache)) cache[id] = null;
       });
       (data || []).forEach(function (fila) {
         cache[fila.id] = fila;
@@ -95,6 +104,7 @@
     const autor = document.getElementById("detalle-autor");
     const id = new URLSearchParams(window.location.search).get("id");
     if (!autor || !id) return;
+    if (document.querySelector("#contenido .yw-insignias")) return;
 
     const { data } = await supabaseClient
       .from("recomendaciones")
@@ -103,6 +113,7 @@
       .maybeSingle();
 
     if (!data) return;
+    if (document.querySelector("#contenido .yw-insignias")) return;
 
     const caja = crearInsignias(data);
     if (caja) {
