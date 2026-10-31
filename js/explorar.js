@@ -8,6 +8,7 @@
   const navPerfil = document.getElementById("nav-perfil");
 
   const GENEROS = ["Romance", "Drama", "Comedia", "Fantasía", "Escolar", "Slice of life", "Ciencia ficción", "Misterio", "Histórico", "Sobrenatural"];
+  GENEROS.push("Romance y comedia (RomCom)", "Drama romántico", "Psicológico", "Fantasía oscura", "Suspenso", "Terror", "Acción", "Aventura", "Tragedia", "Musical", "Deporte", "Erótico");
   const COLORES_AVATAR = ["#e0529a", "#7b3fe4", "#c2418c", "#6a35c9", "#d94f8a", "#8a4fe8", "#b8387f", "#5d2fb8"];
 
   let pestana = "todo";
