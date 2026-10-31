@@ -42,3 +42,16 @@ document.head.appendChild(scriptLegal);
 const scriptCuenta = document.createElement("script");
 scriptCuenta.src = "js/cuenta.js?v=1";
 document.head.appendChild(scriptCuenta);
+
+const scriptInsignias = document.createElement("script");
+scriptInsignias.src = "js/insignias.js?v=1";
+document.head.appendChild(scriptInsignias);
+
+const scriptGeneros = document.createElement("script");
+scriptGeneros.src = "js/generos.js?v=1";
+scriptGeneros.onload = function () {
+  const scriptRecExtra = document.createElement("script");
+  scriptRecExtra.src = "js/rec-extra.js?v=1";
+  document.head.appendChild(scriptRecExtra);
+};
+document.head.appendChild(scriptGeneros);
