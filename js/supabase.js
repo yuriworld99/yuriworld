@@ -44,11 +44,19 @@ scriptCuenta.src = "js/cuenta.js?v=1";
 document.head.appendChild(scriptCuenta);
 
 const scriptInsignias = document.createElement("script");
-scriptInsignias.src = "js/insignias.js?v=1";
+scriptInsignias.src = "js/insignias.js?v=3";
 document.head.appendChild(scriptInsignias);
 
+const scriptSecciones = document.createElement("script");
+scriptSecciones.src = "js/inicio-secciones.js?v=1";
+document.head.appendChild(scriptSecciones);
+
+const scriptExplorarTipos = document.createElement("script");
+scriptExplorarTipos.src = "js/explorar-tipos.js?v=1";
+document.head.appendChild(scriptExplorarTipos);
+
 const scriptGeneros = document.createElement("script");
-scriptGeneros.src = "js/generos.js?v=1";
+scriptGeneros.src = "js/generos.js?v=2";
 scriptGeneros.onload = function () {
   const scriptRecExtra = document.createElement("script");
   scriptRecExtra.src = "js/rec-extra.js?v=1";
