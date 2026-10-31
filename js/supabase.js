@@ -56,7 +56,7 @@ scriptExplorarTipos.src = "js/explorar-tipos.js?v=1";
 document.head.appendChild(scriptExplorarTipos);
 
 const scriptGeneros = document.createElement("script");
-scriptGeneros.src = "js/generos.js?v=2";
+scriptGeneros.src = "js/generos.js?v=3";
 scriptGeneros.onload = function () {
   const scriptRecExtra = document.createElement("script");
   scriptRecExtra.src = "js/rec-extra.js?v=1";
