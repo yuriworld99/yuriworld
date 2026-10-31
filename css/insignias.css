@@ -25,24 +25,6 @@
 .yw-ins.estado-finalizado { background: #6b6b7b; }
 .yw-ins.mas18 { background: #c0264b; }
 
-/* Portadas +18: borrosas hasta que la persona las toque en la página de la obra.
-   Para quitar el desenfoque, borrá esta regla. */
-.yw-borroso {
-  clip-path: inset(0);
-  filter: blur(16px);
-}
-
-.yw-borroso.yw-revelada {
-  filter: none;
-}
-
-.yw-aviso-18 {
-  margin: 0 0 12px;
-  color: #8f1d47;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
 .yw-select {
   width: 100%;
   padding: 12px 14px;
@@ -69,4 +51,4 @@
   color: #8f1d47;
   font-weight: 700;
   cursor: pointer;
-  }
+}
