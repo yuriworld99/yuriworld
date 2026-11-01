@@ -1,0 +1,97 @@
+.bib-caja {
+  margin: 14px 0;
+  padding: 14px;
+  border: 2px solid #e6d9fb;
+  border-radius: 16px;
+  background: #faf5ff;
+}
+
+.bib-caja h3 {
+  margin: 0 0 4px;
+  color: #7b3fe4;
+  font-size: 1rem;
+}
+
+.bib-caja p {
+  margin: 0 0 10px;
+  color: #6d5d7d;
+  font-size: 0.9rem;
+}
+
+.bib-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bib-btn {
+  padding: 8px 14px;
+  border: 2px solid #e6d9fb;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #7b3fe4;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bib-btn.activo {
+  border-color: transparent;
+  background: linear-gradient(90deg, #ff5fa2, #7b3fe4);
+  color: #ffffff;
+}
+
+.bib-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.bib-pagina {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 20px 0 80px;
+}
+
+.bib-pagina h1 {
+  margin: 0 16px 4px;
+  color: #7b3fe4;
+  overflow-wrap: anywhere;
+}
+
+.bib-sub {
+  margin: 0 16px 12px;
+  color: #6d5d7d;
+}
+
+.bib-estados {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  overflow-x: auto;
+}
+
+.bib-estados .bib-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.bib-lista {
+  background: #ffffff;
+  border-radius: 16px;
+}
+
+.bib-etiqueta {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #f3ebff;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.bib-etiqueta.leyendo { color: #4a63d8; }
+.bib-etiqueta.quiero_leer { color: #b0368f; }
+.bib-etiqueta.completada { color: #1e9e4a; }
+.bib-etiqueta.abandonada { color: #6b6b7b; }
