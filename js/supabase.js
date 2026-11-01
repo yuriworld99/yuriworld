@@ -63,6 +63,14 @@ const scriptEditarBoton = document.createElement("script");
 scriptEditarBoton.src = "js/editar-rec-boton.js?v=1";
 document.head.appendChild(scriptEditarBoton);
 
+const scriptBibliotecaBoton = document.createElement("script");
+scriptBibliotecaBoton.src = "js/biblioteca-boton.js?v=1";
+document.head.appendChild(scriptBibliotecaBoton);
+
+const scriptBibliotecaEnlaces = document.createElement("script");
+scriptBibliotecaEnlaces.src = "js/biblioteca-enlaces.js?v=1";
+document.head.appendChild(scriptBibliotecaEnlaces);
+
 const scriptGeneros = document.createElement("script");
 scriptGeneros.src = "js/generos.js?v=3";
 scriptGeneros.onload = function () {
