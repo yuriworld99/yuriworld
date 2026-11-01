@@ -19,6 +19,10 @@ const scriptNotificaciones = document.createElement("script");
 scriptNotificaciones.src = "js/notificaciones-menu.js?v=1";
 document.head.appendChild(scriptNotificaciones);
 
+const scriptMenuAdmin = document.createElement("script");
+scriptMenuAdmin.src = "js/menu-admin.js?v=1";
+document.head.appendChild(scriptMenuAdmin);
+
 const scriptSeguidores = document.createElement("script");
 scriptSeguidores.src = "js/seguidores.js?v=1";
 document.head.appendChild(scriptSeguidores);
