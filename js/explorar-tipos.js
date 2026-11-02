@@ -7,7 +7,7 @@
   if (!document.querySelector('link[href^="css/secciones.css"]')) {
     const enlace = document.createElement("link");
     enlace.rel = "stylesheet";
-    enlace.href = "css/secciones.css?v=1";
+    enlace.href = "css/secciones.css?v=2";
     document.head.appendChild(enlace);
   }
 
@@ -19,15 +19,70 @@
     ["webtoon", "Webtoon"],
     ["novela_ligera", "Novela ligera"]
   ];
+  const ORDENES = [
+    ["recientes", "Más recientes"],
+    ["mejor", "Mejor puntuadas"],
+    ["az", "Orden A–Z"]
+  ];
+  const POR_PAGINA = 20;
 
   let tipoActivo = "";
+  let generoActivo = "";
+  let orden = "recientes";
+  let mostrados = POR_PAGINA;
+  let obrasActuales = [];
+  let mapaResumen = {};
   let turno = 0;
   let programado = null;
+  let envoltorio = null;
 
-  const barra = document.createElement("div");
-  barra.className = "yw-filtro-tipos";
-  barra.hidden = true;
-  pestanas.insertAdjacentElement("afterend", barra);
+  // ---------- Barra de filtros ----------
+  const caja = document.createElement("div");
+  caja.hidden = true;
+
+  const filaTipos = document.createElement("div");
+  filaTipos.className = "yw-filtro-tipos";
+
+  const filaExtra = document.createElement("div");
+  filaExtra.className = "yw-filtros-extra";
+
+  const selectGenero = document.createElement("select");
+  selectGenero.className = "yw-select-chico";
+  selectGenero.setAttribute("aria-label", "Filtrar por género");
+
+  const selectOrden = document.createElement("select");
+  selectOrden.className = "yw-select-chico";
+  selectOrden.setAttribute("aria-label", "Ordenar");
+
+  ORDENES.forEach(function (par) {
+    const opcion = document.createElement("option");
+    opcion.value = par[0];
+    opcion.textContent = par[1];
+    selectOrden.appendChild(opcion);
+  });
+
+  filaExtra.appendChild(selectGenero);
+  filaExtra.appendChild(selectOrden);
+  caja.appendChild(filaTipos);
+  caja.appendChild(filaExtra);
+  pestanas.insertAdjacentElement("afterend", caja);
+
+  function llenarGeneros() {
+    if (selectGenero.options.length > 0) return;
+
+    const todos = document.createElement("option");
+    todos.value = "";
+    todos.textContent = "Todos los géneros";
+    selectGenero.appendChild(todos);
+
+    const lista = window.YW && window.YW.GENEROS ? window.YW.GENEROS : [];
+    lista.forEach(function (genero) {
+      const opcion = document.createElement("option");
+      opcion.value = genero.valor;
+      opcion.textContent = genero.etiqueta;
+      selectGenero.appendChild(opcion);
+    });
+  }
 
   function esObras() {
     const activa = document.querySelector(".ex-pestana.activa");
@@ -43,7 +98,7 @@
   }
 
   function pintarChips() {
-    barra.querySelectorAll(".yw-chip-tipo").forEach(function (chip) {
+    filaTipos.querySelectorAll(".yw-chip-tipo").forEach(function (chip) {
       chip.classList.toggle("activo", chip.dataset.tipo === tipoActivo);
     });
   }
@@ -54,24 +109,26 @@
     chip.className = "yw-chip-tipo";
     chip.dataset.tipo = par[0];
     chip.textContent = par[1];
-
     chip.addEventListener("click", function () {
       tipoActivo = par[0];
       pintarChips();
-
-      if (!tipoActivo) {
-        const pestanaObras = document.querySelector('.ex-pestana[data-pestana="obras"]');
-        if (pestanaObras) pestanaObras.click();
-      } else {
-        aplicarFiltro();
-      }
+      cargarObras();
     });
-
-    barra.appendChild(chip);
+    filaTipos.appendChild(chip);
   });
 
-  pintarChips();
+  selectGenero.addEventListener("change", function () {
+    generoActivo = selectGenero.value;
+    cargarObras();
+  });
 
+  selectOrden.addEventListener("change", function () {
+    orden = selectOrden.value;
+    mostrados = POR_PAGINA;
+    pintarLista();
+  });
+
+  // ---------- Filas ----------
   function crearFila(rec, resumen) {
     const enlace = document.createElement("a");
     enlace.className = "ex-obra";
@@ -130,34 +187,101 @@
     return mensaje;
   }
 
-  function envolver(nodos) {
-    const envoltorio = document.createElement("div");
+  function nuevoEnvoltorio() {
+    envoltorio = document.createElement("div");
     envoltorio.dataset.ywFiltro = "1";
-    nodos.forEach(function (nodo) {
-      envoltorio.appendChild(nodo);
-    });
     return envoltorio;
   }
 
-  async function aplicarFiltro() {
-    if (!tipoActivo) return;
+  function ordenar(lista) {
+    const copia = lista.slice();
+
+    if (orden === "mejor") {
+      copia.sort(function (a, b) {
+        const ra = mapaResumen[a.id];
+        const rb = mapaResumen[b.id];
+        const pa = ra ? Number(ra.promedio) : -1;
+        const pb = rb ? Number(rb.promedio) : -1;
+        if (pb !== pa) return pb - pa;
+        const ca = ra ? ra.cantidad : 0;
+        const cb = rb ? rb.cantidad : 0;
+        if (cb !== ca) return cb - ca;
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+    } else if (orden === "az") {
+      copia.sort(function (a, b) {
+        return a.titulo.localeCompare(b.titulo, "es", { sensitivity: "base" });
+      });
+    }
+
+    return copia;
+  }
+
+  function pintarLista() {
+    if (!envoltorio) return;
+
+    const q = entrada.value.trim();
+    const nodos = [];
+
+    const titulo = document.createElement("h2");
+    titulo.className = "yw-titulo-filtro";
+    titulo.textContent =
+      obrasActuales.length + (obrasActuales.length === 1 ? " obra" : " obras");
+    nodos.push(titulo);
+
+    if (obrasActuales.length === 0) {
+      nodos.push(
+        crearMensaje(
+          q || tipoActivo || generoActivo
+            ? "No encontramos obras con esos filtros."
+            : "Todavía no hay obras."
+        )
+      );
+    } else {
+      const ordenadas = ordenar(obrasActuales);
+      ordenadas.slice(0, mostrados).forEach(function (rec) {
+        nodos.push(crearFila(rec, mapaResumen[rec.id]));
+      });
+
+      if (ordenadas.length > mostrados) {
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.className = "ex-mas";
+        boton.textContent = "Mostrar más (" + (ordenadas.length - mostrados) + " restantes)";
+        boton.addEventListener("click", function () {
+          mostrados += POR_PAGINA;
+          pintarLista();
+        });
+        nodos.push(boton);
+      }
+    }
+
+    envoltorio.replaceChildren.apply(envoltorio, nodos);
+  }
+
+  async function cargarObras() {
     turno += 1;
     const miTurno = turno;
 
-    cuerpo.replaceChildren(envolver([crearMensaje("Cargando...")]));
+    const contenedor = nuevoEnvoltorio();
+    contenedor.appendChild(crearMensaje("Cargando..."));
+    cuerpo.replaceChildren(contenedor);
 
     const q = limpiarTexto(entrada.value);
 
-    let consulta = supabaseClient
-      .from("recomendaciones")
-      .select("id, titulo, autor, generos, portada_url")
-      .eq("tipo", tipoActivo)
-      .order("created_at", { ascending: false })
-      .limit(30);
-
-    if (q) {
-      consulta = consulta.or("titulo.ilike.%" + q + "%,autor.ilike.%" + q + "%");
+    function base() {
+      let consulta = supabaseClient
+        .from("recomendaciones")
+        .select("id, titulo, autor, generos, portada_url, created_at")
+        .order("created_at", { ascending: false })
+        .limit(1000);
+      if (tipoActivo) consulta = consulta.eq("tipo", tipoActivo);
+      if (generoActivo) consulta = consulta.contains("generos", [generoActivo]);
+      return consulta;
     }
+
+    let consulta = base();
+    if (q) consulta = consulta.or("titulo.ilike.%" + q + "%,autor.ilike.%" + q + "%");
 
     const { data } = await consulta;
     const obras = data || [];
@@ -171,14 +295,7 @@
       });
 
       if (genero) {
-        const { data: porGenero } = await supabaseClient
-          .from("recomendaciones")
-          .select("id, titulo, autor, generos, portada_url")
-          .eq("tipo", tipoActivo)
-          .contains("generos", [genero.valor])
-          .order("created_at", { ascending: false })
-          .limit(30);
-
+        const { data: porGenero } = await base().contains("generos", [genero.valor]);
         (porGenero || []).forEach(function (rec) {
           if (!obras.some(function (existente) { return existente.id === rec.id; })) {
             obras.push(rec);
@@ -187,63 +304,45 @@
       }
     }
 
-    const mapa = {};
-    if (obras.length > 0) {
-      const { data: resumenes } = await supabaseClient
-        .from("resumen_calificaciones")
-        .select("recomendacion_id, promedio, cantidad")
-        .in(
-          "recomendacion_id",
-          obras.map(function (rec) {
-            return rec.id;
-          })
-        );
-      (resumenes || []).forEach(function (resumen) {
-        mapa[resumen.recomendacion_id] = resumen;
-      });
-    }
+    const { data: resumenes } = await supabaseClient
+      .from("resumen_calificaciones")
+      .select("recomendacion_id, promedio, cantidad")
+      .limit(1000);
 
     if (miTurno !== turno) return;
 
-    const etiqueta = (TIPOS.find(function (par) { return par[0] === tipoActivo; }) || ["", ""])[1];
-    const titulo = document.createElement("h2");
-    titulo.className = "yw-titulo-filtro";
-    titulo.textContent = etiqueta;
+    mapaResumen = {};
+    (resumenes || []).forEach(function (resumen) {
+      mapaResumen[resumen.recomendacion_id] = resumen;
+    });
 
-    const nodos = [titulo];
-    if (obras.length === 0) {
-      nodos.push(
-        crearMensaje(
-          q
-            ? "No encontramos «" + entrada.value.trim() + "» entre las obras de este tipo."
-            : "Todavía no hay obras de este tipo."
-        )
-      );
-    } else {
-      obras.forEach(function (rec) {
-        nodos.push(crearFila(rec, mapa[rec.id]));
-      });
-    }
-
-    cuerpo.replaceChildren(envolver(nodos));
+    obrasActuales = obras;
+    mostrados = POR_PAGINA;
+    pintarLista();
   }
 
+  // ---------- Integración con la pantalla ----------
   function alCambiarCuerpo() {
-    if (!tipoActivo || !esObras()) return;
+    if (!esObras()) return;
     const primero = cuerpo.firstElementChild;
     if (primero && primero.dataset.ywFiltro === "1") return;
 
     clearTimeout(programado);
-    programado = setTimeout(aplicarFiltro, 150);
+    programado = setTimeout(cargarObras, 150);
   }
 
   new MutationObserver(alCambiarCuerpo).observe(cuerpo, { childList: true });
 
   function actualizarBarra() {
     const visible = esObras();
-    barra.hidden = !visible;
-    if (!visible && tipoActivo) {
+    caja.hidden = !visible;
+
+    if (visible) {
+      llenarGeneros();
+    } else if (tipoActivo || generoActivo) {
       tipoActivo = "";
+      generoActivo = "";
+      selectGenero.value = "";
       pintarChips();
     }
   }
@@ -254,5 +353,6 @@
     subtree: true
   });
 
+  pintarChips();
   actualizarBarra();
 })();
