@@ -56,7 +56,7 @@ scriptSecciones.src = "js/inicio-secciones.js?v=1";
 document.head.appendChild(scriptSecciones);
 
 const scriptExplorarTipos = document.createElement("script");
-scriptExplorarTipos.src = "js/explorar-tipos.js?v=1";
+scriptExplorarTipos.src = "js/explorar-tipos.js?v=2";
 document.head.appendChild(scriptExplorarTipos);
 
 const scriptEditarBoton = document.createElement("script");
@@ -74,6 +74,10 @@ document.head.appendChild(scriptBibliotecaEnlaces);
 const scriptMenciones = document.createElement("script");
 scriptMenciones.src = "js/menciones.js?v=1";
 document.head.appendChild(scriptMenciones);
+
+const scriptDuplicadas = document.createElement("script");
+scriptDuplicadas.src = "js/duplicadas.js?v=1";
+document.head.appendChild(scriptDuplicadas);
 
 const scriptGeneros = document.createElement("script");
 scriptGeneros.src = "js/generos.js?v=3";
