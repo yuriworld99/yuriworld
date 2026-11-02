@@ -27,8 +27,28 @@
   color: #ffffff;
 }
 
+.yw-filtros-extra {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 10px;
+  background: #ffffff;
+}
+
+.yw-select-chico {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 2px solid #e6d9fb;
+  border-radius: 12px;
+  background: #faf5ff;
+  color: #2b1a3d;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 .yw-titulo-filtro {
   margin: 14px 16px 4px;
   color: #2b1a3d;
   font-size: 1.1rem;
-  }
+}
