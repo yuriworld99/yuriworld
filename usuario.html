@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+</head>
+<body>
+  <main class="caja-formulario">
+    <h1 id="titulo">Buscando perfil...</h1>
+    <p id="mensaje" class="mensaje"></p>
+    <p class="enlace-secundario"><a href="foro.html">Ir a la comunidad</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    (async function () {
+      const titulo = document.getElementById("titulo");
+      const mensaje = document.getElementById("mensaje");
+      const nombre = (new URLSearchParams(window.location.search).get("u") || "").trim();
+
+      if (!nombre) {
+        titulo.textContent = "Perfil";
+        mensaje.textContent = "Falta el nombre de usuario.";
+        return;
+      }
+
+      let perfil = null;
+
+      const exacto = await supabaseClient
+        .from("profiles")
+        .select("id")
+        .eq("username", nombre)
+        .maybeSingle();
+      perfil = exacto.data;
+
+      if (!perfil) {
+        const parecido = await supabaseClient
+          .from("profiles")
+          .select("id")
+          .ilike("username", nombre.replace(/[\\%_]/g, "\\$&"))
+          .limit(1)
+          .maybeSingle();
+        perfil = parecido.data;
+      }
+
+      if (perfil) {
+        window.location.replace("perfil.html?id=" + encodeURIComponent(perfil.id));
+        return;
+      }
+
+      titulo.textContent = "No encontramos a @" + nombre;
+      mensaje.textContent = "Esa cuenta no existe o fue eliminada.";
+    })();
+  </script>
+</body>
+</html>
