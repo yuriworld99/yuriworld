@@ -11,7 +11,7 @@
 
   const FILTROS = {
     todas: null,
-    comentarios: ["comentario", "respuesta"],
+    comentarios: ["comentario", "respuesta", "mencion"],
     seguidores: ["seguidor"]
   };
 
@@ -37,7 +37,8 @@
   const ICONOS = {
     me_gusta: icono('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>'),
     repost: icono('<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>'),
-    seguidor: icono('<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>')
+    seguidor: icono('<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>'),
+    mencion: icono('<circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.9 7.9"/>')
   };
 
   function colorDe(texto) {
@@ -133,6 +134,10 @@
       accion = plural ? "repostearon tu publicación" : "reposteó tu publicación";
     } else if (grupo.tipo === "seguidor") {
       accion = "empezó a seguirte";
+    } else if (grupo.tipo === "mencion") {
+      accion = grupo.filas[0].respuesta_id
+        ? "te mencionó en un comentario"
+        : "te mencionó en una publicación";
     }
 
     return { sujeto: sujeto, accion: accion, actores: actores };
