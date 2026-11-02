@@ -71,6 +71,10 @@ const scriptBibliotecaEnlaces = document.createElement("script");
 scriptBibliotecaEnlaces.src = "js/biblioteca-enlaces.js?v=1";
 document.head.appendChild(scriptBibliotecaEnlaces);
 
+const scriptMenciones = document.createElement("script");
+scriptMenciones.src = "js/menciones.js?v=1";
+document.head.appendChild(scriptMenciones);
+
 const scriptGeneros = document.createElement("script");
 scriptGeneros.src = "js/generos.js?v=3";
 scriptGeneros.onload = function () {
