@@ -1,0 +1,61 @@
+.yw-mencion,
+.yw-hashtag {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.yw-mencion {
+  color: #7b3fe4;
+}
+
+.yw-hashtag {
+  color: #b0368f;
+}
+
+.yw-sugerencias {
+  margin-top: 6px;
+  border: 2px solid #e6d9fb;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(123, 63, 228, 0.15);
+  overflow: hidden;
+}
+
+.yw-sugerencia {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-bottom: 1px solid #f0e6fb;
+  background: #ffffff;
+  color: #2b1a3d;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.yw-sugerencia:last-child {
+  border-bottom: none;
+}
+
+.yw-sug-avatar {
+  display: flex;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #7b3fe4;
+  background-position: center;
+  background-size: cover;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.nx-icono.mencion {
+  color: #7b3fe4;
+}
