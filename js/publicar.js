@@ -8,6 +8,7 @@ const selectTipo = document.getElementById("tipo");
 const selectEstado = document.getElementById("estado");
 const casilla18 = document.getElementById("es18");
 const listaGeneros = document.getElementById("lista-generos");
+const campoOtros = document.getElementById("otros-titulos");
 
 const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/webp"];
 const TAMANO_MAXIMO = 2 * 1024 * 1024;
@@ -18,9 +19,57 @@ if (window.YW) {
   window.YW.llenarSelect(selectEstado, window.YW.ESTADOS);
 }
 
+let buscador = null;
+if (window.YW && window.YW.anilist) {
+  buscador = window.YW.anilist.montar({
+    contenedor: document.getElementById("buscador-anilist"),
+    alElegir: function (obra) {
+      window.YW.anilist.rellenar(
+        obra,
+        {
+          titulo: document.getElementById("titulo"),
+          autor: document.getElementById("autor"),
+          otros: campoOtros,
+          tipo: selectTipo,
+          estado: selectEstado,
+          es18: casilla18
+        },
+        true
+      );
+    }
+  });
+}
+
 function mostrarMensaje(texto, tipo) {
   mensaje.textContent = texto;
   mensaje.className = "mensaje " + tipo;
+}
+
+async function mostrarYaExiste(anilistId) {
+  let existente = null;
+  try {
+    const { data } = await supabaseClient
+      .from("recomendaciones")
+      .select("id, titulo")
+      .eq("anilist_id", anilistId)
+      .limit(1);
+    existente = data && data.length > 0 ? data[0] : null;
+  } catch (error) {
+    console.error(error);
+  }
+
+  mensaje.className = "mensaje error";
+  mensaje.textContent = "";
+  if (!existente) {
+    mensaje.textContent = "Esta obra ya está en YuriWorld. Buscala en Explorar → Obras.";
+    return;
+  }
+
+  mensaje.appendChild(document.createTextNode("Esta obra ya fue recomendada: «" + existente.titulo + "». "));
+  const enlace = document.createElement("a");
+  enlace.href = "recomendacion.html?id=" + encodeURIComponent(existente.id);
+  enlace.textContent = "Verla, calificarla y comentarla";
+  mensaje.appendChild(enlace);
 }
 
 async function comprobarSesion() {
@@ -59,12 +108,17 @@ formulario.addEventListener("submit", async function (evento) {
   });
   const archivo = inputPortada.files[0];
 
+  const otrosTitulos =
+    window.YW && window.YW.anilist ? window.YW.anilist.parsearOtros(campoOtros.value) : [];
+  const vinculada = buscador ? buscador.vinculada() : null;
+  const anilistId = vinculada ? vinculada.anilistId : null;
+
   if (!titulo || !autor || !sinopsis) {
     mostrarMensaje("Completá el título, el autor y la sinopsis.", "error");
     return;
   }
   if (!tipo) {
-    mostrarMensaje("Elegí el tipo de obra (manga, manhwa, manhua o webtoon).", "error");
+    mostrarMensaje("Elegí el tipo de obra (manga, manhwa, manhua, webtoon o novela ligera).", "error");
     return;
   }
   if (!estado) {
@@ -128,18 +182,27 @@ formulario.addEventListener("submit", async function (evento) {
       tipo: tipo,
       estado: estado,
       es_18: es18,
+      anilist_id: anilistId,
+      titulos_alternativos: otrosTitulos,
       portada_url: datosUrl.publicUrl
     });
 
   if (errorGuardar) {
     await supabaseClient.storage.from("portadas").remove([ruta]);
-    mostrarMensaje("No se pudo publicar: " + errorGuardar.message, "error");
     boton.disabled = false;
+
+    if (anilistId && (errorGuardar.message || "").indexOf("recomendaciones_anilist_unico") !== -1) {
+      await mostrarYaExiste(anilistId);
+      return;
+    }
+
+    mostrarMensaje("No se pudo publicar: " + errorGuardar.message, "error");
     return;
   }
 
   mostrarMensaje("¡Recomendación publicada! 💜", "ok");
   formulario.reset();
   vistaPrevia.hidden = true;
+  if (buscador) buscador.vincular(null);
   boton.disabled = false;
 });
