@@ -75,6 +75,10 @@ const scriptMenciones = document.createElement("script");
 scriptMenciones.src = "js/menciones.js?v=1";
 document.head.appendChild(scriptMenciones);
 
+const scriptUnir = document.createElement("script");
+scriptUnir.src = "js/unir-recomendaciones.js?v=1";
+document.head.appendChild(scriptUnir);
+
 const scriptDuplicadas = document.createElement("script");
 scriptDuplicadas.src = "js/duplicadas.js?v=2";
 document.head.appendChild(scriptDuplicadas);
