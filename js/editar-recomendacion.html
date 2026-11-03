@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar recomendación - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/formularios.css">
+  <link rel="stylesheet" href="css/publicar.css">
+  <link rel="stylesheet" href="css/insignias.css?v=3">
+  <link rel="stylesheet" href="css/anilist.css?v=1">
+</head>
+<body>
+  <main class="caja-formulario ancha">
+    <h1>Editar recomendación</h1>
+    <p id="estado-carga">Cargando...</p>
+
+    <form id="form-editar" hidden>
+      <div id="buscador-anilist"></div>
+
+      <label for="titulo">Título</label>
+      <input type="text" id="titulo" maxlength="120" required>
+
+      <label for="autor">Autor/a</label>
+      <input type="text" id="autor" maxlength="120" required>
+
+      <label for="otros-titulos">Otros títulos (opcional, uno por línea: en inglés, japonés, romaji…)</label>
+      <textarea id="otros-titulos" maxlength="1500" style="min-height: 90px;"></textarea>
+
+      <label for="sinopsis">Sinopsis</label>
+      <textarea id="sinopsis" maxlength="2000" required></textarea>
+
+      <label for="tipo">Tipo de obra</label>
+      <select id="tipo" class="yw-select" required></select>
+
+      <label for="estado">Estado</label>
+      <select id="estado" class="yw-select" required></select>
+
+      <label class="yw-18" for="es18">
+        <input type="checkbox" id="es18" style="width: auto; margin-top: 3px;">
+        <span>Es una obra +18 (contenido para mayores de 18 años)</span>
+      </label>
+
+      <p class="etiqueta">Géneros</p>
+      <div id="lista-generos" class="generos"></div>
+
+      <label for="portada">Cambiar la portada (opcional, JPG, PNG o WEBP, máximo 2 MB)</label>
+      <input type="file" id="portada" accept="image/jpeg,image/png,image/webp">
+      <img id="vista-previa" class="vista-previa" alt="Portada de la recomendación" hidden>
+
+      <button type="submit" id="boton-guardar" class="boton">Guardar cambios</button>
+    </form>
+
+    <p id="mensaje" class="mensaje"></p>
+    <p class="enlace-secundario"><a id="enlace-volver" href="index.html">Cancelar y volver</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/generos.js?v=3"></script>
+  <script src="js/anilist.js?v=1"></script>
+  <script src="js/editar-recomendacion.js?v=2"></script>
+</body>
+</html>

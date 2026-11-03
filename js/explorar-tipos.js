@@ -11,6 +11,32 @@
     document.head.appendChild(enlace);
   }
 
+  // La búsqueda de obras también mira los "otros títulos" (inglés, japonés, romaji…).
+  (function ampliarBusqueda() {
+    const desdeOriginal = supabaseClient.from.bind(supabaseClient);
+    supabaseClient.from = function (tabla) {
+      const constructor = desdeOriginal(tabla);
+      if (tabla !== "recomendaciones") return constructor;
+
+      const selectOriginal = constructor.select.bind(constructor);
+      constructor.select = function () {
+        const filtro = selectOriginal.apply(null, arguments);
+        const orOriginal = filtro.or.bind(filtro);
+        filtro.or = function (condiciones, opciones) {
+          if (typeof condiciones === "string" && condiciones.indexOf("titulo.ilike.") === 0) {
+            const coincidencia = condiciones.match(/^titulo\.ilike\.(.*?),autor\.ilike\./);
+            if (coincidencia && condiciones.indexOf("titulos_busqueda") === -1) {
+              condiciones += ",titulos_busqueda.ilike." + coincidencia[1];
+            }
+          }
+          return orOriginal(condiciones, opciones);
+        };
+        return filtro;
+      };
+      return constructor;
+    };
+  })();
+
   const TIPOS = [
     ["", "Todas"],
     ["manga", "Manga"],

@@ -7,7 +7,7 @@
   if (!document.querySelector('link[href^="css/insignias.css"]')) {
     const enlace = document.createElement("link");
     enlace.rel = "stylesheet";
-    enlace.href = "css/insignias.css?v=1";
+    enlace.href = "css/insignias.css?v=3";
     document.head.appendChild(enlace);
   }
 
@@ -17,6 +17,25 @@
     window.YW.llenarGeneros(contenedorGeneros);
   }
 
+  // ---------- Campo "Otros títulos" (antes de la sinopsis) ----------
+  const etiquetaOtros = document.createElement("label");
+  etiquetaOtros.setAttribute("for", "rec-otros");
+  etiquetaOtros.textContent = "Otros títulos (opcional, uno por línea)";
+  const campoOtros = document.createElement("textarea");
+  campoOtros.id = "rec-otros";
+  campoOtros.maxLength = 1500;
+  campoOtros.style.minHeight = "80px";
+
+  const etiquetaSinopsis = panel.querySelector('label[for="rec-sinopsis"]');
+  if (etiquetaSinopsis && etiquetaSinopsis.parentNode === panel) {
+    panel.insertBefore(etiquetaOtros, etiquetaSinopsis);
+    panel.insertBefore(campoOtros, etiquetaSinopsis);
+  } else {
+    panel.appendChild(etiquetaOtros);
+    panel.appendChild(campoOtros);
+  }
+
+  // ---------- Tipo, estado y +18 (antes de la portada) ----------
   const bloque = document.createElement("div");
   bloque.className = "yw-extra";
 
@@ -61,6 +80,32 @@
     panel.appendChild(bloque);
   }
 
+  // ---------- Buscador de obras (arriba del panel) ----------
+  let buscador = null;
+  if (window.YW.anilist) {
+    const cajaBuscador = document.createElement("div");
+    panel.insertBefore(cajaBuscador, panel.firstElementChild);
+
+    buscador = window.YW.anilist.montar({
+      contenedor: cajaBuscador,
+      alElegir: function (obra) {
+        window.YW.anilist.rellenar(
+          obra,
+          {
+            titulo: document.getElementById("rec-titulo"),
+            autor: document.getElementById("rec-autor"),
+            otros: campoOtros,
+            tipo: selectTipo,
+            estado: selectEstado,
+            es18: casilla18
+          },
+          true
+        );
+      }
+    });
+  }
+
+  // ---------- Datos extra al guardar ----------
   const desdeOriginal = supabaseClient.from.bind(supabaseClient);
   supabaseClient.from = function (tabla) {
     const consulta = desdeOriginal(tabla);
@@ -72,6 +117,12 @@
           datos.tipo = selectTipo.value || null;
           datos.estado = selectEstado.value || null;
           datos.es_18 = casilla18.checked;
+
+          const vinculada = buscador ? buscador.vinculada() : null;
+          datos.anilist_id = vinculada ? vinculada.anilistId : null;
+          datos.titulos_alternativos = window.YW.anilist
+            ? window.YW.anilist.parsearOtros(campoOtros.value)
+            : [];
         }
         return insertarOriginal(datos, opciones);
       };
@@ -99,6 +150,8 @@
       selectTipo.value = "";
       selectEstado.value = "";
       casilla18.checked = false;
+      campoOtros.value = "";
+      if (buscador) buscador.vincular(null);
     }
   }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
 })();

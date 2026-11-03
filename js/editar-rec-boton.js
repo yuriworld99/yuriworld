@@ -13,13 +13,20 @@
     .eq("id", id)
     .maybeSingle();
 
-  if (!rec || rec.user_id !== sesion.user.id) return;
+  if (!rec) return;
+
+  let puedeEditar = rec.user_id === sesion.user.id;
+  if (!puedeEditar) {
+    const { data: esAdmin } = await supabaseClient.rpc("es_administrador");
+    puedeEditar = esAdmin === true;
+  }
+  if (!puedeEditar) return;
   if (contenedor.querySelector(".yw-boton-editar")) return;
 
   const enlace = document.createElement("a");
   enlace.className = "yw-boton-editar";
   enlace.href = "editar-recomendacion.html?id=" + encodeURIComponent(id);
-  enlace.textContent = "Editar mi recomendación";
+  enlace.textContent = rec.user_id === sesion.user.id ? "Editar mi recomendación" : "Editar (administración)";
   enlace.style.display = "inline-block";
   enlace.style.margin = "0 8px 8px 0";
   enlace.style.padding = "10px 18px";

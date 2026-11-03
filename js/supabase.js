@@ -48,7 +48,7 @@ scriptCuenta.src = "js/cuenta.js?v=1";
 document.head.appendChild(scriptCuenta);
 
 const scriptInsignias = document.createElement("script");
-scriptInsignias.src = "js/insignias.js?v=3";
+scriptInsignias.src = "js/insignias.js?v=4";
 document.head.appendChild(scriptInsignias);
 
 const scriptSecciones = document.createElement("script");
@@ -56,11 +56,11 @@ scriptSecciones.src = "js/inicio-secciones.js?v=1";
 document.head.appendChild(scriptSecciones);
 
 const scriptExplorarTipos = document.createElement("script");
-scriptExplorarTipos.src = "js/explorar-tipos.js?v=2";
+scriptExplorarTipos.src = "js/explorar-tipos.js?v=3";
 document.head.appendChild(scriptExplorarTipos);
 
 const scriptEditarBoton = document.createElement("script");
-scriptEditarBoton.src = "js/editar-rec-boton.js?v=1";
+scriptEditarBoton.src = "js/editar-rec-boton.js?v=2";
 document.head.appendChild(scriptEditarBoton);
 
 const scriptBibliotecaBoton = document.createElement("script");
@@ -76,14 +76,19 @@ scriptMenciones.src = "js/menciones.js?v=1";
 document.head.appendChild(scriptMenciones);
 
 const scriptDuplicadas = document.createElement("script");
-scriptDuplicadas.src = "js/duplicadas.js?v=1";
+scriptDuplicadas.src = "js/duplicadas.js?v=2";
 document.head.appendChild(scriptDuplicadas);
 
 const scriptGeneros = document.createElement("script");
 scriptGeneros.src = "js/generos.js?v=3";
 scriptGeneros.onload = function () {
-  const scriptRecExtra = document.createElement("script");
-  scriptRecExtra.src = "js/rec-extra.js?v=1";
-  document.head.appendChild(scriptRecExtra);
+  const scriptAniList = document.createElement("script");
+  scriptAniList.src = "js/anilist.js?v=1";
+  scriptAniList.onload = function () {
+    const scriptRecExtra = document.createElement("script");
+    scriptRecExtra.src = "js/rec-extra.js?v=2";
+    document.head.appendChild(scriptRecExtra);
+  };
+  document.head.appendChild(scriptAniList);
 };
 document.head.appendChild(scriptGeneros);

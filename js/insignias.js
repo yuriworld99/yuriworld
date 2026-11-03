@@ -104,21 +104,35 @@
     const autor = document.getElementById("detalle-autor");
     const id = new URLSearchParams(window.location.search).get("id");
     if (!autor || !id) return;
-    if (document.querySelector("#contenido .yw-insignias")) return;
+    if (document.querySelector("#contenido .yw-insignias, #contenido .yw-otros-titulos")) return;
 
     const { data } = await supabaseClient
       .from("recomendaciones")
-      .select("tipo, estado, es_18")
+      .select("tipo, estado, es_18, titulos_alternativos")
       .eq("id", id)
       .maybeSingle();
 
     if (!data) return;
-    if (document.querySelector("#contenido .yw-insignias")) return;
+    if (document.querySelector("#contenido .yw-insignias, #contenido .yw-otros-titulos")) return;
+
+    let referencia = autor;
 
     const caja = crearInsignias(data);
     if (caja) {
       caja.style.margin = "6px 0 10px";
       autor.insertAdjacentElement("afterend", caja);
+      referencia = caja;
+    }
+
+    const otros = data.titulos_alternativos || [];
+    if (otros.length > 0) {
+      const parrafo = document.createElement("p");
+      parrafo.className = "yw-otros-titulos";
+      parrafo.style.margin = "0 0 10px";
+      parrafo.style.color = "#6d5d7d";
+      parrafo.style.fontSize = "0.9rem";
+      parrafo.textContent = "También conocida como: " + otros.slice(0, 6).join(" · ");
+      referencia.insertAdjacentElement("afterend", parrafo);
     }
   }
 

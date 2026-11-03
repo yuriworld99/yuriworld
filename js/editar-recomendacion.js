@@ -10,6 +10,7 @@
   const selectEstado = document.getElementById("estado");
   const casilla18 = document.getElementById("es18");
   const listaGeneros = document.getElementById("lista-generos");
+  const campoOtros = document.getElementById("otros-titulos");
 
   const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/webp"];
   const TAMANO_MAXIMO = 2 * 1024 * 1024;
@@ -47,7 +48,7 @@
 
   const { data: rec, error } = await supabaseClient
     .from("recomendaciones")
-    .select("id, user_id, titulo, autor, sinopsis, generos, tipo, estado, es_18, portada_url")
+    .select("id, user_id, titulo, autor, sinopsis, generos, tipo, estado, es_18, portada_url, anilist_id, titulos_alternativos")
     .eq("id", id)
     .maybeSingle();
 
@@ -56,7 +57,12 @@
     return;
   }
 
-  if (rec.user_id !== sesion.user.id) {
+  let puedeEditar = rec.user_id === sesion.user.id;
+  if (!puedeEditar) {
+    const { data: esAdmin } = await supabaseClient.rpc("es_administrador");
+    puedeEditar = esAdmin === true;
+  }
+  if (!puedeEditar) {
     estadoCarga.textContent = "Solo podés editar tus propias recomendaciones.";
     return;
   }
@@ -88,12 +94,39 @@
   document.getElementById("titulo").value = rec.titulo || "";
   document.getElementById("autor").value = rec.autor || "";
   document.getElementById("sinopsis").value = rec.sinopsis || "";
+  campoOtros.value = (rec.titulos_alternativos || []).join("\n");
   selectTipo.value = rec.tipo || "";
   selectEstado.value = rec.estado || "";
   casilla18.checked = !!rec.es_18;
 
   vistaPrevia.src = rec.portada_url;
   vistaPrevia.hidden = false;
+
+  let buscador = null;
+  if (window.YW.anilist) {
+    buscador = window.YW.anilist.montar({
+      contenedor: document.getElementById("buscador-anilist"),
+      idExcluido: rec.id,
+      alElegir: function (obra) {
+        window.YW.anilist.rellenar(
+          obra,
+          {
+            titulo: document.getElementById("titulo"),
+            autor: document.getElementById("autor"),
+            otros: campoOtros,
+            tipo: selectTipo,
+            estado: selectEstado,
+            es18: casilla18
+          },
+          false
+        );
+      }
+    });
+
+    if (rec.anilist_id) {
+      buscador.vincular({ anilistId: rec.anilist_id, titulo: rec.titulo });
+    }
+  }
 
   estadoCarga.hidden = true;
   formulario.hidden = false;
@@ -121,6 +154,7 @@
       return casilla.value;
     });
     const archivo = inputPortada.files[0];
+    const vinculada = buscador ? buscador.vinculada() : null;
 
     if (!titulo || !autor || !sinopsis) {
       mostrarMensaje("Completá el título, el autor y la sinopsis.", "error");
@@ -159,7 +193,9 @@
       generos: generos,
       tipo: tipo,
       estado: estado,
-      es_18: casilla18.checked
+      es_18: casilla18.checked,
+      anilist_id: vinculada ? vinculada.anilistId : null,
+      titulos_alternativos: window.YW.anilist ? window.YW.anilist.parsearOtros(campoOtros.value) : []
     };
 
     let rutaNueva = null;
