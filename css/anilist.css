@@ -1,0 +1,145 @@
+.al-caja {
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 2px solid #e6d9fb;
+  border-radius: 16px;
+  background: #faf5ff;
+}
+
+.al-titulo {
+  margin: 0 0 4px;
+  color: #7b3fe4;
+  font-weight: 800;
+}
+
+.al-ayuda {
+  margin: 0 0 10px;
+  color: #6d5d7d;
+  font-size: 0.88rem;
+}
+
+.al-fila {
+  display: flex;
+  gap: 8px;
+}
+
+.al-input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 14px;
+  border: 2px solid #e6d9fb;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #2b1a3d;
+  font: inherit;
+  font-size: 16px;
+}
+
+.al-boton {
+  flex: 0 0 auto;
+  padding: 0 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #ff5fa2, #7b3fe4);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.al-estado {
+  margin: 10px 0 4px;
+  color: #6d5d7d;
+  font-size: 0.9rem;
+}
+
+.al-estado a {
+  color: #7b3fe4;
+  font-weight: 700;
+}
+
+.al-resultados {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.al-resultado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  border: 2px solid #e6d9fb;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #2b1a3d;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.al-resultado img {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 62px;
+  border-radius: 6px;
+  background: #f3ebff;
+  object-fit: cover;
+}
+
+.al-resultado-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.al-resultado-titulo {
+  overflow-wrap: anywhere;
+}
+
+.al-resultado-datos {
+  color: #6d5d7d;
+  font-size: 0.82rem;
+}
+
+.al-ya {
+  color: #c0264b;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.al-vinculo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #e9f8ee;
+  color: #1e7a3a;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.al-vinculo[hidden] {
+  display: none;
+}
+
+.al-quitar {
+  border: none;
+  background: none;
+  color: #7b3fe4;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.al-credito {
+  margin: 10px 0 0;
+  color: #8b7a9c;
+  font-size: 0.78rem;
+  }
