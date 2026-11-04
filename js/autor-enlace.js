@@ -16,7 +16,7 @@
     }
 
     const nombres = texto
-      .split(",")
+      .split(/[,;/&]/)
       .map(function (nombre) {
         return nombre.trim();
       })

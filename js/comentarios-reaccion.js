@@ -10,6 +10,12 @@
     ".yw-rbtn svg { width: 18px; height: 18px; }" +
     ".yw-rbtn.activo { color: #e0529a; }" +
     ".yw-rbtn:disabled { opacity: 0.6; cursor: default; }" +
+    ".yw-rbtn[hidden] { display: none; }" +
+    ".respuesta-acciones.yw-acciones { display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 2px; position: relative; max-width: 100%; }" +
+    ".yw-menu-lista { position: absolute; right: 0; top: 100%; z-index: 30; min-width: 170px; overflow: hidden; border: 2px solid #e6d9fb; border-radius: 14px; background: #ffffff; box-shadow: 0 8px 24px rgba(123, 63, 228, 0.18); }" +
+    ".yw-menu-lista[hidden] { display: none; }" +
+    ".yw-menu-lista > * { display: block !important; width: 100%; box-sizing: border-box; margin: 0 !important; padding: 12px 16px !important; border: none !important; border-bottom: 1px solid #f0e6fb !important; border-radius: 0 !important; background: #ffffff !important; font: inherit; font-size: 0.95rem; font-weight: 700; text-align: left; cursor: pointer; }" +
+    ".yw-menu-lista > *:last-child { border-bottom: none !important; }" +
     "@keyframes yw-resaltar { from { background: #ffe3f1; } to { background: transparent; } }" +
     ".yw-resaltado { animation: yw-resaltar 2.4s ease-out; border-radius: 12px; }";
   document.head.appendChild(estilo);
@@ -18,6 +24,9 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>';
   const COMPARTIR =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+
+  const PUNTOS =
+    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>';
 
   let miId = null;
   let pendiente = false;
@@ -132,6 +141,7 @@
       }
     });
 
+    acciones.classList.add("yw-acciones");
     acciones.insertBefore(botonLike, acciones.firstChild);
     const responder = acciones.querySelector(".respuesta-responder");
     if (responder) {
@@ -140,8 +150,69 @@
       acciones.appendChild(botonCompartir);
     }
 
+    const botonMas = document.createElement("button");
+    botonMas.type = "button";
+    botonMas.className = "yw-rbtn yw-menu-boton";
+    botonMas.setAttribute("aria-label", "Más opciones");
+    botonMas.innerHTML = PUNTOS;
+    botonMas.hidden = true;
+
+    const lista = document.createElement("div");
+    lista.className = "yw-menu-lista";
+    lista.hidden = true;
+
+    botonMas.addEventListener("click", function (evento) {
+      evento.stopPropagation();
+      const abrir = lista.hidden;
+      document.querySelectorAll(".yw-menu-lista").forEach(function (otra) {
+        otra.hidden = true;
+      });
+      lista.hidden = !abrir;
+    });
+
+    lista.addEventListener("click", function () {
+      setTimeout(function () {
+        lista.hidden = true;
+      }, 0);
+    });
+
+    acciones.appendChild(botonMas);
+    acciones.appendChild(lista);
+
     pintar();
+    reorganizar(acciones);
   }
+
+  // Las acciones secundarias (Denunciar, Bloquear, Borrar…) pasan al menú ⋮.
+  function reorganizar(acciones) {
+    const lista = acciones.querySelector(".yw-menu-lista");
+    const botonMas = acciones.querySelector(".yw-menu-boton");
+    if (!lista || !botonMas) return;
+
+    Array.from(acciones.children).forEach(function (hijo) {
+      if (
+        hijo === lista ||
+        hijo === botonMas ||
+        hijo.classList.contains("yw-rbtn") ||
+        hijo.classList.contains("respuesta-responder")
+      ) {
+        return;
+      }
+      lista.appendChild(hijo);
+    });
+
+    botonMas.hidden = lista.children.length === 0;
+  }
+
+  function reorganizarTodas() {
+    document.querySelectorAll(".respuesta-acciones.yw-acciones").forEach(reorganizar);
+  }
+
+  document.addEventListener("click", function () {
+    document.querySelectorAll(".yw-menu-lista").forEach(function (lista) {
+      lista.hidden = true;
+    });
+  });
 
   function resaltarDesdeEnlace() {
     if (resaltado) return;
@@ -160,6 +231,8 @@
   }
 
   async function procesar() {
+    reorganizarTodas();
+
     const cajas = Array.from(
       document.querySelectorAll(".respuesta[data-id]:not([data-yw-reaccion])")
     );
