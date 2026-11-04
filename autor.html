@@ -41,13 +41,55 @@
       titulo.textContent = "Obras de " + nombre;
       document.title = "Obras de " + nombre + " - YuriWorld";
 
-      const patron = "%" + nombre.replace(/[\\%_]/g, "\\$&") + "%";
-      const { data, error } = await supabaseClient
+      function palabras(texto) {
+        return String(texto || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .split(/[^\p{L}\p{N}]+/u)
+          .filter(Boolean);
+      }
+
+      function clave(texto) {
+        return palabras(texto).sort().join(" ");
+      }
+
+      function nombresDe(autor) {
+        return String(autor || "")
+          .split(/[,;/&]/)
+          .map(function (parte) {
+            return parte.trim();
+          })
+          .filter(Boolean);
+      }
+
+      const claveBuscada = clave(nombre);
+      let trozos = nombre
+        .replace(/[,()%*\\"]/g, " ")
+        .split(/\s+/)
+        .filter(function (trozo) {
+          return trozo.length >= 2;
+        });
+      if (trozos.length === 0) trozos = [nombre.replace(/[,()%*\\"]/g, " ").trim()];
+
+      const filtro = trozos
+        .map(function (trozo) {
+          return "autor.ilike.%" + trozo + "%";
+        })
+        .join(",");
+
+      const { data: candidatas, error } = await supabaseClient
         .from("recomendaciones")
         .select("id, titulo, autor, generos, portada_url, created_at")
-        .ilike("autor", patron)
+        .or(filtro)
         .order("created_at", { ascending: false })
-        .limit(200);
+        .limit(500);
+
+      const data = (candidatas || []).filter(function (rec) {
+        return nombresDe(rec.autor).some(function (parte) {
+          return clave(parte) === claveBuscada;
+        });
+      });
 
       if (error) {
         lista.replaceChildren(mensaje("No se pudieron cargar las obras. Probá de nuevo."));
