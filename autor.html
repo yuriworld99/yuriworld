@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Obras de un autor - YuriWorld</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/explorar.css">
+  <link rel="stylesheet" href="css/insignias.css?v=3">
+  <link rel="stylesheet" href="css/biblioteca.css?v=1">
+</head>
+<body>
+  <main class="bib-pagina">
+    <h1 id="titulo">Obras</h1>
+    <p id="sub" class="bib-sub"></p>
+    <section id="lista" class="bib-lista">Cargando...</section>
+    <p class="enlace-secundario" style="margin: 16px;"><a href="javascript:history.back()">← Volver</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    (async function () {
+      const titulo = document.getElementById("titulo");
+      const sub = document.getElementById("sub");
+      const lista = document.getElementById("lista");
+
+      function mensaje(texto) {
+        const parrafo = document.createElement("p");
+        parrafo.className = "ex-vacio";
+        parrafo.textContent = texto;
+        return parrafo;
+      }
+
+      const nombre = (new URLSearchParams(window.location.search).get("n") || "").trim();
+      if (!nombre) {
+        lista.replaceChildren(mensaje("Falta el nombre del autor."));
+        return;
+      }
+
+      titulo.textContent = "Obras de " + nombre;
+      document.title = "Obras de " + nombre + " - YuriWorld";
+
+      const patron = "%" + nombre.replace(/[\\%_]/g, "\\$&") + "%";
+      const { data, error } = await supabaseClient
+        .from("recomendaciones")
+        .select("id, titulo, autor, generos, portada_url, created_at")
+        .ilike("autor", patron)
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      if (error) {
+        lista.replaceChildren(mensaje("No se pudieron cargar las obras. Probá de nuevo."));
+        return;
+      }
+
+      const obras = data || [];
+      sub.textContent = obras.length + (obras.length === 1 ? " obra en YuriWorld" : " obras en YuriWorld");
+
+      if (obras.length === 0) {
+        lista.replaceChildren(mensaje("Todavía no hay obras de esta persona."));
+        return;
+      }
+
+      const { data: resumenes } = await supabaseClient
+        .from("resumen_calificaciones")
+        .select("recomendacion_id, promedio, cantidad")
+        .limit(1000);
+
+      const mapa = {};
+      (resumenes || []).forEach(function (resumen) {
+        mapa[resumen.recomendacion_id] = resumen;
+      });
+
+      function crearFila(rec) {
+        const resumen = mapa[rec.id];
+
+        const enlace = document.createElement("a");
+        enlace.className = "ex-obra";
+        enlace.href = "recomendacion.html?id=" + encodeURIComponent(rec.id);
+
+        const portada = document.createElement("img");
+        portada.className = "ex-portada";
+        portada.src = rec.portada_url;
+        portada.alt = "Portada de " + rec.titulo;
+        portada.loading = "lazy";
+
+        const info = document.createElement("div");
+        info.className = "ex-info";
+
+        const nombreObra = document.createElement("p");
+        nombreObra.className = "ex-obra-titulo";
+        nombreObra.textContent = rec.titulo;
+
+        const autor = document.createElement("p");
+        autor.className = "ex-obra-datos";
+        autor.textContent = "de " + rec.autor;
+
+        const estrellas = document.createElement("p");
+        estrellas.className = "ex-obra-datos ex-estrellas";
+        estrellas.textContent = resumen
+          ? "★ " + resumen.promedio + " · " + resumen.cantidad + (resumen.cantidad === 1 ? " voto" : " votos")
+          : "☆ Sin calificaciones";
+
+        const generos = document.createElement("div");
+        generos.className = "ex-generos";
+        (rec.generos || []).slice(0, 3).forEach(function (genero) {
+          const chip = document.createElement("span");
+          chip.className = "ex-genero";
+          chip.textContent = genero;
+          generos.appendChild(chip);
+        });
+
+        info.appendChild(nombreObra);
+        info.appendChild(autor);
+        info.appendChild(estrellas);
+        info.appendChild(generos);
+        enlace.appendChild(portada);
+        enlace.appendChild(info);
+        return enlace;
+      }
+
+      lista.replaceChildren.apply(lista, obras.map(crearFila));
+    })();
+  </script>
+</body>
+</html>
