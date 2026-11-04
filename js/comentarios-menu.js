@@ -15,16 +15,11 @@
 
   const PUNTOS =
     '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>';
-
+  const PALABRAS = ["denunciar", "bloquear", "borrar", "eliminar"];
   let pendiente = false;
 
-  function esPropio(hijo, boton, lista) {
-    return (
-      hijo === boton ||
-      hijo === lista ||
-      hijo.classList.contains("yw-rbtn") ||
-      hijo.classList.contains("respuesta-responder")
-    );
+  function texto(el) {
+    return (el.textContent || "").trim().toLowerCase();
   }
 
   function reorganizar(acciones) {
@@ -64,9 +59,12 @@
       acciones.appendChild(lista);
     }
 
-    Array.from(acciones.children).forEach(function (hijo) {
-      if (esPropio(hijo, boton, lista)) return;
-      lista.appendChild(hijo);
+    const zona = acciones.parentElement || acciones;
+    zona.querySelectorAll("button, a, span").forEach(function (el) {
+      if (lista.contains(el) || el === boton || boton.contains(el)) return;
+      if (PALABRAS.indexOf(texto(el)) === -1) return;
+      if (el.parentElement && texto(el.parentElement) === texto(el)) return;
+      lista.appendChild(el);
     });
 
     boton.hidden = lista.children.length === 0;
