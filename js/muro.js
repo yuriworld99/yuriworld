@@ -129,7 +129,7 @@ async function subirArchivo(bucket, blob, registro) {
     sesion.user.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
   const { error } = await supabaseClient.storage
     .from(bucket)
-    .upload(ruta, blob, { contentType: "image/jpeg" });
+    .upload(ruta, blob, { contentType: "image/jpeg", cacheControl: "31536000" });
   if (error) throw error;
   registro.push({ bucket: bucket, ruta: ruta });
   return supabaseClient.storage.from(bucket).getPublicUrl(ruta).data.publicUrl;
