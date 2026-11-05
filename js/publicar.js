@@ -11,7 +11,19 @@ const listaGeneros = document.getElementById("lista-generos");
 const campoOtros = document.getElementById("otros-titulos");
 
 const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/webp"];
-const TAMANO_MAXIMO = 2 * 1024 * 1024;
+const TAMANO_MAXIMO = 10 * 1024 * 1024;
+
+async function comprimirImagen(archivo, anchoMax, calidad) {
+  const bmp = await createImageBitmap(archivo);
+  const escala = Math.min(1, anchoMax / bmp.width);
+  const lienzo = document.createElement("canvas");
+  lienzo.width = Math.round(bmp.width * escala);
+  lienzo.height = Math.round(bmp.height * escala);
+  lienzo.getContext("2d").drawImage(bmp, 0, 0, lienzo.width, lienzo.height);
+  return new Promise(function (resolver) {
+    lienzo.toBlob(resolver, "image/webp", calidad);
+  });
+}
 
 if (window.YW) {
   window.YW.llenarGeneros(listaGeneros);
