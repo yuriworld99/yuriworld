@@ -62,6 +62,7 @@
     const zona = acciones.parentElement || acciones;
     zona.querySelectorAll("button, a, span").forEach(function (el) {
       if (lista.contains(el) || el === boton || boton.contains(el)) return;
+      if (el.closest(".post-cabecera")) return;
       if (PALABRAS.indexOf(texto(el)) === -1) return;
       if (el.parentElement && texto(el.parentElement) === texto(el)) return;
       lista.appendChild(el);
