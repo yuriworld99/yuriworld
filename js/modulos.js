@@ -4,7 +4,8 @@
     "js/autor-enlace.js?v=2",
     "js/comentarios-reaccion.js?v=1",
     "js/comentarios-menu.js?v=2",
-    "js/feed-reposts.js?v=1"
+    "js/feed-reposts.js?v=1",
+    "js/fijar-post.js?v=1"
   ];
 
   MODULOS.forEach(function (ruta) {
