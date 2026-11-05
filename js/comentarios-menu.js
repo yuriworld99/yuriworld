@@ -15,7 +15,7 @@
 
   const PUNTOS =
     '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>';
-  const PALABRAS = ["denunciar", "bloquear", "borrar", "eliminar"];
+  const PALABRAS = ["denunciar", "bloquear", "desbloquear", "reportar", "borrar", "eliminar"];
   let pendiente = false;
 
   function texto(el) {
