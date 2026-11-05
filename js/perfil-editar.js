@@ -100,7 +100,7 @@
     const ruta = sesion.user.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 7) + ".jpg";
     const { error } = await supabaseClient.storage
       .from(bucket)
-      .upload(ruta, blob, { contentType: "image/jpeg" });
+      .upload(ruta, blob, { contentType: "image/jpeg", cacheControl: "31536000" });
     if (error) throw error;
     rutas.push({ bucket: bucket, ruta: ruta });
     return supabaseClient.storage.from(bucket).getPublicUrl(ruta).data.publicUrl;
