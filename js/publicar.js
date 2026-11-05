@@ -165,14 +165,31 @@ formulario.addEventListener("submit", async function (evento) {
     return;
   }
 
+    let archivoSubir = archivo;
+  try {
+    const comprimida = await comprimirImagen(archivo, 500, 0.8);
+    if (comprimida && comprimida.size < archivo.size) archivoSubir = comprimida;
+  } catch (error) {
+    console.error("No se pudo comprimir la portada:", error);
+  }
+
+  if (archivoSubir === archivo && archivo.size > 2 * 1024 * 1024) {
+    mostrarMensaje("No se pudo achicar la portada. Elegí una imagen de menos de 2 MB.", "error");
+    boton.disabled = false;
+    return;
+  }
+
   let extension = "jpg";
-  if (archivo.type === "image/png") extension = "png";
-  if (archivo.type === "image/webp") extension = "webp";
+  if (archivoSubir.type === "image/png") extension = "png";
+  if (archivoSubir.type === "image/webp") extension = "webp";
   const ruta = sesion.user.id + "/" + Date.now() + "." + extension;
 
   const { error: errorSubida } = await supabaseClient.storage
     .from("portadas")
-    .upload(ruta, archivo);
+    .upload(ruta, archivoSubir, {
+      contentType: archivoSubir.type,
+      cacheControl: "31536000"
+    });
 
   if (errorSubida) {
     mostrarMensaje("No se pudo subir la portada: " + errorSubida.message, "error");
