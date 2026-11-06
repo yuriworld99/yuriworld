@@ -96,7 +96,28 @@
     });
   }
 
+  const WORKER_SUBIDA = "https://subir-img.yuriworld-avisos.workers.dev";
+  const R2_PUBLICO = "https://pub-c643606c6a4545f18f9677fe2dca68ee.r2.dev/";
+
   async function subir(bucket, blob, rutas) {
+    const ruta = sesion.user.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 7) + ".jpg";
+    try {
+      const { data: datosActuales } = await supabaseClient.auth.getSession();
+      const token = datosActuales.session ? datosActuales.session.access_token : sesion.access_token;
+      const respuesta = await fetch(WORKER_SUBIDA + "/" + bucket + "/" + ruta, {
+        method: "PUT",
+        headers: { Authorization: "Bearer " + token, "Content-Type": "image/jpeg" },
+        body: blob
+      });
+      if (!respuesta.ok) throw new Error("Worker " + respuesta.status);
+      return R2_PUBLICO + bucket + "/" + ruta;
+    } catch (error) {
+      console.warn("Subida a R2 falló, uso Supabase:", error);
+      return subirSupabase(bucket, blob, rutas);
+    }
+  }
+
+  async function subirSupabase(bucket, blob, rutas) {
     const ruta = sesion.user.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 7) + ".jpg";
     const { error } = await supabaseClient.storage
       .from(bucket)
