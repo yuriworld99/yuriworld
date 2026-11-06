@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verificar R2</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body style="font-family:sans-serif;padding:16px">
+<h1>Verificar R2</h1>
+<p>Iniciá sesión como administrador en el sitio antes de usar esto.</p>
+<button id="bv" style="padding:12px">1. Verificar</button>
+<button id="bc" style="padding:12px" disabled>2. Copiar faltantes</button>
+<pre id="log" style="white-space:pre-wrap"></pre>
+<script>
+const WORKER = "https://subir-img.yuriworld-avisos.workers.dev";
+const R2 = "https://pub-c643606c6a4545f18f9677fe2dca68ee.r2.dev/";
+const SB = "https://ifgattjcckprijvpfypw.supabase.co/storage/v1/object/public/";
+const cli = window.supabase.createClient(
+  "https://ifgattjcckprijvpfypw.supabase.co",
+  "sb_publishable_JG7AQQ_tTJJ6SNKVjU50PQ_VNxlzTim"
+);
+const el = document.getElementById("log");
+const log = t => { el.textContent += t + "\n"; };
+const enc = k => k.split("/").map(encodeURIComponent).join("/");
+let faltan = [];
+
+function clave(url) {
+  if (!url) return null;
+  const m = url.match(/\/object\/public\/([^\/]+)\/([^?]+)/);
+  return m ? m[1] + "/" + decodeURIComponent(m[2].split("?")[0]) : null;
+}
+async function leer(tabla, columnas) {
+  const out = [];
+  for (let d = 0; ; d += 1000) {
+    const { data, error } = await cli.from(tabla).select(columnas).range(d, d + 999);
+    if (error) { log("Aviso " + tabla + ": " + error.message); break; }
+    out.push(...data);
+    if (data.length < 1000) break;
+  }
+  return out;
+}
+async function claves() {
+  const s = new Set();
+  const add = u => { const k = clave(u); if (k) s.add(k); };
+  (await leer("recomendaciones", "portada_url")).forEach(f => add(f.portada_url));
+  (await leer("profiles", "avatar_url")).forEach(f => add(f.avatar_url));
+  (await leer("profiles", "banner_url")).forEach(f => add(f.banner_url));
+  (await leer("muro_publicaciones", "imagen_url, rec_portada_url")).forEach(f => { add(f.imagen_url); add(f.rec_portada_url); });
+  return Array.from(s);
+}
+function existe(k) {
+  return new Promise(res => {
+    const im = new Image();
+    im.onload = () => res(true);
+    im.onerror = () => res(false);
+    im.src = R2 + enc(k);
+  });
+}
+document.getElementById("bv").onclick = async () => {
+  document.getElementById("bv").disabled = true;
+  const lista = await claves();
+  log("Referenciadas en la base: " + lista.length);
+  let i = 0, ok = 0; faltan = [];
+  async function t() {
+    while (i < lista.length) { const k = lista[i++]; if (await existe(k)) ok++; else faltan.push(k); }
+  }
+  await Promise.all([t(), t(), t(), t(), t(), t()]);
+  log("Están en R2: " + ok + ". Faltan: " + faltan.length);
+  faltan.slice(0, 30).forEach(k => log("FALTA " + k));
+  document.getElementById("bc").disabled = faltan.length === 0;
+  document.getElementById("bv").disabled = false;
+};
+document.getElementById("bc").onclick = async () => {
+  document.getElementById("bc").disabled = true;
+  const { data: s } = await cli.auth.getSession();
+  if (!s.session) return log("Primero iniciá sesión en el sitio.");
+  const token = s.session.access_token;
+  let i = 0, hechas = 0, errores = 0;
+  async function t() {
+    while (i < faltan.length) {
+      const k = faltan[i++];
+      try {
+        const r = await fetch(SB + enc(k));
+        if (!r.ok) throw new Error("bajada " + r.status);
+        const blob = await r.blob();
+        const up = await fetch(WORKER + "/" + enc(k), {
+          method: "PUT",
+          headers: { Authorization: "Bearer " + token, "Content-Type": blob.type || "image/jpeg" },
+          body: blob
+        });
+        if (!up.ok) throw new Error("subida " + up.status + " " + (await up.text()));
+        hechas++;
+      } catch (x) { errores++; log("ERROR " + k + ": " + x.message); }
+    }
+  }
+  await Promise.all([t(), t(), t(), t()]);
+  log("LISTO. Copiadas: " + hechas + ". Errores: " + errores + ". Volvé a tocar Verificar.");
+};
+</script>
+</body></html>
