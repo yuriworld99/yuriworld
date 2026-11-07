@@ -14,6 +14,9 @@
 
   const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/webp"];
   const TAMANO_MAXIMO = 2 * 1024 * 1024;
+  const WORKER_SUBIDA = "https://subir-img.yuriworld-avisos.workers.dev";
+  const R2_PUBLICO = "https://pub-c643606c6a4545f18f9677fe2dca68ee.r2.dev/";
+
   async function comprimirImagen(archivo, anchoMax, calidad) {
     const bmp = await createImageBitmap(archivo);
     const escala = Math.min(1, anchoMax / bmp.width);
@@ -210,7 +213,7 @@
 
     let rutaNueva = null;
 
-        if (archivo) {
+    if (archivo) {
       let archivoSubir = archivo;
       try {
         const comprimida = await comprimirImagen(archivo, 500, 0.8);
@@ -224,23 +227,46 @@
       if (archivoSubir.type === "image/webp") extension = "webp";
       rutaNueva = sesion.user.id + "/" + Date.now() + "." + extension;
 
-      const { error: errorSubida } = await supabaseClient.storage
-        .from("portadas")
-        .upload(rutaNueva, archivoSubir, {
-          contentType: archivoSubir.type,
-          cacheControl: "31536000"
-        });
+      let urlNueva = null;
 
-      if (errorSubida) {
-        mostrarMensaje("No se pudo subir la portada: " + errorSubida.message, "error");
-        boton.disabled = false;
-        return;
+      try {
+        const { data: actual } = await supabaseClient.auth.getSession();
+        const token = actual.session ? actual.session.access_token : sesion.access_token;
+        const respuesta = await fetch(WORKER_SUBIDA + "/portadas/" + rutaNueva, {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": archivoSubir.type || "image/jpeg"
+          },
+          body: archivoSubir
+        });
+        if (!respuesta.ok) throw new Error("Worker " + respuesta.status);
+        urlNueva = R2_PUBLICO + "portadas/" + rutaNueva;
+      } catch (error) {
+        console.warn("Subida a R2 falló, uso Supabase:", error);
       }
 
-      const { data: datosUrl } = supabaseClient.storage
-        .from("portadas")
-        .getPublicUrl(rutaNueva);
-      cambios.portada_url = datosUrl.publicUrl;
+      if (!urlNueva) {
+        const { error: errorSubida } = await supabaseClient.storage
+          .from("portadas")
+          .upload(rutaNueva, archivoSubir, {
+            contentType: archivoSubir.type,
+            cacheControl: "31536000"
+          });
+
+        if (errorSubida) {
+          mostrarMensaje("No se pudo subir la portada: " + errorSubida.message, "error");
+          boton.disabled = false;
+          return;
+        }
+
+        const { data: datosUrl } = supabaseClient.storage
+          .from("portadas")
+          .getPublicUrl(rutaNueva);
+        urlNueva = datosUrl.publicUrl;
+      }
+
+      cambios.portada_url = urlNueva;
     }
 
     const { data: filas, error: errorGuardar } = await supabaseClient
