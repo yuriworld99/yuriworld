@@ -127,6 +127,27 @@ async function prepararImagen(archivo) {
 async function subirArchivo(bucket, blob, registro) {
   const ruta =
     sesion.user.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
+  const workerSubida = "https://subir-img.yuriworld-avisos.workers.dev";
+  const publicoR2 = "https://pub-c643606c6a4545f18f9677fe2dca68ee.r2.dev/";
+  try {
+    const { data: actual } = await supabaseClient.auth.getSession();
+    const token = actual.session ? actual.session.access_token : sesion.access_token;
+    const respuesta = await fetch(workerSubida + "/" + bucket + "/" + ruta, {
+      method: "PUT",
+      headers: { Authorization: "Bearer " + token, "Content-Type": "image/jpeg" },
+      body: blob
+    });
+    if (!respuesta.ok) throw new Error("Worker " + respuesta.status);
+    return publicoR2 + bucket + "/" + ruta;
+  } catch (error) {
+    console.warn("Subida a R2 falló, uso Supabase:", error);
+    return subirArchivoSupabase(bucket, blob, registro);
+  }
+}
+
+async function subirArchivoSupabase(bucket, blob, registro) {
+  const ruta =
+    sesion.user.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
   const { error } = await supabaseClient.storage
     .from(bucket)
     .upload(ruta, blob, { contentType: "image/jpeg", cacheControl: "31536000" });
@@ -588,7 +609,7 @@ async function cargarMuro() {
   const faltantes = [];
   items.forEach(function (item) {
     if (item.repost_de && !originales[item.repost_de] && !faltantes.includes(item.repost_de)) {
-      faltantes.push(item.repost_de);
+    faltantes.push(item.repost_de);
     }
   });
 
@@ -624,7 +645,7 @@ async function cargarMuro() {
 
   const idsPosts = [];
   items.forEach(function (item) {
-        const id = item.repost_de ? item.repost_de : item.id;
+    const id = item.repost_de ? item.repost_de : item.id;
     if (!idsPosts.includes(id)) idsPosts.push(id);
   });
 
@@ -857,3 +878,4 @@ async function iniciar() {
 }
 
 iniciar();
+                                                         
