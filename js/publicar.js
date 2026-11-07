@@ -165,7 +165,7 @@ formulario.addEventListener("submit", async function (evento) {
     return;
   }
 
-    let archivoSubir = archivo;
+  let archivoSubir = archivo;
   try {
     const comprimida = await comprimirImagen(archivo, 500, 0.8);
     if (comprimida && comprimida.size < archivo.size) archivoSubir = comprimida;
@@ -184,22 +184,44 @@ formulario.addEventListener("submit", async function (evento) {
   if (archivoSubir.type === "image/webp") extension = "webp";
   const ruta = sesion.user.id + "/" + Date.now() + "." + extension;
 
-  const { error: errorSubida } = await supabaseClient.storage
-    .from("portadas")
-    .upload(ruta, archivoSubir, {
-      contentType: archivoSubir.type,
-      cacheControl: "31536000"
-    });
+  const WORKER_SUBIDA = "https://subir-img.yuriworld-avisos.workers.dev";
+  const R2_PUBLICO = "https://pub-c643606c6a4545f18f9677fe2dca68ee.r2.dev/";
+  let urlPortada = null;
 
-  if (errorSubida) {
-    mostrarMensaje("No se pudo subir la portada: " + errorSubida.message, "error");
-    boton.disabled = false;
-    return;
+  try {
+    const respuesta = await fetch(WORKER_SUBIDA + "/portadas/" + ruta, {
+      method: "PUT",
+      headers: {
+        Authorization: "Bearer " + sesion.access_token,
+        "Content-Type": archivoSubir.type || "image/jpeg"
+      },
+      body: archivoSubir
+    });
+    if (!respuesta.ok) throw new Error("Worker " + respuesta.status);
+    urlPortada = R2_PUBLICO + "portadas/" + ruta;
+  } catch (error) {
+    console.warn("Subida a R2 falló, uso Supabase:", error);
   }
 
-  const { data: datosUrl } = supabaseClient.storage
-    .from("portadas")
-    .getPublicUrl(ruta);
+  if (!urlPortada) {
+    const { error: errorSubida } = await supabaseClient.storage
+      .from("portadas")
+      .upload(ruta, archivoSubir, {
+        contentType: archivoSubir.type,
+        cacheControl: "31536000"
+      });
+
+    if (errorSubida) {
+      mostrarMensaje("No se pudo subir la portada: " + errorSubida.message, "error");
+      boton.disabled = false;
+      return;
+    }
+
+    const { data: datosUrl } = supabaseClient.storage
+      .from("portadas")
+      .getPublicUrl(ruta);
+    urlPortada = datosUrl.publicUrl;
+  }
 
   const { error: errorGuardar } = await supabaseClient
     .from("recomendaciones")
@@ -213,7 +235,7 @@ formulario.addEventListener("submit", async function (evento) {
       es_18: es18,
       anilist_id: anilistId,
       titulos_alternativos: otrosTitulos,
-      portada_url: datosUrl.publicUrl
+      portada_url: urlPortada
     });
 
   if (errorGuardar) {
