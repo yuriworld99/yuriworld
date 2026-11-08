@@ -6,7 +6,8 @@
     "js/comentarios-menu.js?v=2",
     "js/feed-reposts.js?v=1",
     "js/fijar-post.js?v=1",
-    "js/citas.js?v=2"
+    "js/citas.js?v=2",
+    "js/enlace-obra.js?v=1"
   ];
 
   MODULOS.forEach(function (ruta) {
