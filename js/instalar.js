@@ -88,8 +88,9 @@
     document.body.appendChild(caja);
   }
 
-  window.addEventListener("beforeinstallprompt", function (e) {
+    window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
+    window.__ywInstalar = e;
     evento = e;
     quitar();
     mostrar();
