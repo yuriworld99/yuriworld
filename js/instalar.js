@@ -14,7 +14,11 @@
   }
 
   let evento = window.__ywInstalar || null;
-
+  if (evento) {
+    try {
+      localStorage.removeItem("yw-instalada");
+    } catch (error) {}
+  }
   function oculto() {
     try {
       return sessionStorage.getItem("yw-instalar-oculto") === "1";
