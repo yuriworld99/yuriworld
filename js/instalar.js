@@ -109,7 +109,12 @@
     mostrar();
   });
 
-  window.addEventListener("appinstalled", quitar);
+    window.addEventListener("appinstalled", function () {
+    try {
+      localStorage.setItem("yw-instalada", "1");
+    } catch (error) {}
+    quitar();
+  });
 
   // Si Chrome ya avisó antes de que este archivo cargara, igual se muestra.
   setTimeout(mostrar, 3000);
