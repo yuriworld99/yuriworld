@@ -8,7 +8,7 @@
     navigator.serviceWorker.register("sw.js").catch(function () {});
   }
 
-  let evento = null;
+  let evento = window.__ywInstalar || null;
 
   function oculto() {
     try {
