@@ -125,3 +125,6 @@ document.head.appendChild(scriptGeneros);
     document.head.appendChild(manifiesto);
   }
 })();
+const scriptInstalar = document.createElement("script");
+scriptInstalar.src = "js/instalar.js?v=1";
+document.head.appendChild(scriptInstalar);
