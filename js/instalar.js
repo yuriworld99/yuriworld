@@ -2,7 +2,12 @@
   const esApp =
     window.matchMedia("(display-mode: standalone)").matches ||
     window.navigator.standalone === true;
-  if (esApp) return;
+  if (esApp) {
+    try {
+      localStorage.setItem("yw-instalada", "1");
+    } catch (error) {}
+    return;
+    }
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(function () {});
