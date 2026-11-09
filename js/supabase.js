@@ -100,3 +100,28 @@ scriptGeneros.onload = function () {
   document.head.appendChild(scriptAniList);
 };
 document.head.appendChild(scriptGeneros);
+(function () {
+  document
+    .querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]')
+    .forEach(function (enlace) {
+      enlace.remove();
+    });
+
+  const icono = document.createElement("link");
+  icono.rel = "icon";
+  icono.type = "image/png";
+  icono.href = "yw-favicon.png";
+  document.head.appendChild(icono);
+
+  const apple = document.createElement("link");
+  apple.rel = "apple-touch-icon";
+  apple.href = "apple-touch-icon.png";
+  document.head.appendChild(apple);
+
+  if (!document.querySelector('link[rel="manifest"]')) {
+    const manifiesto = document.createElement("link");
+    manifiesto.rel = "manifest";
+    manifiesto.href = "manifest.json";
+    document.head.appendChild(manifiesto);
+  }
+})();
