@@ -31,7 +31,11 @@
   function mostrar() {
     if (oculto() || document.getElementById("yw-instalar")) return;
     if (!document.body) return;
-
+        let yaInstalada = false;
+    try {
+      yaInstalada = localStorage.getItem("yw-instalada") === "1";
+    } catch (error) {}
+    if (yaInstalada && !evento) return;
     const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
     const hayBoton = !!evento;
     const texto = hayBoton
