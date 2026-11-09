@@ -1,3 +1,7 @@
+window.addEventListener("beforeinstallprompt", function (e) {
+  e.preventDefault();
+  window.__ywInstalar = e;
+});
 const SUPABASE_URL = "https://ifgattjcckprijvpfypw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_JG7AQQ_tTJJ6SNKVjU50PQ_VNxlzTim";
 
