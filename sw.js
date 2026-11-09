@@ -1,12 +1,60 @@
-const ICONO =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABAAgMAAADXB5lNAAAADFBMVEX///97P+T/X6IAAACYnb7IAAAA6klEQVR42t2SMa7CMBBE3y6md0F6juIj5Ej/PiDEEXwU+lC4j4V/kWB7FSJRs4WlGe3OzG4iwBBYqlxB4fjGyAgKI7WOoAhdBZRTT5xQQk8I2sNhBNdJSICgrhEOgu9HPHjUY8qpCYGzLgAaLJZtx0diulxhvvxBXgi/HSmQeEBaiDV+hlhFI5ES53Vk3dhP92abihEN7d1J6sl5VVKqrzO7lGRGpC1QRaPdJVTvvQP5mn+vw9Ub7HVIveOXn+FHCBnsb1i+0EgW521HtjhpsUT84BJNDJRnTzxRjEhE4d7wDAd4Tee3wg3+AQtjMHSVdPdNAAAAAElFTkSuQmCC";
+const CACHE = "yuriworld-v1";
+const ICONO = self.registration.scope + "icon-192.png";
 
 self.addEventListener("install", function () {
   self.skipWaiting();
 });
 
 self.addEventListener("activate", function (evento) {
-  evento.waitUntil(self.clients.claim());
+  evento.waitUntil(
+    caches
+      .keys()
+      .then(function (nombres) {
+        return Promise.all(
+          nombres
+            .filter(function (nombre) {
+              return nombre !== CACHE;
+            })
+            .map(function (nombre) {
+              return caches.delete(nombre);
+            })
+        );
+      })
+      .then(function () {
+        return self.clients.claim();
+      })
+  );
+});
+
+// Primero se pide a la red (siempre se ve lo último) y, si no hay conexión,
+// se usa la copia guardada. Solo archivos de tu propio sitio: Supabase y las
+// imágenes de las portadas no se tocan.
+self.addEventListener("fetch", function (evento) {
+  const pedido = evento.request;
+  if (pedido.method !== "GET") return;
+
+  const url = new URL(pedido.url);
+  if (url.origin !== self.location.origin) return;
+
+  evento.respondWith(
+    fetch(pedido)
+      .then(function (respuesta) {
+        if (respuesta && respuesta.ok) {
+          const copia = respuesta.clone();
+          caches.open(CACHE).then(function (cache) {
+            cache.put(pedido, copia);
+          });
+        }
+        return respuesta;
+      })
+      .catch(function () {
+        return caches.match(pedido).then(function (guardada) {
+          if (guardada) return guardada;
+          if (pedido.mode === "navigate") return caches.match("index.html");
+          return Response.error();
+        });
+      })
+  );
 });
 
 self.addEventListener("push", function (evento) {
