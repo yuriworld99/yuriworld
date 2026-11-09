@@ -126,5 +126,5 @@ document.head.appendChild(scriptGeneros);
   }
 })();
 const scriptInstalar = document.createElement("script");
-scriptInstalar.src = "js/instalar.js?v=1";
+scriptInstalar.src = "js/instalar.js?v=2";
 document.head.appendChild(scriptInstalar);
