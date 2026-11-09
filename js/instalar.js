@@ -51,7 +51,7 @@
     const caja = document.createElement("div");
     caja.id = "yw-instalar";
     caja.style.cssText =
-      "position:fixed;left:12px;right:12px;bottom:12px;z-index:99999;" +
+      "position:fixed;left:12px;right:12px;top:12px;z-index:99999;" +
       "display:flex;align-items:center;gap:10px;padding:12px 14px;" +
       "background:#1a0f2e;color:#fff;border-radius:16px;" +
       "box-shadow:0 8px 30px rgba(0,0,0,.35);font-family:inherit;";
