@@ -7,7 +7,7 @@
       localStorage.setItem("yw-instalada", "1");
     } catch (error) {}
     return;
-    }
+  }
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(function () {});
@@ -19,89 +19,74 @@
       localStorage.removeItem("yw-instalada");
     } catch (error) {}
   }
-  function oculto() {
+
+  const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const esSafari =
+    /safari/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent);
+
+  function yaInstalada() {
     try {
-      return sessionStorage.getItem("yw-instalar-oculto") === "1";
+      return localStorage.getItem("yw-instalada") === "1";
     } catch (error) {
       return false;
     }
   }
 
   function quitar() {
-    const caja = document.getElementById("yw-instalar");
-    if (caja) caja.remove();
+    const boton = document.getElementById("yw-instalar");
+    if (boton) boton.remove();
   }
 
-  function mostrar() {
-    if (oculto() || document.getElementById("yw-instalar")) return;
-    if (!document.body) return;
-        let yaInstalada = false;
-    try {
-      yaInstalada = localStorage.getItem("yw-instalada") === "1";
-    } catch (error) {}
-    if (yaInstalada && !evento) return;
-    const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    const hayBoton = !!evento;
-    const texto = hayBoton
-      ? "Instalá YuriWorld en tu celular"
-      : esIOS
-        ? "Para instalar YuriWorld tocá Compartir y después “Agregar a pantalla de inicio”."
-        : "Para instalar YuriWorld tocá los tres puntitos del navegador y elegí “Instalar aplicación”.";
+  function debeMostrar() {
+    if (evento) return true;
+    if (yaInstalada()) return false;
+    return esIOS && esSafari;
+  }
 
-    const caja = document.createElement("div");
-    caja.id = "yw-instalar";
-    caja.style.cssText =
-      "position:fixed;left:12px;right:12px;top:12px;z-index:99999;" +
-      "display:flex;align-items:center;gap:10px;padding:12px 14px;" +
-      "background:#1a0f2e;color:#fff;border-radius:16px;" +
-      "box-shadow:0 8px 30px rgba(0,0,0,.35);font-family:inherit;";
+  // Devuelve true cuando terminó (se puso el botón o no hace falta).
+  function colocar() {
+    if (document.getElementById("yw-instalar")) return true;
+    if (!debeMostrar()) return true;
 
-    const icono = document.createElement("img");
-    icono.src = "icon-192.png";
-    icono.alt = "";
-    icono.style.cssText = "width:40px;height:40px;border-radius:10px;flex:none;";
-    caja.appendChild(icono);
+    const logo = document.querySelector(".cabecera .logo");
+    if (!logo) return false;
 
-    const mensaje = document.createElement("span");
-    mensaje.textContent = texto;
-    mensaje.style.cssText = "flex:1;font-size:.9rem;line-height:1.3;";
-    caja.appendChild(mensaje);
+    const boton = document.createElement("button");
+    boton.id = "yw-instalar";
+    boton.type = "button";
+    boton.textContent = "Instalar app";
+    boton.style.cssText =
+      "margin:0 0 0 10px;background:#fff;color:#7b3fe4;border:0;" +
+      "border-radius:999px;padding:6px 14px;font-weight:700;" +
+      "font-size:.85rem;cursor:pointer;vertical-align:middle;" +
+      "box-shadow:0 2px 8px rgba(0,0,0,.2);";
 
-    if (hayBoton) {
-      const boton = document.createElement("button");
-      boton.type = "button";
-      boton.textContent = "Instalar";
-      boton.style.cssText =
-        "background:#7b3fe4;border:0;color:#fff;font-weight:700;" +
-        "border-radius:999px;padding:9px 16px;font-size:.9rem;cursor:pointer;";
-      boton.addEventListener("click", function () {
-        if (!evento) return;
+    boton.addEventListener("click", function () {
+      if (evento) {
         evento.prompt();
         evento.userChoice.then(function () {
           evento = null;
+          window.__ywInstalar = null;
           quitar();
         });
-      });
-      caja.appendChild(boton);
-    }
-
-    const cerrar = document.createElement("button");
-    cerrar.type = "button";
-    cerrar.textContent = "Ahora no";
-    cerrar.style.cssText =
-      "background:none;border:0;color:#cbb8f5;font-size:.85rem;padding:8px;cursor:pointer;";
-    cerrar.addEventListener("click", function () {
-      try {
-        sessionStorage.setItem("yw-instalar-oculto", "1");
-      } catch (error) {}
-      quitar();
+      } else {
+        alert("Para instalar YuriWorld tocá Compartir y después “Agregar a pantalla de inicio”.");
+      }
     });
-    caja.appendChild(cerrar);
 
-    document.body.appendChild(caja);
+    logo.insertAdjacentElement("afterend", boton);
+    return true;
   }
 
-     
+  // La cabecera puede armarse después de cargar la página, así que se reintenta un rato.
+  function intentar() {
+    let veces = 0;
+    const reloj = setInterval(function () {
+      veces += 1;
+      if (colocar() || veces > 25) clearInterval(reloj);
+    }, 300);
+  }
+
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     window.__ywInstalar = e;
@@ -109,17 +94,15 @@
     try {
       localStorage.removeItem("yw-instalada");
     } catch (error) {}
-    quitar();
-    mostrar();
+    intentar();
   });
 
-    window.addEventListener("appinstalled", function () {
+  window.addEventListener("appinstalled", function () {
     try {
       localStorage.setItem("yw-instalada", "1");
     } catch (error) {}
     quitar();
   });
 
-  // Si Chrome ya avisó antes de que este archivo cargara, igual se muestra.
-  setTimeout(mostrar, 3000);
+  intentar();
 })();
