@@ -954,7 +954,7 @@ async function iniciar() {
   if (error) {
     const respaldo = await supabaseClient
       .from("profiles")
-      .select("id, username, created_at, avatar_url")
+      .select("id, username, created_at, avatar_url, nombre_visible")
       .eq("id", perfilId)
       .maybeSingle();
     perfil = respaldo.data;
