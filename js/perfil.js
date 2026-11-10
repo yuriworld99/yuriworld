@@ -966,8 +966,9 @@ async function iniciar() {
     return;
   }
 
-  nombreActual = perfil.username;
-  document.title = perfil.username + " - YuriWorld";
+  const mostrado = perfil.nombre_visible || perfil.username;
+  nombreActual = mostrado;
+  document.title = mostrado + " - YuriWorld";
 
   if (perfil.banner_url) {
     banner.style.backgroundImage = 'url("' + perfil.banner_url + '")';
