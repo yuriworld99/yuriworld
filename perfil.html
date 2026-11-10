@@ -57,7 +57,8 @@
             <label for="archivo-avatar">Foto de perfil</label>
             <input type="file" id="archivo-avatar" accept="image/*">
             <img id="vista-avatar" class="vista-avatar" alt="Vista previa de tu foto" hidden>
-
+            <label for="texto-nombre">Nombre (hasta 30 caracteres)</label>
+            <input type="text" id="texto-nombre" maxlength="30" placeholder="Cómo querés que te vean">
             <label for="texto-descripcion">Descripción (hasta 160 caracteres)</label>
             <textarea id="texto-descripcion" maxlength="160" rows="3" placeholder="Contá algo sobre vos y tus obras favoritas"></textarea>
 
@@ -109,7 +110,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/perfil.js?v=4"></script>
-  <script src="js/perfil-editar.js?v=3"></script>
+  <script src="js/perfil.js?v=5"></script>
+  <script src="js/perfil-editar.js?v=4"></script>
 </body>
         </html>
