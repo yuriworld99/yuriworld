@@ -593,7 +593,7 @@ async function cargarRespuestas() {
       contenedorHijas.className = "hilo-hijas";
       hijas.forEach(function (hija) {
         contenedorHijas.appendChild(
-          crearRespuesta(hija, nombres[hija.user_id] || "usuario", principal.id, hilo)
+          crearRespuesta(hija, nombres[hija.user_id] || "usuario", principal.id, hilo, usuarios[hija.user_id])
         );
       });
       hilo.appendChild(contenedorHijas);
@@ -659,10 +659,10 @@ async function iniciar() {
 
   const { data: autor } = await supabaseClient
       .from("profiles")
-    .select("username")
+      .select("username, nombre_visible")
     .eq("id", post.user_id)
     .maybeSingle();
-  const nombre = autor ? autor.username : "usuario";
+  const nombre = autor ? autor.nombre_visible || autor.username : "usuario";
 
   let meGustaInicial = false;
   let repostInicial = false;
@@ -686,12 +686,13 @@ async function iniciar() {
 
     const { data: miPerfil } = await supabaseClient
       .from("profiles")
-      .select("username")
+            .select("username, nombre_visible")
       .eq("id", sesion.user.id)
       .maybeSingle();
     avatarRespuesta.replaceWith(
-      crearAvatar(miPerfil ? miPerfil.username : "usuario", null, true)
+      crearAvatar(miPerfil ? miPerfil.nombre_visible || miPerfil.username : "usuario", null, true)
     );
+    
     compositorRespuesta.hidden = false;
   } else {
     avisoRespuesta.hidden = false;
