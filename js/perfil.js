@@ -535,10 +535,10 @@ async function construirContexto(items) {
   const perfiles = {};
   const { data: filasPerfiles } = await supabaseClient
     .from("profiles")
-    .select("id, username")
+    .select("id, username, nombre_visible")
     .in("id", idsUsuarios);
   (filasPerfiles || []).forEach(function (perfil) {
-    perfiles[perfil.id] = perfil.username;
+    perfiles[perfil.id] = perfil.nombre_visible || perfil.username;
   });
 
   const idsPosts = [];
@@ -947,7 +947,7 @@ async function iniciar() {
 
   let { data: perfil, error } = await supabaseClient
     .from("profiles")
-    .select("id, username, created_at, avatar_url, banner_url")
+    .select("id, username, created_at, avatar_url, banner_url, nombre_visible")
     .eq("id", perfilId)
     .maybeSingle();
 
