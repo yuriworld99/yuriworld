@@ -974,11 +974,11 @@ async function iniciar() {
     banner.style.backgroundImage = 'url("' + perfil.banner_url + '")';
   }
 
-  contenedorAvatar.replaceWith(crearAvatarGrande(perfil.username, perfil.avatar_url));
+  contenedorAvatar.replaceWith(crearAvatarGrande(mostrado, perfil.avatar_url));
 
-  nombrePerfil.textContent = perfil.username;
+  nombrePerfil.textContent = mostrado;
   usuarioPerfil.textContent = "@" + perfil.username;
-  barraNombre.textContent = perfil.username;
+  barraNombre.textContent = mostrado;
 
   desdePerfil.innerHTML = ICONOS.calendario;
   const textoDesde = document.createElement("span");
