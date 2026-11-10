@@ -637,10 +637,10 @@ async function cargarMuro() {
   const perfiles = {};
   const { data: filasPerfiles } = await supabaseClient
     .from("profiles")
-    .select("id, username")
+    .select("id, username, nombre_visible")
     .in("id", idsUsuarios);
   (filasPerfiles || []).forEach(function (perfil) {
-    perfiles[perfil.id] = perfil.username;
+    perfiles[perfil.id] = perfil.nombre_visible || perfil.username;
   });
 
   const idsPosts = [];
