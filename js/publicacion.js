@@ -444,7 +444,7 @@ function abrirFormularioRespuesta(hilo, padreId, mencion) {
   texto.focus();
 }
 
-function crearRespuesta(respuesta, nombre, padreId, hilo) {
+function crearRespuesta(respuesta, nombre, padreId, hilo, usuario) {
   const esHija = !!padreId;
 
   const caja = document.createElement("div");
@@ -492,7 +492,7 @@ function crearRespuesta(respuesta, nombre, padreId, hilo) {
     abrirFormularioRespuesta(
       hilo,
       esHija ? padreId : respuesta.id,
-      esHija ? nombre : null
+      esHija ? usuario || nombre : null
     );
   });
   acciones.appendChild(responder);
@@ -555,12 +555,14 @@ async function cargarRespuestas() {
   });
 
   const nombres = {};
+  const usuarios = {};
   const { data: perfiles } = await supabaseClient
     .from("profiles")
-    .select("id, username")
+    .select("id, username, nombre_visible")
     .in("id", ids);
   (perfiles || []).forEach(function (perfil) {
-    nombres[perfil.id] = perfil.username;
+    nombres[perfil.id] = perfil.nombre_visible || perfil.username;
+    usuarios[perfil.id] = perfil.username;
   });
 
   const principales = data.filter(function (respuesta) {
@@ -582,7 +584,7 @@ async function cargarRespuestas() {
     hilo.className = "hilo";
 
     hilo.appendChild(
-      crearRespuesta(principal, nombres[principal.user_id] || "usuario", null, hilo)
+      crearRespuesta(principal, nombres[principal.user_id] || "usuario", null, hilo, usuarios[principal.user_id])
     );
 
     const hijas = hijasPorPadre[principal.id] || [];
