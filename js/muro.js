@@ -867,7 +867,7 @@ async function iniciar() {
       .select("username")
       .eq("id", sesion.user.id)
       .maybeSingle();
-    const miNombre = perfil ? perfil.username : "usuario";
+    const miNombre = perfil ? perfil.nombre_visible || perfil.username : "usuario";
     avatarCompositor.replaceWith(crearAvatar(miNombre));
     compositor.hidden = false;
   } else {
