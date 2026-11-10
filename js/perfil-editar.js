@@ -2,6 +2,7 @@
   const botonEditar = document.getElementById("boton-editar-perfil");
   const formulario = document.getElementById("form-editar-perfil");
   const textoDescripcion = document.getElementById("texto-descripcion");
+  const textoNombre = document.getElementById("texto-nombre");
   const archivoAvatar = document.getElementById("archivo-avatar");
   const vistaAvatar = document.getElementById("vista-avatar");
   const archivoBanner = document.getElementById("archivo-banner");
@@ -20,7 +21,7 @@
 
   let { data: perfil, error: errorPerfilInicial } = await supabaseClient
     .from("profiles")
-    .select("id, avatar_url, banner_url, descripcion")
+    .select("id, avatar_url, banner_url, descripcion, nombre_visible")
     .eq("id", perfilId)
     .maybeSingle();
 
@@ -150,6 +151,7 @@
 
   botonEditar.addEventListener("click", function () {
     textoDescripcion.value = perfil.descripcion || "";
+    textoNombre.value = perfil.nombre_visible || "";
     formulario.hidden = false;
     botonEditar.hidden = true;
   });
@@ -215,6 +217,7 @@
     mostrarMensaje("Guardando...", "");
 
     const texto = textoDescripcion.value.trim();
+    const nombre = textoNombre.value.trim();
     let urlAvatar = perfil.avatar_url;
     let urlBanner = perfil.banner_url || null;
     const subidos = [];
@@ -227,7 +230,11 @@
         urlBanner = await subir("banners", bannerNuevo, subidos);
       }
 
-      const cambios = { avatar_url: urlAvatar, descripcion: texto || null };
+        const cambios = {
+        avatar_url: urlAvatar,
+        descripcion: texto || null,
+        nombre_visible: nombre || null
+      };
       if (bannerNuevo) {
         cambios.banner_url = urlBanner;
       }
