@@ -4,6 +4,7 @@ const mensaje = document.getElementById("mensaje");
 const boton = document.getElementById("boton-publicar");
 const inputPortada = document.getElementById("portada");
 const vistaPrevia = document.getElementById("vista-previa");
+const selectSeccion = document.getElementById("seccion");
 const selectTipo = document.getElementById("tipo");
 const selectEstado = document.getElementById("estado");
 const casilla18 = document.getElementById("es18");
@@ -51,6 +52,28 @@ if (window.YW && window.YW.anilist) {
     }
   });
 }
+
+const interfazSeccion = {
+  etiquetaAutor: document.getElementById("etiqueta-autor"),
+  camposLectura: document.getElementById("campos-lectura"),
+  selectTipo: selectTipo,
+  selectEstado: selectEstado,
+  buscador: document.getElementById("buscador-anilist"),
+  aviso: document.getElementById("aviso-seccion")
+};
+
+function aplicarSeccion() {
+  const conf = window.YW.aplicarSeccion(selectSeccion.value, interfazSeccion);
+  if (!conf.anilist && buscador) buscador.vincular(null);
+  return conf;
+}
+
+const seccionPedida = new URLSearchParams(window.location.search).get("seccion");
+if (seccionPedida && window.YW.SECCIONES[seccionPedida]) {
+  selectSeccion.value = seccionPedida;
+}
+selectSeccion.addEventListener("change", aplicarSeccion);
+aplicarSeccion();
 
 function mostrarMensaje(texto, tipo) {
   mensaje.textContent = texto;
@@ -107,11 +130,14 @@ inputPortada.addEventListener("change", function () {
 formulario.addEventListener("submit", async function (evento) {
   evento.preventDefault();
 
+  const seccion = selectSeccion.value;
+  const conf = window.YW.SECCIONES[seccion] || window.YW.SECCIONES.lecturas;
+
   const titulo = document.getElementById("titulo").value.trim();
   const autor = document.getElementById("autor").value.trim();
   const sinopsis = document.getElementById("sinopsis").value.trim();
-  const tipo = selectTipo.value;
-  const estado = selectEstado.value;
+  const tipo = conf.conTipo ? selectTipo.value : conf.tipo;
+  const estado = conf.conTipo ? selectEstado.value : null;
   const es18 = casilla18.checked;
   const generos = Array.from(
     document.querySelectorAll('input[name="genero"]:checked')
@@ -122,18 +148,18 @@ formulario.addEventListener("submit", async function (evento) {
 
   const otrosTitulos =
     window.YW && window.YW.anilist ? window.YW.anilist.parsearOtros(campoOtros.value) : [];
-  const vinculada = buscador ? buscador.vinculada() : null;
+  const vinculada = buscador && conf.anilist ? buscador.vinculada() : null;
   const anilistId = vinculada ? vinculada.anilistId : null;
 
   if (!titulo || !autor || !sinopsis) {
-    mostrarMensaje("Completá el título, el autor y la sinopsis.", "error");
+    mostrarMensaje("Completá el título, " + conf.autor.toLowerCase() + " y la sinopsis.", "error");
     return;
   }
-  if (!tipo) {
+  if (conf.conTipo && !tipo) {
     mostrarMensaje("Elegí el tipo de obra (manga, manhwa, manhua, webtoon o novela ligera).", "error");
     return;
   }
-  if (!estado) {
+  if (conf.conTipo && !estado) {
     mostrarMensaje("Elegí el estado: en emisión o finalizado.", "error");
     return;
   }
@@ -232,6 +258,7 @@ formulario.addEventListener("submit", async function (evento) {
       generos: generos,
       tipo: tipo,
       estado: estado,
+      seccion: seccion,
       es_18: es18,
       anilist_id: anilistId,
       titulos_alternativos: otrosTitulos,
@@ -255,5 +282,7 @@ formulario.addEventListener("submit", async function (evento) {
   formulario.reset();
   vistaPrevia.hidden = true;
   if (buscador) buscador.vincular(null);
+  aplicarSeccion();
   boton.disabled = false;
 });
+  
