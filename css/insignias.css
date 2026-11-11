@@ -25,14 +25,19 @@
 .yw-ins.estado-en_emision { background: #1e9e4a; }
 .yw-ins.estado-finalizado { background: #6b6b7b; }
 .yw-ins.mas18 { background: #c0264b; }
+.yw-ins.tipo-videojuego { background: #2a7fd4; }
+.yw-ins.tipo-pelicula { background: #8e44ad; }
+.yw-ins.tipo-oneshot { background: #16a085; }
+.yw-ins.tipo-doujin { background: #d35400; }
+.yw-ins.tipo-fanart { background: #c2398a; }
 
 .yw-select {
   width: 100%;
   padding: 12px 14px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 14px;
-  background: #faf5ff;
-  color: #2b1a3d;
+  background: var(--fondo-pagina);
+  color: var(--texto);
   font: inherit;
 }
 
@@ -48,8 +53,13 @@
   padding: 12px 14px;
   border: 2px solid #f3c1d6;
   border-radius: 14px;
-  background: #fff0f7;
+  background: var(--fondo-rosa-suave);
   color: #8f1d47;
   font-weight: 700;
   cursor: pointer;
-    }
+}
+
+:root[data-theme="dark"] .yw-18 {
+  border-color: rgba(255, 122, 168, 0.35);
+  color: #ff9cc7;
+  }
