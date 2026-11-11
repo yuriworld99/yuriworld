@@ -14,6 +14,11 @@
   box-shadow: 0 4px 20px rgba(123, 63, 228, 0.25);
 }
 
+:root[data-theme="dark"] .cabecera {
+  background: linear-gradient(90deg, #b8326f, #5a2bb5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
 .cabecera .logo {
   margin: 0;
   font-size: 1.6rem;
@@ -58,3 +63,20 @@
   background: var(--blanco);
   color: var(--violeta);
 }
+
+/* botón de tema dentro de la cabecera */
+.cabecera #btn-tema {
+  position: static;
+  width: 38px;
+  height: 38px;
+  border: 2px solid var(--blanco);
+  background: transparent;
+  color: var(--blanco);
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+}
+
+.cabecera #btn-tema:hover {
+  background: rgba(255, 255, 255, 0.2);
+  }
