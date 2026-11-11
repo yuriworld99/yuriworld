@@ -2,20 +2,20 @@
   max-width: 720px;
   margin: 0 auto;
   padding: 24px 16px 64px;
-  color: #2b1a3d;
+  color: var(--texto);
   line-height: 1.65;
 }
 
 .legal h1 {
   margin-bottom: 4px;
-  color: #7b3fe4;
+  color: var(--violeta-texto);
 }
 
 .legal h2 {
   margin-top: 40px;
   padding-top: 12px;
-  border-top: 2px solid #f0e6fb;
-  color: #7b3fe4;
+  border-top: 2px solid var(--borde-suave);
+  color: var(--violeta-texto);
 }
 
 .legal h3 {
@@ -32,7 +32,7 @@
 }
 
 .legal-fecha {
-  color: #6d5d7d;
+  color: var(--texto-suave);
   font-size: 0.9rem;
 }
 
@@ -45,14 +45,14 @@
 
 .legal-indice a {
   padding: 8px 14px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 999px;
-  background: #ffffff;
-  color: #7b3fe4;
+  background: var(--superficie);
+  color: var(--violeta-texto);
   font-weight: 700;
   text-decoration: none;
 }
 
 .legal a {
-  color: #7b3fe4;
-}
+  color: var(--violeta-texto);
+  }
