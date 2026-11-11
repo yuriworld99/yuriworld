@@ -1,6 +1,6 @@
 body.comunidad {
   padding: 0;
-  background: #f6f0ff;
+  background: var(--fondo-pagina);
 }
 
 .comunidad > .cabecera,
@@ -13,14 +13,14 @@ body.comunidad {
 .nav-inferior {
   max-width: 620px;
   margin: 0 auto;
-  background: var(--blanco);
+  background: var(--superficie);
 }
 
 @media (min-width: 640px) {
   .barra-comunidad,
   .comunidad .muro {
-    border-right: 1px solid #eadcf8;
-    border-left: 1px solid #eadcf8;
+    border-right: 1px solid var(--borde-medio);
+    border-left: 1px solid var(--borde-medio);
   }
 }
 
@@ -28,7 +28,7 @@ body.comunidad {
   position: sticky;
   top: 0;
   z-index: 20;
-  border-bottom: 1px solid #f0e6fb;
+  border-bottom: 1px solid var(--borde-suave);
 }
 
 .barra-fila {
@@ -36,6 +36,16 @@ body.comunidad {
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
+}
+
+.barra-fila #btn-tema {
+  position: static;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  font-size: 17px;
+  line-height: 1;
+  padding: 0;
 }
 
 .boton-menu {
@@ -61,8 +71,14 @@ body.comunidad {
   color: transparent;
 }
 
+:root[data-theme="dark"] .logo-comunidad {
+  background: linear-gradient(90deg, #ff8fc0, #b794ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 .barra-relleno {
-  width: 36px;
+  display: none;
 }
 
 .pestanas-comunidad {
@@ -75,7 +91,7 @@ body.comunidad {
   padding: 14px 8px;
   border: none;
   background: none;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
@@ -114,7 +130,7 @@ body.comunidad {
   padding: 12px 16px;
   background: transparent;
   border: none;
-  border-bottom: 1px solid #f0e6fb;
+  border-bottom: 1px solid var(--borde-suave);
   border-radius: 0;
 }
 
@@ -139,13 +155,13 @@ body.comunidad {
   border: none;
   border-radius: 50%;
   background: none;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   cursor: pointer;
 }
 
 .post-menu-boton:hover {
-  background: #f3ebff;
-  color: var(--violeta);
+  background: var(--fondo-suave);
+  color: var(--violeta-texto);
 }
 
 .post-menu {
@@ -155,10 +171,10 @@ body.comunidad {
   z-index: 5;
   min-width: 190px;
   padding: 6px;
-  background: var(--blanco);
-  border: 1px solid #e6d9fb;
+  background: var(--superficie);
+  border: 1px solid var(--borde-medio);
   border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(123, 63, 228, 0.18);
+  box-shadow: 0 8px 24px var(--sombra-violeta);
 }
 
 .post-menu button {
@@ -168,7 +184,7 @@ body.comunidad {
   border: none;
   border-radius: 10px;
   background: none;
-  color: #d6336c;
+  color: var(--peligro);
   font: inherit;
   font-weight: 600;
   text-align: left;
@@ -176,7 +192,7 @@ body.comunidad {
 }
 
 .post-menu button:hover {
-  background: #fff0f7;
+  background: var(--fondo-rosa-suave);
 }
 
 .fab {
@@ -212,7 +228,7 @@ body.comunidad {
   display: flex;
   justify-content: space-around;
   padding: 6px 0 max(6px, env(safe-area-inset-bottom));
-  border-top: 1px solid #f0e6fb;
+  border-top: 1px solid var(--borde-suave);
 }
 
 .nav-item {
@@ -222,21 +238,21 @@ body.comunidad {
   align-items: center;
   gap: 2px;
   padding: 6px 4px;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   font-size: 0.72rem;
   font-weight: 600;
   text-decoration: none;
 }
 
 .nav-item.activo {
-  color: var(--violeta);
+  color: var(--violeta-texto);
 }
 
 .drawer-fondo {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: rgba(43, 26, 61, 0.45);
+  background: var(--overlay);
 }
 
 .drawer {
@@ -248,7 +264,7 @@ body.comunidad {
   width: min(86vw, 330px);
   padding: 20px 20px 24px;
   overflow-y: auto;
-  background: var(--blanco);
+  background: var(--superficie);
   transform: translateX(-105%);
   transition: transform 0.22s ease;
 }
@@ -273,7 +289,7 @@ body.comunidad {
 
 .drawer-usuario {
   margin: 0;
-  color: #6d5d7d;
+  color: var(--texto-suave);
 }
 
 .drawer-cuentas {
@@ -287,7 +303,7 @@ body.comunidad {
   display: flex;
   flex-direction: column;
   padding-top: 8px;
-  border-top: 1px solid #f0e6fb;
+  border-top: 1px solid var(--borde-suave);
 }
 
 .drawer-enlace {
@@ -307,7 +323,7 @@ body.comunidad {
 }
 
 .drawer-enlace svg {
-  color: var(--violeta);
+  color: var(--violeta-texto);
 }
 
 .comunidad .compositor:not(.abierto) {
@@ -321,7 +337,7 @@ body.comunidad {
   margin: 0;
   padding: 12px 16px 24px;
   overflow-y: auto;
-  background: var(--blanco);
+  background: var(--superficie);
   border: none;
   border-radius: 0;
   box-shadow: none;
@@ -354,8 +370,8 @@ body.comunidad {
   height: 40px;
   border: none;
   border-radius: 50%;
-  background: #f3ebff;
-  color: var(--violeta);
+  background: var(--fondo-suave);
+  color: var(--violeta-texto);
   font-size: 20px;
   cursor: pointer;
 }
@@ -372,3 +388,4 @@ body.comunidad {
 .comunidad .compositor-acciones .boton-publicar {
   margin-left: auto;
   }
+        
