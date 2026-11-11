@@ -61,7 +61,7 @@
 
   const { data: rec, error } = await supabaseClient
     .from("recomendaciones")
-    .select("id, user_id, titulo, autor, sinopsis, generos, tipo, estado, es_18, portada_url, anilist_id, titulos_alternativos")
+    .select("id, user_id, titulo, autor, sinopsis, generos, tipo, estado, es_18, portada_url, anilist_id, titulos_alternativos, seccion")
     .eq("id", id)
     .maybeSingle();
 
@@ -83,6 +83,16 @@
   window.YW.llenarSelect(selectTipo, window.YW.TIPOS);
   window.YW.llenarSelect(selectEstado, window.YW.ESTADOS);
   window.YW.llenarGeneros(listaGeneros);
+
+  const seccion = rec.seccion || "lecturas";
+  const conf = window.YW.aplicarSeccion(seccion, {
+    etiquetaAutor: document.getElementById("etiqueta-autor"),
+    camposLectura: document.getElementById("campos-lectura"),
+    selectTipo: selectTipo,
+    selectEstado: selectEstado,
+    buscador: document.getElementById("buscador-anilist"),
+    aviso: document.getElementById("aviso-seccion")
+  });
 
   const conocidos = window.YW.GENEROS.map(function (genero) {
     return genero.valor;
@@ -108,8 +118,10 @@
   document.getElementById("autor").value = rec.autor || "";
   document.getElementById("sinopsis").value = rec.sinopsis || "";
   campoOtros.value = (rec.titulos_alternativos || []).join("\n");
-  selectTipo.value = rec.tipo || "";
-  selectEstado.value = rec.estado || "";
+  if (conf.conTipo) {
+    selectTipo.value = rec.tipo || "";
+    selectEstado.value = rec.estado || "";
+  }
   casilla18.checked = !!rec.es_18;
 
   vistaPrevia.src = rec.portada_url;
@@ -136,7 +148,7 @@
       }
     });
 
-    if (rec.anilist_id) {
+    if (conf.anilist && rec.anilist_id) {
       buscador.vincular({ anilistId: rec.anilist_id, titulo: rec.titulo });
     }
   }
@@ -159,8 +171,8 @@
     const titulo = document.getElementById("titulo").value.trim();
     const autor = document.getElementById("autor").value.trim();
     const sinopsis = document.getElementById("sinopsis").value.trim();
-    const tipo = selectTipo.value;
-    const estado = selectEstado.value;
+    const tipo = conf.conTipo ? selectTipo.value : rec.tipo;
+    const estado = conf.conTipo ? selectEstado.value : rec.estado;
     const generos = Array.from(
       document.querySelectorAll('input[name="genero"]:checked')
     ).map(function (casilla) {
@@ -170,14 +182,14 @@
     const vinculada = buscador ? buscador.vinculada() : null;
 
     if (!titulo || !autor || !sinopsis) {
-      mostrarMensaje("Completá el título, el autor y la sinopsis.", "error");
+      mostrarMensaje("Completá el título, " + conf.autor.toLowerCase() + " y la sinopsis.", "error");
       return;
     }
-    if (!tipo) {
+    if (conf.conTipo && !tipo) {
       mostrarMensaje("Elegí el tipo de obra.", "error");
       return;
     }
-    if (!estado) {
+    if (conf.conTipo && !estado) {
       mostrarMensaje("Elegí el estado: en emisión o finalizado.", "error");
       return;
     }
@@ -204,12 +216,17 @@
       autor: autor,
       sinopsis: sinopsis,
       generos: generos,
-      tipo: tipo,
-      estado: estado,
       es_18: casilla18.checked,
-      anilist_id: vinculada ? vinculada.anilistId : null,
       titulos_alternativos: window.YW.anilist ? window.YW.anilist.parsearOtros(campoOtros.value) : []
     };
+
+    if (conf.conTipo) {
+      cambios.tipo = tipo;
+      cambios.estado = estado;
+    }
+    if (conf.anilist) {
+      cambios.anilist_id = vinculada ? vinculada.anilistId : null;
+    }
 
     let rutaNueva = null;
 
@@ -308,3 +325,4 @@
     }, 1200);
   });
 })();
+                                   
