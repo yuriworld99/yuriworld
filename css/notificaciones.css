@@ -22,10 +22,10 @@
 
 .notif-marcar {
   padding: 8px 14px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 999px;
-  background: #ffffff;
-  color: #7b3fe4;
+  background: var(--superficie);
+  color: var(--violeta-texto);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -34,8 +34,8 @@
 
 .notif-lista {
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #e6d9fb;
+  background: var(--superficie);
+  border: 1px solid var(--borde-medio);
   border-radius: 16px;
 }
 
@@ -43,8 +43,8 @@
   display: flex;
   gap: 12px;
   padding: 14px 12px;
-  border-bottom: 1px solid #f0e6fb;
-  color: #2b1a3d;
+  border-bottom: 1px solid var(--borde-suave);
+  color: var(--texto);
   text-decoration: none;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .notif-item.nueva {
-  background: #fff0f7;
+  background: var(--fondo-rosa-suave);
 }
 
 .notif-icono {
@@ -95,14 +95,14 @@
 .notif-cita {
   margin: 4px 0 0;
   font-size: 0.9rem;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   overflow-wrap: anywhere;
 }
 
 .notif-fecha {
   margin: 4px 0 0;
   font-size: 0.8rem;
-  color: #6d5d7d;
+  color: var(--texto-suave);
 }
 
 .notif-vacio {
@@ -129,7 +129,7 @@
   right: 0;
   width: 12px;
   height: 12px;
-  border: 2px solid #ffffff;
+  border: 2px solid var(--superficie);
   border-radius: 50%;
   background: #ff5fa2;
-  }
+}
