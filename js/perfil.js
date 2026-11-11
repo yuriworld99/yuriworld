@@ -346,7 +346,7 @@ function crearBloqueRecomendacion(post) {
   if (enlazada) {
     const ver = document.createElement("p");
     ver.className = "rec-autor";
-    ver.style.color = "#7b3fe4";
+    ver.style.color = "var(--violeta-texto)";
     ver.style.fontWeight = "700";
     ver.textContent = "Ver y calificar →";
     info.appendChild(ver);
@@ -578,94 +578,179 @@ async function construirContexto(items) {
   };
 }
 
-async function mostrarPosts(nombrePanel, items, mensajeVacio) {
-  const contenedor = panel(nombrePanel);
+/* Carga de a tandas: al bajar, se piden las siguientes automáticamente. */
+async function paginar(contenedor, cfg) {
+  const POR_PAGINA = cfg.porPagina || 20;
 
-  if (items.length === 0) {
-    contenedor.replaceChildren(crearVacio(mensajeVacio));
-    return;
+  if (contenedor._paginacion && contenedor._paginacion.observador) {
+    contenedor._paginacion.observador.disconnect();
+  }
+  const pag = { desde: 0, cargando: false, fin: false, observador: null };
+  contenedor._paginacion = pag;
+
+  const centinela = document.createElement("p");
+  centinela.className = "perfil-vacio";
+  centinela.textContent = "Cargando...";
+
+  let lista;
+  if (cfg.listaEsContenedor) {
+    lista = contenedor;
+    contenedor.replaceChildren(centinela);
+  } else {
+    lista = document.createElement("div");
+    if (cfg.claseLista) lista.className = cfg.claseLista;
+    contenedor.replaceChildren(lista, centinela);
   }
 
-  const contexto = await construirContexto(items);
-  const fragmento = document.createDocumentFragment();
-  items.forEach(function (item) {
+  function agregar(nodo) {
+    if (cfg.listaEsContenedor) lista.insertBefore(nodo, centinela);
+    else lista.appendChild(nodo);
+  }
+
+  function terminar() {
+    pag.fin = true;
+    centinela.remove();
+    if (pag.observador) pag.observador.disconnect();
+  }
+
+  async function traerMas() {
+    if (pag.cargando || pag.fin) return;
+    pag.cargando = true;
+
+    const { data, error } = await cfg.consulta().range(pag.desde, pag.desde + POR_PAGINA - 1);
+    if (contenedor._paginacion !== pag) return;
+
+    if (error) {
+      pag.cargando = false;
+      if (pag.desde === 0) {
+        pag.fin = true;
+        contenedor.replaceChildren(crearVacio(cfg.mensajeError));
+      } else {
+        avisar("No se pudieron cargar más.");
+      }
+      return;
+    }
+
+    if (data.length === 0) {
+      pag.cargando = false;
+      if (pag.desde === 0) {
+        pag.fin = true;
+      contenedor.replaceChildren(crearVacio(cfg.mensajeError));
+      } else {
+        avisar("No se pudieron cargar más.");
+      }
+      return;
+    }
+
+    if (data.length === 0) {
+      pag.cargando = false;
+      if (pag.desde === 0) {
+        pag.fin = true;
+        contenedor.replaceChildren(crearVacio(cfg.mensajeVacio));
+        if (pag.observador) pag.observador.disconnect();
+      } else {
+        terminar();
+      }
+      return;
+    }
+
+    const nodos = await cfg.pintar(data);
+    if (contenedor._paginacion !== pag) return;
+    nodos.forEach(agregar);
+
+    pag.desde += data.length;
+    pag.cargando = false;
+    if (data.length < POR_PAGINA) {
+      terminar();
+    } else if (pag.observador) {
+      pag.observador.unobserve(centinela);
+      pag.observador.observe(centinela);
+    }
+  }
+
+  await traerMas();
+
+  if (!pag.fin && contenedor._paginacion === pag) {
+    pag.observador = new IntersectionObserver(function (entradas) {
+      if (entradas.some(function (e) { return e.isIntersecting; })) traerMas();
+    }, { rootMargin: "600px" });
+    pag.observador.observe(centinela);
+  }
+}
+
+async function pintarPosts(data) {
+  const contexto = await construirContexto(data);
+  const nodos = [];
+  data.forEach(function (item) {
     const tarjeta = crearPost(item, contexto);
-    if (tarjeta) fragmento.appendChild(tarjeta);
+    if (tarjeta) nodos.push(tarjeta);
   });
-  contenedor.replaceChildren(fragmento);
+  return nodos;
 }
 
 async function cargarPublicaciones() {
-  const { data, error } = await supabaseClient
-    .from("muro_publicaciones")
-    .select("*")
-    .eq("user_id", perfilId)
-    .is("repost_de", null)
-    .order("created_at", { ascending: false })
-    .limit(30);
-
-  if (error) {
-    panel("publicaciones").replaceChildren(crearVacio("No se pudieron cargar las publicaciones."));
-    return;
-  }
-
-  await mostrarPosts("publicaciones", data, "Todavía no publicó nada en el muro.");
+  await paginar(panel("publicaciones"), {
+    consulta: function () {
+      return supabaseClient
+        .from("muro_publicaciones")
+        .select("*")
+        .eq("user_id", perfilId)
+        .is("repost_de", null)
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false });
+    },
+    mensajeVacio: "Todavía no publicó nada en el muro.",
+    mensajeError: "No se pudieron cargar las publicaciones.",
+    pintar: pintarPosts
+  });
 }
 
 async function cargarReposts() {
-  const { data, error } = await supabaseClient
-    .from("muro_publicaciones")
-    .select("*")
-    .eq("user_id", perfilId)
-    .not("repost_de", "is", null)
-    .order("created_at", { ascending: false })
-    .limit(30);
-
-  if (error) {
-    panel("reposts").replaceChildren(crearVacio("No se pudieron cargar los reposts."));
-    return;
-  }
-
-  await mostrarPosts("reposts", data, "Todavía no reposteó nada.");
+  await paginar(panel("reposts"), {
+    consulta: function () {
+      return supabaseClient
+        .from("muro_publicaciones")
+        .select("*")
+        .eq("user_id", perfilId)
+        .not("repost_de", "is", null)
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false });
+    },
+    mensajeVacio: "Todavía no reposteó nada.",
+    mensajeError: "No se pudieron cargar los reposts.",
+    pintar: pintarPosts
+  });
 }
 
 async function cargarMultimedia() {
-  const contenedor = panel("multimedia");
-
-  const { data, error } = await supabaseClient
-    .from("muro_publicaciones")
-    .select("id, imagen_url")
-    .eq("user_id", perfilId)
-    .is("repost_de", null)
-    .not("imagen_url", "is", null)
-    .order("created_at", { ascending: false })
-    .limit(60);
-
-    if (error) {
-    contenedor.replaceChildren(crearVacio("No se pudieron cargar las imágenes."));
-    return;
-  }
-
-  if (data.length === 0) {
-    contenedor.replaceChildren(crearVacio("Todavía no publicó imágenes."));
-    return;
-  }
-
-  const grilla = document.createElement("div");
-  grilla.className = "multimedia-grilla";
-
-  data.forEach(function (fila) {
-    const enlace = document.createElement("a");
-    enlace.href = "publicacion.html?id=" + encodeURIComponent(fila.id);
-    const imagen = document.createElement("img");
-    imagen.src = fila.imagen_url;
-    imagen.alt = "Imagen publicada";
-    imagen.loading = "lazy";
-    enlace.appendChild(imagen);
-    grilla.appendChild(enlace);
+  await paginar(panel("multimedia"), {
+    porPagina: 30,
+    claseLista: "multimedia-grilla",
+    consulta: function () {
+      return supabaseClient
+        .from("muro_publicaciones")
+        .select("id, imagen_url")
+        .eq("user_id", perfilId)
+        .is("repost_de", null)
+        .not("imagen_url", "is", null)
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false });
+    },
+    mensajeVacio: "Todavía no publicó imágenes.",
+    mensajeError: "No se pudieron cargar las imágenes.",
+    pintar: async function (data) {
+      return data.map(function (fila) {
+        const enlace = document.createElement("a");
+        enlace.href = "publicacion.html?id=" + encodeURIComponent(fila.id);
+        const imagen = document.createElement("img");
+        imagen.src = fila.imagen_url;
+        imagen.alt = "Imagen publicada";
+        imagen.loading = "lazy";
+        enlace.appendChild(imagen);
+        return enlace;
+      });
+    }
   });
-
-  contenedor.replaceChildren(grilla);
 }
 
 function crearRespuestaPerfil(respuesta, original, nombreAutor) {
@@ -712,65 +797,58 @@ function crearRespuestaPerfil(respuesta, original, nombreAutor) {
 }
 
 async function cargarRespuestas() {
-  const contenedor = panel("respuestas");
+  await paginar(panel("respuestas"), {
+    consulta: function () {
+      return supabaseClient
+        .from("respuestas")
+        .select("id, texto, created_at, publicacion_id, respuesta_a")
+        .eq("user_id", perfilId)
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false });
+    },
+    mensajeVacio: "Todavía no comentó nada.",
+    mensajeError: "No se pudieron cargar las respuestas.",
+    pintar: async function (data) {
+      const idsPublicaciones = [];
+      data.forEach(function (respuesta) {
+        if (!idsPublicaciones.includes(respuesta.publicacion_id)) {
+          idsPublicaciones.push(respuesta.publicacion_id);
+        }
+      });
 
-  const { data, error } = await supabaseClient
-    .from("respuestas")
-    .select("id, texto, created_at, publicacion_id, respuesta_a")
-    .eq("user_id", perfilId)
-    .order("created_at", { ascending: false })
-    .limit(30);
+      const originales = {};
+      const { data: filasOriginales } = await supabaseClient
+        .from("muro_publicaciones")
+        .select("id, user_id, contenido, rec_titulo, imagen_url")
+        .in("id", idsPublicaciones);
+      (filasOriginales || []).forEach(function (fila) {
+        originales[fila.id] = fila;
+      });
 
-  if (error) {
-    contenedor.replaceChildren(crearVacio("No se pudieron cargar las respuestas."));
-    return;
-  }
+      const idsAutores = [];
+      Object.keys(originales).forEach(function (id) {
+        const autor = originales[id].user_id;
+        if (!idsAutores.includes(autor)) idsAutores.push(autor);
+      });
 
-  if (data.length === 0) {
-    contenedor.replaceChildren(crearVacio("Todavía no comentó nada."));
-    return;
-  }
+      const nombres = {};
+      if (idsAutores.length > 0) {
+        const { data: filasPerfiles } = await supabaseClient
+          .from("profiles")
+          .select("id, username")
+          .in("id", idsAutores);
+        (filasPerfiles || []).forEach(function (perfil) {
+          nombres[perfil.id] = perfil.username;
+        });
+      }
 
-  const idsPublicaciones = [];
-  data.forEach(function (respuesta) {
-    if (!idsPublicaciones.includes(respuesta.publicacion_id)) {
-      idsPublicaciones.push(respuesta.publicacion_id);
+      return data.map(function (respuesta) {
+        const original = originales[respuesta.publicacion_id];
+        const nombreAutor = original ? nombres[original.user_id] || "usuario" : "usuario";
+        return crearRespuestaPerfil(respuesta, original, nombreAutor);
+      });
     }
   });
-
-  const originales = {};
-  const { data: filasOriginales } = await supabaseClient
-    .from("muro_publicaciones")
-    .select("id, user_id, contenido, rec_titulo, imagen_url")
-    .in("id", idsPublicaciones);
-  (filasOriginales || []).forEach(function (fila) {
-    originales[fila.id] = fila;
-  });
-
-  const idsAutores = [];
-  Object.keys(originales).forEach(function (id) {
-    const autor = originales[id].user_id;
-    if (!idsAutores.includes(autor)) idsAutores.push(autor);
-  });
-
-  const nombres = {};
-  if (idsAutores.length > 0) {
-    const { data: filasPerfiles } = await supabaseClient
-      .from("profiles")
-      .select("id, username")
-      .in("id", idsAutores);
-    (filasPerfiles || []).forEach(function (perfil) {
-      nombres[perfil.id] = perfil.username;
-    });
-  }
-
-  const fragmento = document.createDocumentFragment();
-  data.forEach(function (respuesta) {
-    const original = originales[respuesta.publicacion_id];
-    const nombreAutor = original ? nombres[original.user_id] || "usuario" : "usuario";
-    fragmento.appendChild(crearRespuestaPerfil(respuesta, original, nombreAutor));
-  });
-  contenedor.replaceChildren(fragmento);
 }
 
 function crearTarjetaRecomendacion(rec, resumen) {
@@ -798,7 +876,7 @@ function crearTarjetaRecomendacion(rec, resumen) {
   const estrellas = document.createElement("p");
   estrellas.className = "tarjeta-autor";
   estrellas.style.fontWeight = "bold";
-  estrellas.style.color = "#b0245f";
+  estrellas.style.color = "var(--peligro)";
   if (resumen) {
     estrellas.textContent =
       "★ " + resumen.promedio + " · " + resumen.cantidad +
@@ -832,44 +910,38 @@ function crearTarjetaRecomendacion(rec, resumen) {
 }
 
 async function cargarRecomendaciones() {
-  const contenedor = panel("recomendaciones");
+  await paginar(panel("recomendaciones"), {
+    listaEsContenedor: true,
+    consulta: function () {
+      return supabaseClient
+        .from("recomendaciones")
+        .select("id, titulo, autor, sinopsis, generos, portada_url")
+        .eq("user_id", perfilId)
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false });
+    },
+    mensajeVacio: "Todavía no recomendó ninguna obra.",
+    mensajeError: "No se pudieron cargar las recomendaciones.",
+    pintar: async function (data) {
+      const ids = data.map(function (rec) {
+        return rec.id;
+      });
 
-  const { data, error } = await supabaseClient
-    .from("recomendaciones")
-    .select("id, titulo, autor, sinopsis, generos, portada_url")
-    .eq("user_id", perfilId)
-    .order("created_at", { ascending: false })
-    .limit(60);
+      const { data: resumenes } = await supabaseClient
+        .from("resumen_calificaciones")
+        .select("recomendacion_id, promedio, cantidad")
+        .in("recomendacion_id", ids);
 
-  if (error) {
-    contenedor.replaceChildren(crearVacio("No se pudieron cargar las recomendaciones."));
-    return;
-  }
+      const porRecomendacion = {};
+      (resumenes || []).forEach(function (resumen) {
+        porRecomendacion[resumen.recomendacion_id] = resumen;
+      });
 
-  if (data.length === 0) {
-    contenedor.replaceChildren(crearVacio("Todavía no recomendó ninguna obra."));
-    return;
-  }
-
-  const ids = data.map(function (rec) {
-    return rec.id;
+      return data.map(function (rec) {
+        return crearTarjetaRecomendacion(rec, porRecomendacion[rec.id]);
+      });
+    }
   });
-
-  const { data: resumenes } = await supabaseClient
-    .from("resumen_calificaciones")
-    .select("recomendacion_id, promedio, cantidad")
-    .in("recomendacion_id", ids);
-
-  const porRecomendacion = {};
-  (resumenes || []).forEach(function (resumen) {
-    porRecomendacion[resumen.recomendacion_id] = resumen;
-  });
-
-  const fragmento = document.createDocumentFragment();
-  data.forEach(function (rec) {
-    fragmento.appendChild(crearTarjetaRecomendacion(rec, porRecomendacion[rec.id]));
-  });
-  contenedor.replaceChildren(fragmento);
 }
 
 const cargadores = {
@@ -1021,3 +1093,4 @@ async function iniciar() {
 }
 
 iniciar();
+        
