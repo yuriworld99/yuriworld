@@ -3,14 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script>
+  (function(){try{var t=localStorage.getItem("tema");
+  if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+  document.documentElement.dataset.theme=t;}catch(e){}})();
+  </script>
   <title>Perfil - YuriWorld</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/tarjetas.css">
-  <link rel="stylesheet" href="css/muro.css">
-  <link rel="stylesheet" href="css/comunidad.css">
-  <link rel="stylesheet" href="css/perfil-editar.css">
-  <link rel="stylesheet" href="css/perfil-x.css">
-  <link rel="stylesheet" href="css/perfil-tabs.css">
+  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/tarjetas.css?v=3">
+  <link rel="stylesheet" href="css/muro.css?v=2">
+  <link rel="stylesheet" href="css/comunidad.css?v=2">
+  <link rel="stylesheet" href="css/perfil-editar.css?v=2">
+  <link rel="stylesheet" href="css/perfil-x.css?v=2">
+  <link rel="stylesheet" href="css/perfil-tabs.css?v=2">
 </head>
 <body class="pagina-perfil">
   <div id="perfil-barra" class="perfil-barra">
@@ -21,6 +26,7 @@
       <strong id="barra-nombre"></strong>
       <span id="barra-cuenta"></span>
     </div>
+    <button id="btn-tema" type="button"></button>
   </div>
 
   <main class="perfil">
@@ -112,5 +118,6 @@
   <script src="js/supabase.js"></script>
   <script src="js/perfil.js?v=5"></script>
   <script src="js/perfil-editar.js?v=4"></script>
+  <script src="js/tema.js"></script>
 </body>
-        </html>
+</html>
