@@ -70,3 +70,36 @@
   font-size: 0.9rem;
   opacity: 0.7;
 }
+
+.sec-pestanas {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+}
+
+.sec-pestana {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  border: 2px solid var(--borde-medio);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--violeta-texto);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sec-pestana.activa {
+  border-color: transparent;
+  background: linear-gradient(90deg, var(--rosa), var(--violeta));
+  color: #ffffff;
+}
+
+body:not([data-seccion="lecturas"]) #novelas-ligeras,
+body:not([data-seccion="lecturas"]) #lista-novelas {
+  display: none;
+  }
