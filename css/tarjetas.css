@@ -1,7 +1,7 @@
 .titulo-seccion {
   margin: 8px 0 16px;
   font-size: 1.5rem;
-  color: var(--violeta);
+  color: var(--violeta-texto);
 }
 
 .lista-recomendaciones {
@@ -27,7 +27,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--blanco);
+  background: var(--superficie);
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(123, 63, 228, 0.15);
   transition: transform 0.2s, box-shadow 0.2s;
@@ -38,12 +38,25 @@
   box-shadow: 0 14px 36px rgba(123, 63, 228, 0.28);
 }
 
+:root[data-theme="dark"] .tarjeta {
+  border: 1px solid var(--borde);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+:root[data-theme="dark"] .tarjeta:hover {
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
+}
+
 .tarjeta img {
   display: block;
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   background: #f3ebff;
+}
+
+:root[data-theme="dark"] .tarjeta img {
+  background: #2d1d44;
 }
 
 .tarjeta-cuerpo {
@@ -57,7 +70,7 @@
 .tarjeta h3 {
   margin: 0;
   font-size: 1rem;
-  color: var(--violeta);
+  color: var(--violeta-texto);
 }
 
 .tarjeta-autor {
@@ -88,6 +101,11 @@
   color: #b0245f;
   font-size: 0.72rem;
   font-weight: bold;
+}
+
+:root[data-theme="dark"] .etiqueta-genero {
+  background: rgba(255, 95, 162, 0.18);
+  color: #ff9cc7;
 }
 
 .tarjeta-pie {
