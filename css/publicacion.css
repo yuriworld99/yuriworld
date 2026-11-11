@@ -6,7 +6,7 @@
 .enlace-volver {
   display: inline-block;
   margin-bottom: 12px;
-  color: var(--violeta);
+  color: var(--violeta-texto);
   font-weight: 700;
   text-decoration: none;
 }
@@ -14,7 +14,7 @@
 .titulo-respuestas {
   margin: 22px 0 10px;
   font-size: 1.2rem;
-  color: var(--violeta);
+  color: var(--violeta-texto);
 }
 
 .avatar.pequeno {
@@ -30,8 +30,8 @@
   gap: 10px;
   margin-bottom: 10px;
   padding: 12px;
-  background: var(--blanco);
-  border: 1px solid #e6d9fb;
+  background: var(--superficie);
+  border: 1px solid var(--borde-medio);
   border-radius: 16px;
 }
 
@@ -60,8 +60,8 @@
   gap: 10px;
   margin-bottom: 8px;
   padding: 12px;
-  background: var(--blanco);
-  border: 1px solid #e6d9fb;
+  background: var(--superficie);
+  border: 1px solid var(--borde-medio);
   border-radius: 16px;
 }
 
@@ -81,7 +81,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: #d6336c;
+  color: var(--peligro);
   font-size: 0.8rem;
   text-decoration: underline;
   cursor: pointer;
