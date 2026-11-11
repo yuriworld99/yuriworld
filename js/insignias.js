@@ -4,7 +4,12 @@
     manhwa: "Manhwa",
     manhua: "Manhua",
     webtoon: "Webtoon",
-    novela_ligera: "Novela ligera"
+    novela_ligera: "Novela ligera",
+    videojuego: "Videojuego",
+    pelicula: "Película",
+    oneshot: "OneShot",
+    doujin: "Doujin",
+    fanart: "Fanart"
   };
   const ESTADOS = { en_emision: "En emisión", finalizado: "Finalizado" };
   const cache = {};
@@ -19,7 +24,7 @@
     document.head.appendChild(enlace);
   }
 
-  agregarEstilos("css/insignias.css?v=3");
+  agregarEstilos("css/insignias.css?v=5");
 
   function idDeEnlace(elemento) {
     const direccion = elemento.getAttribute("href") || "";
@@ -129,7 +134,7 @@
       const parrafo = document.createElement("p");
       parrafo.className = "yw-otros-titulos";
       parrafo.style.margin = "0 0 10px";
-      parrafo.style.color = "#6d5d7d";
+      parrafo.style.color = "var(--texto-suave)";
       parrafo.style.fontSize = "0.9rem";
       parrafo.textContent = "También conocida como: " + otros.slice(0, 6).join(" · ");
       referencia.insertAdjacentElement("afterend", parrafo);
@@ -149,3 +154,4 @@
   programar();
   decorarDetalle();
 })();
+    
