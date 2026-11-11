@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script>
+  (function(){try{var t=localStorage.getItem("tema");
+  if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+  document.documentElement.dataset.theme=t;}catch(e){}})();
+  </script>
   <title>Explorar - YuriWorld</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/comunidad.css">
-  <link rel="stylesheet" href="css/explorar.css">
+  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/comunidad.css?v=2">
+  <link rel="stylesheet" href="css/explorar.css?v=2">
 </head>
 <body class="pagina-explorar">
   <header class="ex-cabecera">
@@ -17,6 +22,7 @@
         <input type="search" id="ex-q" placeholder="Buscar" maxlength="60" autocomplete="off" aria-label="Buscar">
         <button type="button" id="ex-borrar" class="ex-borrar" aria-label="Borrar búsqueda" hidden>✕</button>
       </form>
+      <button id="btn-tema" type="button"></button>
     </div>
     <nav class="ex-pestanas">
       <button type="button" class="ex-pestana activa" data-pestana="todo">Explorar</button>
@@ -54,5 +60,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/explorar.js"></script>
+  <script src="js/tema.js"></script>
 </body>
-</html>
+  </html>
+  
