@@ -12,6 +12,8 @@ const mensajeComentario = document.getElementById("mensaje-comentario");
 const listaComentarios = document.getElementById("lista-comentarios");
 const botonComentar = document.getElementById("boton-comentar");
 
+const ROTULOS_AUTOR = { videojuegos: "Estudio: ", peliculas: "Dirección: " };
+
 let sesion = null;
 let calificacionPropia = 0;
 
@@ -197,7 +199,7 @@ async function cargarRecomendacion() {
 
   const { data: rec, error } = await supabaseClient
     .from("recomendaciones")
-    .select("id, titulo, autor, sinopsis, generos, portada_url, profiles!recomendaciones_user_id_fkey(username)")
+    .select("id, titulo, autor, sinopsis, generos, portada_url, seccion, profiles!recomendaciones_user_id_fkey(username)")
     .eq("id", recomendacionId)
     .maybeSingle();
 
@@ -213,7 +215,8 @@ async function cargarRecomendacion() {
   portada.alt = "Portada de " + rec.titulo;
 
   document.getElementById("detalle-titulo").textContent = rec.titulo;
-  document.getElementById("detalle-autor").textContent = "de " + rec.autor;
+  document.getElementById("detalle-autor").textContent =
+    (ROTULOS_AUTOR[rec.seccion] || "de ") + rec.autor;
   document.getElementById("detalle-sinopsis").textContent = rec.sinopsis;
 
   const contenedorGeneros = document.getElementById("detalle-generos");
@@ -250,3 +253,4 @@ async function iniciar() {
 }
 
 iniciar();
+      
