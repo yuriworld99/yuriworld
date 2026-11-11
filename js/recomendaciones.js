@@ -1,3 +1,5 @@
+const ROTULOS_AUTOR = { videojuegos: "Estudio: ", peliculas: "Dirección: " };
+
 function crearTarjeta(rec, resumen) {
   const tarjeta = document.createElement("a");
   tarjeta.className = "tarjeta";
@@ -18,7 +20,7 @@ function crearTarjeta(rec, resumen) {
 
   const autor = document.createElement("p");
   autor.className = "tarjeta-autor";
-  autor.textContent = "de " + rec.autor;
+  autor.textContent = (ROTULOS_AUTOR[rec.seccion] || "de ") + rec.autor;
 
   const estrellas = document.createElement("p");
   estrellas.className = "tarjeta-autor";
@@ -73,7 +75,7 @@ async function cargarRecomendaciones(seccion) {
 
   const { data, error } = await supabaseClient
     .from("recomendaciones")
-    .select("id, titulo, autor, sinopsis, generos, portada_url, created_at, profiles!recomendaciones_user_id_fkey(username)")
+    .select("id, titulo, autor, sinopsis, generos, portada_url, created_at, seccion, profiles!recomendaciones_user_id_fkey(username)")
     .eq("seccion", nombreSeccion)
     .order("created_at", { ascending: false })
     .limit(30);
@@ -116,4 +118,4 @@ async function cargarRecomendaciones(seccion) {
 }
 
 cargarRecomendaciones("lecturas");
-  
+    
