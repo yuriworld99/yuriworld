@@ -7,10 +7,16 @@
     radial-gradient(circle at 80% 30%, rgba(123, 63, 228, 0.18), transparent 50%);
 }
 
+:root[data-theme="dark"] .portada-inicio {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 95, 162, 0.22), transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(123, 63, 228, 0.3), transparent 50%);
+}
+
 .portada-inicio h2 {
   margin: 0 0 12px;
   font-size: clamp(1.8rem, 6vw, 2.8rem);
-  color: var(--violeta);
+  color: var(--violeta-texto);
 }
 
 .portada-inicio p {
@@ -37,13 +43,17 @@
   box-shadow: 0 6px 18px rgba(123, 63, 228, 0.3);
 }
 
+:root[data-theme="dark"] .boton-principal {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
 .boton-secundario {
   display: inline-block;
   padding: 12px 24px;
-  border: 2px solid var(--violeta);
+  border: 2px solid var(--violeta-texto);
   border-radius: 999px;
-  background: var(--blanco);
-  color: var(--violeta);
+  background: var(--superficie);
+  color: var(--violeta-texto);
   font-weight: bold;
   text-decoration: none;
 }
