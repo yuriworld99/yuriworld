@@ -3,12 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  (function(){try{var t=localStorage.getItem("tema");
+  if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+  document.documentElement.dataset.theme=t;}catch(e){}})();
+  </script>
   <title>Editar recomendación - YuriWorld</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/formularios.css">
-  <link rel="stylesheet" href="css/publicar.css">
-  <link rel="stylesheet" href="css/insignias.css?v=3">
-  <link rel="stylesheet" href="css/anilist.css?v=1">
+  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/formularios.css?v=2">
+  <link rel="stylesheet" href="css/publicar.css?v=2">
+  <link rel="stylesheet" href="css/insignias.css?v=4">
+  <link rel="stylesheet" href="css/anilist.css?v=2">
 </head>
 <body>
   <main class="caja-formulario ancha">
@@ -55,10 +60,13 @@
     <p class="enlace-secundario"><a id="enlace-volver" href="index.html">Cancelar y volver</a></p>
   </main>
 
+  <button id="btn-tema" type="button"></button>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/generos.js?v=3"></script>
   <script src="js/anilist.js?v=1"></script>
   <script src="js/editar-recomendacion.js?v=2"></script>
+  <script src="js/tema.js"></script>
 </body>
 </html>
