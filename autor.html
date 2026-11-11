@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  (function(){try{var t=localStorage.getItem("tema");
+  if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+  document.documentElement.dataset.theme=t;}catch(e){}})();
+  </script>
   <title>Obras de un autor - YuriWorld</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/explorar.css">
-  <link rel="stylesheet" href="css/insignias.css?v=3">
-  <link rel="stylesheet" href="css/biblioteca.css?v=1">
+  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/explorar.css?v=2">
+  <link rel="stylesheet" href="css/insignias.css?v=4">
+  <link rel="stylesheet" href="css/biblioteca.css?v=2">
 </head>
 <body>
   <main class="bib-pagina">
@@ -16,6 +21,8 @@
     <section id="lista" class="bib-lista">Cargando...</section>
     <p class="enlace-secundario" style="margin: 16px;"><a href="javascript:history.back()">← Volver</a></p>
   </main>
+
+  <button id="btn-tema" type="button"></button>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
@@ -165,5 +172,6 @@
       lista.replaceChildren.apply(lista, obras.map(crearFila));
     })();
   </script>
+  <script src="js/tema.js"></script>
 </body>
-  </html>
+</html>
