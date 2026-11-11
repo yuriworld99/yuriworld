@@ -2,9 +2,13 @@
   max-width: 420px;
   margin: 40px auto;
   padding: 28px 24px;
-  background: var(--blanco);
+  background: var(--superficie);
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(123, 63, 228, 0.15);
+  box-shadow: 0 8px 30px var(--sombra-violeta);
+}
+
+:root[data-theme="dark"] .caja-formulario {
+  border: 1px solid var(--borde);
 }
 
 .caja-formulario h1 {
@@ -21,8 +25,10 @@
 .caja-formulario input {
   width: 100%;
   padding: 12px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 12px;
+  background: var(--superficie);
+  color: var(--texto);
   font-size: 16px;
 }
 
@@ -56,11 +62,15 @@
 }
 
 .mensaje.error {
-  color: #d6336c;
+  color: var(--peligro);
 }
 
 .mensaje.ok {
   color: #2f9e44;
+}
+
+:root[data-theme="dark"] .mensaje.ok {
+  color: #5fd37a;
 }
 
 .enlace-secundario {
