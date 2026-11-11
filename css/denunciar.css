@@ -8,13 +8,13 @@
   border: none;
   border-radius: 50%;
   background: none;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   cursor: pointer;
 }
 
 .den-menu-boton:hover {
-  background: #f3ebff;
-  color: #7b3fe4;
+  background: var(--fondo-suave);
+  color: var(--violeta-texto);
 }
 
 .den-menu {
@@ -24,10 +24,10 @@
   z-index: 5;
   min-width: 190px;
   padding: 6px;
-  background: #ffffff;
-  border: 1px solid #e6d9fb;
+  background: var(--superficie);
+  border: 1px solid var(--borde-medio);
   border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(123, 63, 228, 0.18);
+  box-shadow: 0 8px 24px var(--sombra-violeta);
 }
 
 .den-menu[hidden] {
@@ -41,7 +41,7 @@
   border: none;
   border-radius: 10px;
   background: none;
-  color: #d6336c;
+  color: var(--peligro);
   font: inherit;
   font-weight: 600;
   text-align: left;
@@ -49,7 +49,7 @@
 }
 
 .den-menu button:hover {
-  background: #fff0f7;
+  background: var(--fondo-rosa-suave);
 }
 
 .perfil-barra .den-menu-boton {
@@ -62,7 +62,7 @@
 
 .perfil-barra.compacta .den-menu-boton {
   background: transparent;
-  color: #2b1a3d;
+  color: var(--texto);
 }
 
 .perfil-barra .den-menu {
@@ -75,7 +75,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: #d6336c;
+  color: var(--peligro);
   font: inherit;
   font-size: 0.85rem;
   text-decoration: underline;
@@ -89,7 +89,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background: rgba(43, 26, 61, 0.5);
+  background: var(--overlay);
 }
 
 .den-caja {
@@ -98,7 +98,7 @@
   max-height: 90vh;
   padding: 20px 18px 24px;
   overflow-y: auto;
-  background: #ffffff;
+  background: var(--superficie);
   border-radius: 20px 20px 0 0;
 }
 
@@ -115,13 +115,13 @@
 .den-caja h2 {
   margin: 0 0 4px;
   font-size: 1.2rem;
-  color: #2b1a3d;
+  color: var(--texto);
 }
 
 .den-caja p {
   margin: 0 0 12px;
   font-size: 0.9rem;
-  color: #6d5d7d;
+  color: var(--texto-suave);
 }
 
 .den-opcion {
@@ -130,14 +130,14 @@
   gap: 10px;
   margin-bottom: 8px;
   padding: 12px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
 .den-opcion:has(input:checked) {
-  background: #fff0f7;
+  background: var(--fondo-rosa-suave);
   border-color: #ff5fa2;
 }
 
@@ -148,8 +148,10 @@
 .den-caja textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 12px;
+  background: var(--superficie);
+  color: var(--texto);
   font: inherit;
   font-size: 16px;
   resize: vertical;
@@ -162,11 +164,15 @@
 }
 
 .den-mensaje.error {
-  color: #d6336c;
+  color: var(--peligro);
 }
 
 .den-mensaje.ok {
   color: #2f9e44;
+}
+
+:root[data-theme="dark"] .den-mensaje.ok {
+  color: #5fd37a;
 }
 
 .den-acciones {
@@ -193,11 +199,11 @@
 
 .den-cancelar {
   padding: 10px 20px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 999px;
-  background: #ffffff;
-  color: #2b1a3d;
+  background: var(--superficie);
+  color: var(--texto);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
-}
+  }
