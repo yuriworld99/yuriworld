@@ -3,17 +3,17 @@
   gap: 8px;
   padding: 10px 16px;
   overflow-x: auto;
-  background: #ffffff;
-  border-top: 1px solid #f0e6fb;
+  background: var(--superficie);
+  border-top: 1px solid var(--borde-suave);
 }
 
 .yw-chip-tipo {
   flex: 0 0 auto;
   padding: 8px 14px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 999px;
-  background: #ffffff;
-  color: #7b3fe4;
+  background: var(--superficie);
+  color: var(--violeta-texto);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -31,17 +31,17 @@
   display: flex;
   gap: 8px;
   padding: 0 16px 10px;
-  background: #ffffff;
+  background: var(--superficie);
 }
 
 .yw-select-chico {
   flex: 1;
   min-width: 0;
   padding: 9px 12px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 12px;
-  background: #faf5ff;
-  color: #2b1a3d;
+  background: var(--fondo-pagina);
+  color: var(--texto);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 600;
@@ -49,6 +49,6 @@
 
 .yw-titulo-filtro {
   margin: 14px 16px 4px;
-  color: #2b1a3d;
+  color: var(--texto);
   font-size: 1.1rem;
 }
