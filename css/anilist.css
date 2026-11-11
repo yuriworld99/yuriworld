@@ -1,20 +1,20 @@
-.al-caja {
+ .al-caja {
   margin: 0 0 18px;
   padding: 14px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 16px;
-  background: #faf5ff;
+  background: var(--fondo-pagina);
 }
 
 .al-titulo {
   margin: 0 0 4px;
-  color: #7b3fe4;
+  color: var(--violeta-texto);
   font-weight: 800;
 }
 
 .al-ayuda {
   margin: 0 0 10px;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   font-size: 0.88rem;
 }
 
@@ -27,10 +27,10 @@
   flex: 1;
   min-width: 0;
   padding: 11px 14px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 14px;
-  background: #ffffff;
-  color: #2b1a3d;
+  background: var(--superficie);
+  color: var(--texto);
   font: inherit;
   font-size: 16px;
 }
@@ -49,12 +49,12 @@
 
 .al-estado {
   margin: 10px 0 4px;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   font-size: 0.9rem;
 }
 
 .al-estado a {
-  color: #7b3fe4;
+  color: var(--violeta-texto);
   font-weight: 700;
 }
 
@@ -70,10 +70,10 @@
   gap: 10px;
   width: 100%;
   padding: 8px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 14px;
-  background: #ffffff;
-  color: #2b1a3d;
+  background: var(--superficie);
+  color: var(--texto);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -84,7 +84,7 @@
   width: 44px;
   height: 62px;
   border-radius: 6px;
-  background: #f3ebff;
+  background: var(--fondo-suave);
   object-fit: cover;
 }
 
@@ -100,12 +100,12 @@
 }
 
 .al-resultado-datos {
-  color: #6d5d7d;
+  color: var(--texto-suave);
   font-size: 0.82rem;
 }
 
 .al-ya {
-  color: #c0264b;
+  color: var(--peligro);
   font-size: 0.8rem;
   font-weight: 800;
 }
@@ -124,6 +124,11 @@
   font-weight: 700;
 }
 
+:root[data-theme="dark"] .al-vinculo {
+  background: rgba(95, 211, 122, 0.15);
+  color: #5fd37a;
+}
+
 .al-vinculo[hidden] {
   display: none;
 }
@@ -131,7 +136,7 @@
 .al-quitar {
   border: none;
   background: none;
-  color: #7b3fe4;
+  color: var(--violeta-texto);
   font: inherit;
   font-weight: 700;
   text-decoration: underline;
@@ -140,6 +145,7 @@
 
 .al-credito {
   margin: 10px 0 0;
-  color: #8b7a9c;
+  color: var(--texto-suave);
   font-size: 0.78rem;
-  }
+   }
+  
