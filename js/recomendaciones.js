@@ -23,7 +23,7 @@ function crearTarjeta(rec, resumen) {
   const estrellas = document.createElement("p");
   estrellas.className = "tarjeta-autor";
   estrellas.style.fontWeight = "bold";
-  estrellas.style.color = "#b0245f";
+  estrellas.style.color = "var(--peligro)";
   if (resumen) {
     estrellas.textContent =
       "★ " + resumen.promedio + " · " + resumen.cantidad +
@@ -62,14 +62,23 @@ function crearTarjeta(rec, resumen) {
   return tarjeta;
 }
 
-async function cargarRecomendaciones() {
+let pedidoLista = 0;
+
+async function cargarRecomendaciones(seccion) {
+  const nombreSeccion = seccion || "lecturas";
+  const miPedido = ++pedidoLista;
   const lista = document.getElementById("lista-recomendaciones");
+
+  lista.textContent = "Cargando recomendaciones...";
 
   const { data, error } = await supabaseClient
     .from("recomendaciones")
     .select("id, titulo, autor, sinopsis, generos, portada_url, created_at, profiles!recomendaciones_user_id_fkey(username)")
+    .eq("seccion", nombreSeccion)
     .order("created_at", { ascending: false })
     .limit(30);
+
+  if (miPedido !== pedidoLista) return;
 
   if (error) {
     lista.textContent = "No se pudieron cargar las recomendaciones.";
@@ -77,7 +86,10 @@ async function cargarRecomendaciones() {
   }
 
   if (data.length === 0) {
-    lista.textContent = "Todavía no hay recomendaciones. ¡Publicá la primera!";
+    lista.textContent =
+      nombreSeccion === "lecturas"
+        ? "Todavía no hay recomendaciones. ¡Publicá la primera!"
+        : "Todavía no hay nada en esta sección. ¡Publicá lo primero!";
     return;
   }
 
@@ -90,6 +102,8 @@ async function cargarRecomendaciones() {
     .select("recomendacion_id, promedio, cantidad")
     .in("recomendacion_id", ids);
 
+  if (miPedido !== pedidoLista) return;
+
   const porRecomendacion = {};
   (resumenes || []).forEach(function (resumen) {
     porRecomendacion[resumen.recomendacion_id] = resumen;
@@ -101,4 +115,5 @@ async function cargarRecomendaciones() {
   });
 }
 
-cargarRecomendaciones();
+cargarRecomendaciones("lecturas");
+  
