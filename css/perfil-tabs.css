@@ -19,7 +19,7 @@
   display: block;
   aspect-ratio: 1;
   overflow: hidden;
-  background: #f3ebff;
+  background: var(--fondo-suave);
 }
 
 .multimedia-grilla img {
@@ -32,11 +32,11 @@
 .respuesta-perfil .contexto {
   margin: 0 0 6px;
   font-size: 0.85rem;
-  color: #6d5d7d;
+  color: var(--texto-suave);
 }
 
 .respuesta-perfil .contexto a {
-  color: var(--violeta);
+  color: var(--violeta-texto);
   font-weight: 700;
   text-decoration: none;
 }
@@ -44,8 +44,8 @@
 .respuesta-perfil .cita {
   margin: 0 0 8px;
   padding: 6px 12px;
-  border-left: 3px solid #e6d9fb;
+  border-left: 3px solid var(--borde-medio);
   font-size: 0.9rem;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   overflow-wrap: anywhere;
 }
