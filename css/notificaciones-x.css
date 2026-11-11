@@ -4,7 +4,7 @@
 
 body.pagina-notificaciones {
   padding: 0;
-  background: #f6f0ff;
+  background: var(--fondo-pagina);
 }
 
 .pagina-notificaciones > .cabecera,
@@ -18,21 +18,32 @@ body.pagina-notificaciones {
   z-index: 20;
   max-width: 620px;
   margin: 0 auto;
-  background: rgba(255, 255, 255, 0.96);
-  border-bottom: 1px solid #f0e6fb;
+  background: var(--barra-compacta);
+  border-bottom: 1px solid var(--borde-suave);
 }
 
 .nx-barra {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   padding: 8px 16px;
 }
 
+.nx-barra #btn-tema {
+  position: static;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 17px;
+  line-height: 1;
+}
+
 .nx-titulo {
+  flex: 1;
   font-size: 1.2rem;
   font-weight: 800;
-  color: #2b1a3d;
+  color: var(--texto);
 }
 
 .nx-marcar {
@@ -44,12 +55,12 @@ body.pagina-notificaciones {
   border: none;
   border-radius: 50%;
   background: none;
-  color: #7b3fe4;
+  color: var(--violeta-texto);
   cursor: pointer;
 }
 
 .nx-marcar:hover {
-  background: #f3ebff;
+  background: var(--fondo-suave);
 }
 
 .nx-pestanas {
@@ -62,14 +73,14 @@ body.pagina-notificaciones {
   padding: 14px 8px;
   border: none;
   background: none;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
 }
 
 .nx-pestana.activa {
-  color: #2b1a3d;
+  color: var(--texto);
   font-weight: 800;
 }
 
@@ -96,14 +107,14 @@ body.pagina-notificaciones {
   min-height: calc(100vh - 120px);
   margin: 0 auto;
   padding-bottom: 100px;
-  background: #ffffff;
+  background: var(--superficie);
 }
 
 @media (min-width: 640px) {
   .nx-cabecera,
   .nx-lista {
-    border-right: 1px solid #eadcf8;
-    border-left: 1px solid #eadcf8;
+    border-right: 1px solid var(--borde-medio);
+    border-left: 1px solid var(--borde-medio);
   }
 }
 
@@ -111,12 +122,16 @@ body.pagina-notificaciones {
   display: flex;
   gap: 12px;
   padding: 14px 16px;
-  border-bottom: 1px solid #f0e6fb;
+  border-bottom: 1px solid var(--borde-suave);
   cursor: pointer;
 }
 
 .nx-item.nueva {
   background: #faf3ff;
+}
+
+:root[data-theme="dark"] .nx-item.nueva {
+  background: rgba(183, 148, 255, 0.1);
 }
 
 .nx-icono {
@@ -142,7 +157,7 @@ body.pagina-notificaciones {
 
 .nx-icono.repost,
 .nx-icono.seguidor {
-  color: #7b3fe4;
+  color: var(--violeta-texto);
 }
 
 .nx-cuerpo {
@@ -181,31 +196,31 @@ body.pagina-notificaciones {
 
 .nx-texto {
   margin: 0;
-  color: #2b1a3d;
+  color: var(--texto);
   overflow-wrap: anywhere;
 }
 
 .nx-hora {
-  color: #6d5d7d;
+  color: var(--texto-suave);
   white-space: nowrap;
 }
 
 .nx-contexto {
   margin: 2px 0 0;
   font-size: 0.92rem;
-  color: #6d5d7d;
+  color: var(--texto-suave);
 }
 
 .nx-comentario {
   margin: 6px 0 0;
-  color: #2b1a3d;
+  color: var(--texto);
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
 
 .nx-cita {
   margin: 6px 0 0;
-  color: #6d5d7d;
+  color: var(--texto-suave);
   overflow-wrap: anywhere;
 }
 
@@ -213,7 +228,7 @@ body.pagina-notificaciones {
   flex-shrink: 0;
   width: 64px;
   height: 64px;
-  border: 1px solid #eadcf8;
+  border: 1px solid var(--borde-medio);
   border-radius: 10px;
   object-fit: cover;
 }
