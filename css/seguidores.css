@@ -27,10 +27,10 @@
 .seg-pestana {
   flex: 1;
   padding: 10px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 999px;
-  background: #ffffff;
-  color: #7b3fe4;
+  background: var(--superficie);
+  color: var(--violeta-texto);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
@@ -44,8 +44,8 @@
 
 .seg-lista {
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #e6d9fb;
+  background: var(--superficie);
+  border: 1px solid var(--borde-medio);
   border-radius: 16px;
 }
 
@@ -54,7 +54,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border-bottom: 1px solid #f0e6fb;
+  border-bottom: 1px solid var(--borde-suave);
 }
 
 .seg-fila:last-child {
@@ -78,7 +78,7 @@
 .seg-nombre {
   flex: 1;
   min-width: 0;
-  color: #2b1a3d;
+  color: var(--texto);
   font-weight: 700;
   text-decoration: none;
   overflow-wrap: anywhere;
@@ -86,10 +86,10 @@
 
 .seg-boton {
   padding: 8px 16px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 999px;
-  background: #ffffff;
-  color: #2b1a3d;
+  background: var(--superficie);
+  color: var(--texto);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -106,4 +106,4 @@
   padding: 24px;
   text-align: center;
   opacity: 0.7;
-  }
+}
