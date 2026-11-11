@@ -10,7 +10,7 @@
 .enlace-volver {
   display: inline-block;
   margin-bottom: 12px;
-  color: var(--violeta);
+  color: var(--violeta-texto);
   font-weight: bold;
   text-decoration: none;
 }
@@ -23,7 +23,7 @@
   object-fit: cover;
   margin: 0 auto 16px;
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(123, 63, 228, 0.15);
+  box-shadow: 0 8px 30px var(--sombra-violeta);
 }
 
 .detalle h1 {
@@ -54,14 +54,18 @@
 .bloque {
   margin-top: 20px;
   padding: 20px;
-  background: var(--blanco);
+  background: var(--superficie);
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(123, 63, 228, 0.15);
+  box-shadow: 0 8px 30px var(--sombra-violeta);
+}
+
+:root[data-theme="dark"] .bloque {
+  border: 1px solid var(--borde);
 }
 
 .bloque h2 {
   margin-top: 0;
-  color: var(--violeta);
+  color: var(--violeta-texto);
 }
 
 .estrellas {
@@ -79,6 +83,10 @@
   cursor: pointer;
 }
 
+:root[data-theme="dark"] .estrella {
+  color: #4a3866;
+}
+
 .estrella.activa {
   color: var(--rosa);
 }
@@ -87,8 +95,10 @@
   width: 100%;
   min-height: 90px;
   padding: 12px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 12px;
+  background: var(--superficie);
+  color: var(--texto);
   font-family: inherit;
   font-size: 16px;
   resize: vertical;
@@ -101,12 +111,12 @@
 
 .comentario {
   padding: 12px 0;
-  border-top: 1px solid #f0e6fb;
+  border-top: 1px solid var(--borde-suave);
 }
 
 .comentario-cabecera {
   margin: 0 0 4px;
-  color: var(--violeta);
+  color: var(--violeta-texto);
   font-size: 0.85rem;
   font-weight: bold;
 }
@@ -121,7 +131,7 @@
   padding: 0;
   border: none;
   background: none;
-  color: #d6336c;
+  color: var(--peligro);
   font-size: 0.8rem;
   text-decoration: underline;
   cursor: pointer;
