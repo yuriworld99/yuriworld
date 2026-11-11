@@ -8,10 +8,10 @@
 .boton-editar-perfil {
   margin-top: 8px;
   padding: 8px 18px;
-  border: 2px solid var(--violeta);
+  border: 2px solid var(--violeta-texto);
   border-radius: 999px;
-  background: var(--blanco);
-  color: var(--violeta);
+  background: var(--superficie);
+  color: var(--violeta-texto);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
@@ -21,8 +21,8 @@
   width: 100%;
   margin-top: 14px;
   padding: 14px;
-  background: #faf6ff;
-  border: 1px solid #e6d9fb;
+  background: var(--fondo-pagina);
+  border: 1px solid var(--borde-medio);
   border-radius: 16px;
   text-align: left;
 }
@@ -37,9 +37,9 @@
 .form-editar-perfil textarea {
   width: 100%;
   padding: 10px 12px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 12px;
-  background: var(--blanco);
+  background: var(--superficie);
   color: var(--texto);
   font: inherit;
   font-size: 16px;
@@ -68,9 +68,9 @@
 
 .boton-cancelar {
   padding: 10px 20px;
-  border: 2px solid #e6d9fb;
+  border: 2px solid var(--borde-medio);
   border-radius: 999px;
-  background: var(--blanco);
+  background: var(--superficie);
   color: var(--texto);
   font: inherit;
   font-weight: 600;
