@@ -40,7 +40,8 @@
     manhwa: "Manhwa",
     manhua: "Manhua",
     webtoon: "Webtoon",
-    novela_ligera: "Novela ligera"
+    novela_ligera: "Novela ligera",
+    oneshot: "OneShot"
   };
 
   const ETIQUETAS_ESTADO = { en_emision: "En emisión", finalizado: "Finalizado" };
@@ -54,6 +55,7 @@
   }
 
   function tipoDe(media) {
+    if (media.format === "ONE_SHOT") return "oneshot";
     if (media.format === "NOVEL") return "novela_ligera";
     const pais = media.countryOfOrigin;
     if (pais === "KR") return "manhwa";
@@ -454,3 +456,4 @@
     normalizarTexto: normalizarTexto
   };
 })();
+ 
