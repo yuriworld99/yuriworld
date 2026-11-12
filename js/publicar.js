@@ -55,6 +55,7 @@ if (window.YW && window.YW.anilist) {
 
 const interfazSeccion = {
   etiquetaAutor: document.getElementById("etiqueta-autor"),
+  etiquetaSinopsis: document.getElementById("etiqueta-sinopsis"),
   camposLectura: document.getElementById("campos-lectura"),
   selectTipo: selectTipo,
   selectEstado: selectEstado,
@@ -193,7 +194,7 @@ formulario.addEventListener("submit", async function (evento) {
 
   let archivoSubir = archivo;
   try {
-    const comprimida = await comprimirImagen(archivo, 500, 0.8);
+    const comprimida = await comprimirImagen(archivo, conf.anchoPortada || 500, 0.8);
     if (comprimida && comprimida.size < archivo.size) archivoSubir = comprimida;
   } catch (error) {
     console.error("No se pudo comprimir la portada:", error);
@@ -285,4 +286,4 @@ formulario.addEventListener("submit", async function (evento) {
   aplicarSeccion();
   boton.disabled = false;
 });
-  
+            
