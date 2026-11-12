@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="css/style.css?v=5">
   <link rel="stylesheet" href="css/formularios.css?v=2">
   <link rel="stylesheet" href="css/publicar.css?v=3">
-  <link rel="stylesheet" href="css/insignias.css?v=5">
+  <link rel="stylesheet" href="css/insignias.css?v=6">
   <link rel="stylesheet" href="css/anilist.css?v=2">
 </head>
 <body>
@@ -35,6 +35,7 @@
         <option value="peliculas">Películas Yuri</option>
         <option value="oneshot">OneShot</option>
         <option value="doujin">Doujin</option>
+        <option value="fanart">Fanart</option>
       </select>
 
       <p id="aviso-seccion" class="aviso-seccion" hidden></p>
@@ -50,7 +51,7 @@
       <label for="otros-titulos">Otros títulos (opcional, uno por línea: en inglés, japonés, romaji…)</label>
       <textarea id="otros-titulos" maxlength="1500" style="min-height: 90px;"></textarea>
 
-      <label for="sinopsis">Sinopsis</label>
+      <label for="sinopsis" id="etiqueta-sinopsis">Sinopsis</label>
       <textarea id="sinopsis" maxlength="2000" required></textarea>
 
       <div id="campos-lectura">
@@ -89,5 +90,4 @@
   <script src="js/publicar.js?v=4"></script>
   <script src="js/tema.js"></script>
 </body>
-          </html>
-  
+</html>
