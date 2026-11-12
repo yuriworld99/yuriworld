@@ -10,6 +10,14 @@
   const GENEROS = ["Romance", "Drama", "Comedia", "Fantasía", "Escolar", "Slice of life", "Ciencia ficción", "Misterio", "Histórico", "Sobrenatural"];
   GENEROS.push("Romance y comedia (RomCom)", "Drama romántico", "Psicológico", "Fantasía oscura", "Suspenso", "Terror", "Acción", "Aventura", "Tragedia", "Musical", "Deporte", "Erótico");
   const COLORES_AVATAR = ["#e0529a", "#7b3fe4", "#c2418c", "#6a35c9", "#d94f8a", "#8a4fe8", "#b8387f", "#5d2fb8"];
+  const ROTULOS_AUTOR = { videojuegos: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
+  const SECCIONES_EXPLORAR = [
+    ["videojuegos", "Videojuegos"],
+    ["peliculas", "Películas"],
+    ["oneshot", "OneShot"],
+    ["doujin", "Doujin"],
+    ["fanart", "Fanart"]
+  ];
 
   let pestana = "todo";
   let consulta = "";
@@ -242,7 +250,7 @@
 
     const autor = document.createElement("p");
     autor.className = "ex-obra-datos";
-    autor.textContent = "de " + rec.autor;
+    autor.textContent = (ROTULOS_AUTOR[rec.seccion] || "de ") + rec.autor;
 
     const estrellas = document.createElement("p");
     estrellas.className = "ex-obra-datos ex-estrellas";
@@ -378,13 +386,14 @@
       .slice(0, limite);
   }
 
+  // Solo obras de la sección "lecturas": las demás secciones tienen su propio lugar.
   async function mejorPuntuadas(limite) {
     const { data: resumenes } = await supabaseClient
       .from("resumen_calificaciones")
       .select("recomendacion_id, promedio, cantidad")
       .order("promedio", { ascending: false })
       .order("cantidad", { ascending: false })
-      .limit(limite);
+      .limit(Math.max(limite * 8, 40));
 
     if (!resumenes || resumenes.length === 0) return [];
 
@@ -394,7 +403,8 @@
 
     const { data: recs } = await supabaseClient
       .from("recomendaciones")
-      .select("id, titulo, autor, generos, portada_url")
+      .select("id, titulo, autor, generos, portada_url, seccion")
+      .eq("seccion", "lecturas")
       .in("id", ids);
 
     const porId = {};
@@ -406,13 +416,15 @@
       .map(function (id) {
         return porId[id];
       })
-      .filter(Boolean);
+      .filter(Boolean)
+      .slice(0, limite);
   }
 
   async function obrasRecientes(limite) {
     const { data } = await supabaseClient
       .from("recomendaciones")
-      .select("id, titulo, autor, generos, portada_url")
+      .select("id, titulo, autor, generos, portada_url, seccion")
+      .eq("seccion", "lecturas")
       .order("created_at", { ascending: false })
       .limit(limite);
     return data || [];
@@ -439,13 +451,14 @@
     return data || [];
   }
 
+  // La búsqueda general mira todas las secciones (cada resultado muestra su etiqueta).
   async function buscarObras(q, limite) {
     const t = limpiarTexto(q);
     if (!t) return [];
 
     const { data: porTexto } = await supabaseClient
       .from("recomendaciones")
-      .select("id, titulo, autor, generos, portada_url")
+      .select("id, titulo, autor, generos, portada_url, seccion")
       .or("titulo.ilike.%" + t + "%,autor.ilike.%" + t + "%")
       .order("created_at", { ascending: false })
       .limit(limite);
@@ -459,7 +472,7 @@
     if (genero) {
       const { data: porGenero } = await supabaseClient
         .from("recomendaciones")
-        .select("id, titulo, autor, generos, portada_url")
+        .select("id, titulo, autor, generos, portada_url, seccion")
         .contains("generos", [genero])
         .order("created_at", { ascending: false })
         .limit(limite);
@@ -495,6 +508,31 @@
     cargar();
   }
 
+  // Pasa a la pestaña Obras y elige la sección (la fila de secciones la arma explorar-tipos.js).
+  function irASeccion(valor) {
+    cambiarPestana("obras");
+    const chip = document.querySelector('.yw-chip-tipo[data-seccion="' + valor + '"]');
+    if (chip) chip.click();
+  }
+
+  function crearSecciones() {
+    const contenedor = document.createElement("div");
+    contenedor.className = "ex-chips";
+
+    SECCIONES_EXPLORAR.forEach(function (par) {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "ex-chip";
+      chip.textContent = par[1];
+      chip.addEventListener("click", function () {
+        irASeccion(par[0]);
+      });
+      contenedor.appendChild(chip);
+    });
+
+    return crearSeccion("Secciones", [contenedor], null);
+  }
+
   function crearGeneros() {
     const contenedor = document.createElement("div");
     contenedor.className = "ex-chips";
@@ -518,6 +556,10 @@
 
   async function armarDescubrir() {
     const nodos = [];
+
+    if (pestana === "todo") {
+      nodos.push(crearSecciones());
+    }
 
     if (pestana === "todo" || pestana === "obras") {
       nodos.push(crearGeneros());
@@ -600,7 +642,7 @@
     if (pestana === "publicaciones") {
       const posts = await buscarPublicaciones(q, 30);
       return posts.length > 0
-        ? await nodosDePublicaciones(posts)
+      ? await nodosDePublicaciones(posts)
         : [crearMensaje("No encontramos publicaciones para «" + q + "».")];
     }
 
@@ -718,3 +760,4 @@
 
   cargar();
 })();
+          
