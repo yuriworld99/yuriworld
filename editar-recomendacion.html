@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="css/style.css?v=5">
   <link rel="stylesheet" href="css/formularios.css?v=2">
   <link rel="stylesheet" href="css/publicar.css?v=3">
-  <link rel="stylesheet" href="css/insignias.css?v=5">
+  <link rel="stylesheet" href="css/insignias.css?v=6">
   <link rel="stylesheet" href="css/anilist.css?v=2">
 </head>
 <body>
@@ -21,6 +21,16 @@
     <p id="estado-carga">Cargando...</p>
 
     <form id="form-editar" hidden>
+      <label for="seccion">Sección</label>
+      <select id="seccion" class="yw-select">
+        <option value="lecturas">Lecturas (manga, manhwa, manhua, webtoon y novela ligera)</option>
+        <option value="videojuegos">Videojuegos Yuri</option>
+        <option value="peliculas">Películas Yuri</option>
+        <option value="oneshot">OneShot</option>
+        <option value="doujin">Doujin</option>
+        <option value="fanart">Fanart</option>
+      </select>
+
       <p id="aviso-seccion" class="aviso-seccion" hidden></p>
 
       <div id="buscador-anilist"></div>
@@ -34,7 +44,7 @@
       <label for="otros-titulos">Otros títulos (opcional, uno por línea: en inglés, japonés, romaji…)</label>
       <textarea id="otros-titulos" maxlength="1500" style="min-height: 90px;"></textarea>
 
-      <label for="sinopsis">Sinopsis</label>
+      <label for="sinopsis" id="etiqueta-sinopsis">Sinopsis</label>
       <textarea id="sinopsis" maxlength="2000" required></textarea>
 
       <div id="campos-lectura">
@@ -70,7 +80,7 @@
   <script src="js/supabase.js"></script>
   <script src="js/generos.js?v=3"></script>
   <script src="js/anilist.js?v=1"></script>
-  <script src="js/editar-recomendacion.js?v=2"></script>
+  <script src="js/editar-recomendacion.js?v=4"></script>
   <script src="js/tema.js"></script>
 </body>
 </html>
