@@ -62,4 +62,14 @@
 :root[data-theme="dark"] .yw-18 {
   border-color: rgba(255, 122, 168, 0.35);
   color: #ff9cc7;
+}
+
+.aviso-seccion {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border: 2px solid var(--borde-medio);
+  border-radius: 12px;
+  background: var(--fondo-rosa-suave);
+  color: var(--texto);
+  font-size: 0.9rem;
   }
