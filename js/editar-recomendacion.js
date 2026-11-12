@@ -6,6 +6,7 @@
   const enlaceVolver = document.getElementById("enlace-volver");
   const inputPortada = document.getElementById("portada");
   const vistaPrevia = document.getElementById("vista-previa");
+  const selectSeccion = document.getElementById("seccion");
   const selectTipo = document.getElementById("tipo");
   const selectEstado = document.getElementById("estado");
   const casilla18 = document.getElementById("es18");
@@ -84,15 +85,25 @@
   window.YW.llenarSelect(selectEstado, window.YW.ESTADOS);
   window.YW.llenarGeneros(listaGeneros);
 
-  const seccion = rec.seccion || "lecturas";
-  const conf = window.YW.aplicarSeccion(seccion, {
+  const seccionInicial = rec.seccion || "lecturas";
+  if (!Array.from(selectSeccion.options).some(function (o) { return o.value === seccionInicial; })) {
+    const extra = document.createElement("option");
+    extra.value = seccionInicial;
+    extra.textContent = seccionInicial;
+    selectSeccion.appendChild(extra);
+  }
+  selectSeccion.value = seccionInicial;
+  const confInicial = window.YW.SECCIONES[seccionInicial] || window.YW.SECCIONES.lecturas;
+
+  const interfazSeccion = {
     etiquetaAutor: document.getElementById("etiqueta-autor"),
+    etiquetaSinopsis: document.getElementById("etiqueta-sinopsis"),
     camposLectura: document.getElementById("campos-lectura"),
     selectTipo: selectTipo,
     selectEstado: selectEstado,
     buscador: document.getElementById("buscador-anilist"),
     aviso: document.getElementById("aviso-seccion")
-  });
+  };
 
   const conocidos = window.YW.GENEROS.map(function (genero) {
     return genero.valor;
@@ -118,10 +129,8 @@
   document.getElementById("autor").value = rec.autor || "";
   document.getElementById("sinopsis").value = rec.sinopsis || "";
   campoOtros.value = (rec.titulos_alternativos || []).join("\n");
-  if (conf.conTipo) {
-    selectTipo.value = rec.tipo || "";
-    selectEstado.value = rec.estado || "";
-  }
+  selectTipo.value = rec.tipo || "";
+  selectEstado.value = rec.estado || "";
   casilla18.checked = !!rec.es_18;
 
   vistaPrevia.src = rec.portada_url;
@@ -148,10 +157,19 @@
       }
     });
 
-    if (conf.anilist && rec.anilist_id) {
+    if (confInicial.anilist && rec.anilist_id) {
       buscador.vincular({ anilistId: rec.anilist_id, titulo: rec.titulo });
     }
   }
+
+  function aplicarSeccion() {
+    const c = window.YW.aplicarSeccion(selectSeccion.value, interfazSeccion);
+    if (!c.anilist && buscador) buscador.vincular(null);
+    return c;
+  }
+
+  selectSeccion.addEventListener("change", aplicarSeccion);
+  aplicarSeccion();
 
   estadoCarga.hidden = true;
   formulario.hidden = false;
@@ -171,8 +189,10 @@
     const titulo = document.getElementById("titulo").value.trim();
     const autor = document.getElementById("autor").value.trim();
     const sinopsis = document.getElementById("sinopsis").value.trim();
-    const tipo = conf.conTipo ? selectTipo.value : rec.tipo;
-    const estado = conf.conTipo ? selectEstado.value : rec.estado;
+    const seccion = selectSeccion.value;
+    const conf = window.YW.SECCIONES[seccion] || window.YW.SECCIONES.lecturas;
+    const tipo = conf.conTipo ? selectTipo.value : conf.tipo;
+    const estado = conf.conTipo ? selectEstado.value : null;
     const generos = Array.from(
       document.querySelectorAll('input[name="genero"]:checked')
     ).map(function (casilla) {
@@ -220,20 +240,17 @@
       titulos_alternativos: window.YW.anilist ? window.YW.anilist.parsearOtros(campoOtros.value) : []
     };
 
-    if (conf.conTipo) {
-      cambios.tipo = tipo;
-      cambios.estado = estado;
-    }
-    if (conf.anilist) {
-      cambios.anilist_id = vinculada ? vinculada.anilistId : null;
-    }
+    cambios.seccion = seccion;
+    cambios.tipo = tipo;
+    cambios.estado = estado;
+    cambios.anilist_id = conf.anilist && vinculada ? vinculada.anilistId : null;
 
     let rutaNueva = null;
 
     if (archivo) {
       let archivoSubir = archivo;
       try {
-        const comprimida = await comprimirImagen(archivo, 500, 0.8);
+        const comprimida = await comprimirImagen(archivo, conf.anchoPortada || 500, 0.8);
         if (comprimida && comprimida.size < archivo.size) archivoSubir = comprimida;
       } catch (error) {
         console.error("No se pudo comprimir la portada:", error);
@@ -325,4 +342,4 @@
     }, 1200);
   });
 })();
-                                   
+ 
