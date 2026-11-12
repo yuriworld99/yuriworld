@@ -102,4 +102,51 @@
 body:not([data-seccion="lecturas"]) #novelas-ligeras,
 body:not([data-seccion="lecturas"]) #lista-novelas {
   display: none;
-  }
+}
+
+.fanart-item {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: var(--superficie);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px var(--sombra-violeta);
+  color: inherit;
+  text-decoration: none;
+}
+
+.fanart-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.fanart-pie {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 10px;
+  font-size: 0.85rem;
+}
+
+.fanart-pie strong {
+  color: var(--violeta-texto);
+  overflow-wrap: anywhere;
+}
+
+.fanart-pie span {
+  opacity: 0.75;
+  overflow-wrap: anywhere;
+}
+
+.fanart-mas18 {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #c0264b;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
