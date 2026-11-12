@@ -15,6 +15,14 @@
       boton: "🎮 Ir al juego",
       aviso: "Enlace agregado por quien recomendó el juego. YuriWorld no controla ese sitio."
     },
+    novelas_visuales: {
+      boton: "🎮 Ir a la novela visual",
+      aviso: "Enlace agregado por quien recomendó la novela visual. YuriWorld no controla ese sitio."
+    },
+    anime: {
+      boton: "📺 Ver el anime",
+      aviso: "Enlace agregado por quien recomendó el anime. YuriWorld no controla ese sitio."
+    },
     peliculas: {
       boton: "🎬 Ver la película",
       aviso: "Enlace agregado por quien recomendó la película. YuriWorld no controla ese sitio."
@@ -407,4 +415,4 @@
     })();
   }
 })();
-    
+        
