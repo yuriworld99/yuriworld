@@ -24,7 +24,7 @@
     document.head.appendChild(enlace);
   }
 
-  agregarEstilos("css/insignias.css?v=5");
+  agregarEstilos("css/insignias.css?v=6");
 
   function idDeEnlace(elemento) {
     const direccion = elemento.getAttribute("href") || "";
@@ -154,4 +154,4 @@
   programar();
   decorarDetalle();
 })();
-    
+        
