@@ -30,7 +30,8 @@ window.YW.TIPOS = [
   { valor: "manhwa", etiqueta: "Manhwa (Corea)" },
   { valor: "manhua", etiqueta: "Manhua (China)" },
   { valor: "webtoon", etiqueta: "Webtoon" },
-  { valor: "novela_ligera", etiqueta: "Novela ligera" }
+  { valor: "novela_ligera", etiqueta: "Novela ligera" },
+  { valor: "oneshot", etiqueta: "OneShot (un solo capítulo)" }
 ];
 
 window.YW.ESTADOS = [
@@ -43,7 +44,7 @@ window.YW.ESTADOS = [
 window.YW.SECCIONES = {
   lecturas: {
     etiqueta: "Lecturas",
-    opcion: "Lecturas (manga, manhwa, manhua, webtoon y novela ligera)",
+    opcion: "Lecturas (manga, manhwa, manhua, webtoon, novela ligera y OneShot)",
     autor: "Autor/a",
     sinopsis: "Sinopsis",
     enlace: "Enlace para leer la obra",
@@ -65,6 +66,30 @@ window.YW.SECCIONES = {
     anchoPortada: 500,
     aviso: ""
   },
+  novelas_visuales: {
+    etiqueta: "Novelas visuales",
+    opcion: "Novelas visuales Yuri",
+    autor: "Estudio o desarrolladora",
+    sinopsis: "Sinopsis",
+    enlace: "Enlace de la novela visual (tienda o sitio oficial)",
+    conTipo: false,
+    tipo: "novela_visual",
+    anilist: false,
+    anchoPortada: 500,
+    aviso: ""
+  },
+  anime: {
+    etiqueta: "Anime y OVA",
+    opcion: "Anime y OVA",
+    autor: "Estudio de animación",
+    sinopsis: "Sinopsis",
+    enlace: "Enlace para ver el anime (sitio o plataforma)",
+    conTipo: false,
+    tipo: "anime",
+    anilist: false,
+    anchoPortada: 500,
+    aviso: ""
+  },
   peliculas: {
     etiqueta: "Películas",
     opcion: "Películas Yuri",
@@ -74,18 +99,6 @@ window.YW.SECCIONES = {
     conTipo: false,
     tipo: "pelicula",
     anilist: false,
-    anchoPortada: 500,
-    aviso: ""
-  },
-  oneshot: {
-    etiqueta: "OneShot",
-    opcion: "OneShot",
-    autor: "Autor/a",
-    sinopsis: "Sinopsis",
-    enlace: "Enlace para leer la obra",
-    conTipo: false,
-    tipo: "oneshot",
-    anilist: true,
     anchoPortada: 500,
     aviso: ""
   },
@@ -129,6 +142,14 @@ window.YW.aplicarSeccion = function (nombre, ui) {
   }
   window.YW.rotuloEnlaceActual = conf.enlace;
   if (typeof window.YW.rotularEnlace === "function") window.YW.rotularEnlace(conf.enlace);
+  if (ui.selectTipo && ui.selectEstado && !ui.selectTipo.dataset.ywOneshot) {
+    ui.selectTipo.dataset.ywOneshot = "1";
+    ui.selectTipo.addEventListener("change", function () {
+      if (ui.selectTipo.value === "oneshot" && !ui.selectEstado.value) {
+        ui.selectEstado.value = "finalizado";
+      }
+    });
+  }
   return conf;
 };
 
@@ -161,4 +182,4 @@ window.YW.llenarSelect = function (select, lista) {
     select.appendChild(elemento);
   });
 };
-  
+   
