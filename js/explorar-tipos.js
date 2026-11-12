@@ -37,6 +37,15 @@
     };
   })();
 
+  const SECCIONES = [
+    ["lecturas", "Lecturas"],
+    ["videojuegos", "Videojuegos"],
+    ["peliculas", "Películas"],
+    ["oneshot", "OneShot"],
+    ["doujin", "Doujin"],
+    ["fanart", "Fanart"]
+  ];
+  const ROTULOS_AUTOR = { videojuegos: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
   const TIPOS = [
     ["", "Todas"],
     ["manga", "Manga"],
@@ -52,6 +61,7 @@
   ];
   const POR_PAGINA = 20;
 
+  let seccionActiva = "lecturas";
   let tipoActivo = "";
   let generoActivo = "";
   let orden = "recientes";
@@ -66,8 +76,12 @@
   const caja = document.createElement("div");
   caja.hidden = true;
 
+  const filaSecciones = document.createElement("div");
+  filaSecciones.className = "yw-filtro-tipos";
+
   const filaTipos = document.createElement("div");
   filaTipos.className = "yw-filtro-tipos";
+  filaTipos.style.borderTop = "none";
 
   const filaExtra = document.createElement("div");
   filaExtra.className = "yw-filtros-extra";
@@ -89,6 +103,7 @@
 
   filaExtra.appendChild(selectGenero);
   filaExtra.appendChild(selectOrden);
+  caja.appendChild(filaSecciones);
   caja.appendChild(filaTipos);
   caja.appendChild(filaExtra);
   pestanas.insertAdjacentElement("afterend", caja);
@@ -127,7 +142,31 @@
     filaTipos.querySelectorAll(".yw-chip-tipo").forEach(function (chip) {
       chip.classList.toggle("activo", chip.dataset.tipo === tipoActivo);
     });
+    filaTipos.hidden = seccionActiva !== "lecturas";
   }
+
+  function pintarSecciones() {
+    filaSecciones.querySelectorAll(".yw-chip-tipo").forEach(function (chip) {
+      chip.classList.toggle("activo", chip.dataset.seccion === seccionActiva);
+    });
+  }
+
+  SECCIONES.forEach(function (par) {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "yw-chip-tipo";
+    chip.dataset.seccion = par[0];
+    chip.textContent = par[1];
+    chip.addEventListener("click", function () {
+      if (seccionActiva === par[0]) return;
+      seccionActiva = par[0];
+      tipoActivo = "";
+      pintarSecciones();
+      pintarChips();
+      cargarObras();
+    });
+    filaSecciones.appendChild(chip);
+  });
 
   TIPOS.forEach(function (par) {
     const chip = document.createElement("button");
@@ -175,7 +214,7 @@
 
     const autor = document.createElement("p");
     autor.className = "ex-obra-datos";
-    autor.textContent = "de " + rec.autor;
+    autor.textContent = (ROTULOS_AUTOR[rec.seccion] || "de ") + rec.autor;
 
     const estrellas = document.createElement("p");
     estrellas.className = "ex-obra-datos ex-estrellas";
@@ -260,7 +299,7 @@
         crearMensaje(
           q || tipoActivo || generoActivo
             ? "No encontramos obras con esos filtros."
-            : "Todavía no hay obras."
+            : "Todavía no hay obras en esta sección."
         )
       );
     } else {
@@ -298,7 +337,8 @@
     function base() {
       let consulta = supabaseClient
         .from("recomendaciones")
-        .select("id, titulo, autor, generos, portada_url, created_at")
+        .select("id, titulo, autor, generos, portada_url, created_at, seccion")
+        .eq("seccion", seccionActiva)
         .order("created_at", { ascending: false })
         .limit(1000);
       if (tipoActivo) consulta = consulta.eq("tipo", tipoActivo);
@@ -365,10 +405,12 @@
 
     if (visible) {
       llenarGeneros();
-    } else if (tipoActivo || generoActivo) {
+    } else if (seccionActiva !== "lecturas" || tipoActivo || generoActivo) {
+      seccionActiva = "lecturas";
       tipoActivo = "";
       generoActivo = "";
       selectGenero.value = "";
+      pintarSecciones();
       pintarChips();
     }
   }
@@ -379,6 +421,8 @@
     subtree: true
   });
 
+  pintarSecciones();
   pintarChips();
   actualizarBarra();
 })();
+        
