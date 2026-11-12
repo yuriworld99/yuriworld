@@ -1,4 +1,6 @@
 (function () {
+  window.YW = window.YW || {};
+
   const ruta = window.location.pathname;
   const enPublicar = /\/publicar\.html$/.test(ruta);
   const enEditar = /\/editar-recomendacion\.html$/.test(ruta);
@@ -7,6 +9,25 @@
   if (!enPublicar && !enEditar && !enDetalle && !enForo) return;
 
   const IDIOMAS = { es: "Español", en: "Inglés", pt: "Portugués", otro: "Otro idioma" };
+
+  const TEXTOS_ENLACE = {
+    videojuegos: {
+      boton: "🎮 Ir al juego",
+      aviso: "Enlace agregado por quien recomendó el juego. YuriWorld no controla ese sitio."
+    },
+    peliculas: {
+      boton: "🎬 Ver la película",
+      aviso: "Enlace agregado por quien recomendó la película. YuriWorld no controla ese sitio."
+    },
+    fanart: {
+      boton: "🎨 Ver el original",
+      aviso: "Enlace al original agregado por quien subió el fanart. YuriWorld no controla ese sitio."
+    }
+  };
+  const TEXTO_POR_DEFECTO = {
+    boton: "📖 Leer la obra",
+    aviso: "Enlace agregado por quien recomendó la obra. YuriWorld no controla ese sitio."
+  };
 
   function crear(etiqueta, clase, texto) {
     const elemento = document.createElement(etiqueta);
@@ -45,17 +66,19 @@
   function crearBloque(idBase, obligatorio) {
     const caja = crear("div", "yw-enlace-campos");
 
+    function textoEtiqueta(base) {
+      return obligatorio ? base + " (obligatorio)" : base;
+    }
+
     const etiqueta = document.createElement("label");
     etiqueta.setAttribute("for", idBase + "-url");
-    etiqueta.textContent = obligatorio
-      ? "Enlace para leer la obra (obligatorio)"
-      : "Enlace para leer la obra";
+    etiqueta.textContent = textoEtiqueta(window.YW.rotuloEnlaceActual || "Enlace para leer la obra");
 
     const campoUrl = document.createElement("input");
     campoUrl.type = "text";
     campoUrl.inputMode = "url";
     campoUrl.id = idBase + "-url";
-    campoUrl.placeholder = "https://… (dónde se puede leer)";
+    campoUrl.placeholder = "https://… (dónde se puede ver)";
     campoUrl.maxLength = 500;
     campoUrl.autocomplete = "off";
     campoUrl.style.width = "100%";
@@ -90,6 +113,9 @@
       caja: caja,
       campoUrl: campoUrl,
       obligatorio: obligatorio,
+      rotular: function (base) {
+        etiqueta.textContent = textoEtiqueta(base);
+      },
       valores: function () {
         const texto = campoUrl.value.trim();
         const url = texto ? normalizarDireccion(texto) : null;
@@ -113,7 +139,7 @@
       },
       error: function () {
         const v = this.valores();
-        if (obligatorio && v.vacio) return "Falta el enlace para leer la obra. Es obligatorio.";
+        if (obligatorio && v.vacio) return "Falta el enlace. Es obligatorio.";
         if (!v.valido) return "El enlace no es válido. Tiene que ser una dirección como https://sitio.com/obra";
         return null;
       }
@@ -123,6 +149,12 @@
   // Agrega los datos del enlace a lo que se guarda en la base de datos.
   let bloqueActivo = null;
   let modoEditar = false;
+
+  // Lo llama generos.js cuando se cambia de sección, para ajustar el rótulo.
+  window.YW.rotularEnlace = function (texto) {
+    window.YW.rotuloEnlaceActual = texto;
+    if (bloqueActivo) bloqueActivo.rotular(texto);
+  };
 
   const desdeOriginal = supabaseClient.from.bind(supabaseClient);
   supabaseClient.from = function (tabla) {
@@ -295,22 +327,23 @@
     const estilo = document.createElement("style");
     estilo.textContent =
       ".yw-leer { margin: 0 0 12px; }" +
-      "a.yw-leer-enlace { display: inline-flex; flex-direction: column; gap: 2px; padding: 10px 16px; border: 2px solid #7b3fe4; border-radius: 14px; background: #ffffff; color: #7b3fe4; text-decoration: none; }" +
+      "a.yw-leer-enlace { display: inline-flex; flex-direction: column; gap: 2px; padding: 10px 16px; border: 2px solid var(--violeta-texto, #7b3fe4); border-radius: 14px; background: var(--superficie, #ffffff); color: var(--violeta-texto, #7b3fe4); text-decoration: none; }" +
       "a.yw-leer-enlace strong { font-size: 1rem; }" +
-      "a.yw-leer-enlace span { color: #6d5d7d; font-size: 0.85rem; overflow-wrap: anywhere; }" +
-      ".yw-leer-aviso { margin: 6px 0 0; color: #8b7a9c; font-size: 0.78rem; }" +
-      ".yw-leer-vacio { margin: 0 0 12px; color: #6d5d7d; font-size: 0.9rem; }" +
-      ".yw-leer-vacio a { color: #7b3fe4; font-weight: 700; }";
+      "a.yw-leer-enlace span { color: var(--texto-suave, #6d5d7d); font-size: 0.85rem; overflow-wrap: anywhere; }" +
+      ".yw-leer-aviso { margin: 6px 0 0; color: var(--texto-suave, #8b7a9c); font-size: 0.78rem; }" +
+      ".yw-leer-vacio { margin: 0 0 12px; color: var(--texto-suave, #6d5d7d); font-size: 0.9rem; }" +
+      ".yw-leer-vacio a { color: var(--violeta-texto, #7b3fe4); font-weight: 700; }";
     document.head.appendChild(estilo);
 
     (async function mostrar() {
       const { data: obra } = await supabaseClient
         .from("recomendaciones")
-        .select("user_id, enlace_url, enlace_etiqueta, enlace_idioma")
+        .select("user_id, enlace_url, enlace_etiqueta, enlace_idioma, seccion")
         .eq("id", id)
         .maybeSingle();
       if (!obra) return;
 
+      const textos = TEXTOS_ENLACE[obra.seccion] || TEXTO_POR_DEFECTO;
       let bloque = null;
 
       if (obra.enlace_url) {
@@ -321,7 +354,7 @@
         vinculo.href = obra.enlace_url;
         vinculo.target = "_blank";
         vinculo.rel = "noopener noreferrer nofollow ugc";
-        vinculo.appendChild(crear("strong", "", "📖 Leer la obra"));
+        vinculo.appendChild(crear("strong", "", textos.boton));
         vinculo.appendChild(
           crear(
             "span",
@@ -333,13 +366,7 @@
           )
         );
         bloque.appendChild(vinculo);
-        bloque.appendChild(
-          crear(
-            "p",
-            "yw-leer-aviso",
-            "Enlace agregado por quien recomendó la obra. YuriWorld no controla ese sitio."
-          )
-        );
+        bloque.appendChild(crear("p", "yw-leer-aviso", textos.aviso));
       } else {
         const { data: datosSesion } = await supabaseClient.auth.getSession();
         const miId = datosSesion.session ? datosSesion.session.user.id : null;
@@ -351,7 +378,7 @@
         if (!puedeEditar) return;
 
         bloque = crear("p", "yw-leer-vacio");
-        bloque.appendChild(document.createTextNode("Esta obra todavía no tiene enlace para leerla. "));
+        bloque.appendChild(document.createTextNode("Esta obra todavía no tiene enlace. "));
         const agregar = document.createElement("a");
         agregar.href = "editar-recomendacion.html?id=" + encodeURIComponent(id);
         agregar.textContent = "Agregar enlace";
@@ -380,3 +407,4 @@
     })();
   }
 })();
+    
