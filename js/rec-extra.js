@@ -7,7 +7,7 @@
   if (!document.querySelector('link[href^="css/insignias.css"]')) {
     const enlace = document.createElement("link");
     enlace.rel = "stylesheet";
-    enlace.href = "css/insignias.css?v=3";
+    enlace.href = "css/insignias.css?v=6";
     document.head.appendChild(enlace);
   }
 
@@ -35,9 +35,11 @@
     panel.appendChild(campoOtros);
   }
 
-  // ---------- Tipo, estado y +18 (antes de la portada) ----------
+  // ---------- Tipo y estado (solo Lecturas) y +18 (antes de la portada) ----------
   const bloque = document.createElement("div");
   bloque.className = "yw-extra";
+
+  const bloqueLectura = document.createElement("div");
 
   const etiquetaTipo = document.createElement("label");
   etiquetaTipo.setAttribute("for", "rec-tipo");
@@ -55,6 +57,11 @@
   selectEstado.className = "yw-select";
   window.YW.llenarSelect(selectEstado, window.YW.ESTADOS);
 
+  bloqueLectura.appendChild(etiquetaTipo);
+  bloqueLectura.appendChild(selectTipo);
+  bloqueLectura.appendChild(etiquetaEstado);
+  bloqueLectura.appendChild(selectEstado);
+
   const etiqueta18 = document.createElement("label");
   etiqueta18.className = "yw-18";
   const casilla18 = document.createElement("input");
@@ -67,10 +74,7 @@
   etiqueta18.appendChild(casilla18);
   etiqueta18.appendChild(texto18);
 
-  bloque.appendChild(etiquetaTipo);
-  bloque.appendChild(selectTipo);
-  bloque.appendChild(etiquetaEstado);
-  bloque.appendChild(selectEstado);
+  bloque.appendChild(bloqueLectura);
   bloque.appendChild(etiqueta18);
 
   const etiquetaPortada = panel.querySelector('label[for="rec-portada"]');
@@ -82,8 +86,9 @@
 
   // ---------- Buscador de obras (arriba del panel) ----------
   let buscador = null;
+  let cajaBuscador = null;
   if (window.YW.anilist) {
-    const cajaBuscador = document.createElement("div");
+    cajaBuscador = document.createElement("div");
     panel.insertBefore(cajaBuscador, panel.firstElementChild);
 
     buscador = window.YW.anilist.montar({
@@ -105,6 +110,51 @@
     });
   }
 
+  // ---------- Sección (arriba de todo) ----------
+  const cajaSeccion = document.createElement("div");
+
+  const etiquetaSeccion = document.createElement("label");
+  etiquetaSeccion.setAttribute("for", "rec-seccion");
+  etiquetaSeccion.textContent = "Sección";
+
+  const selectSeccion = document.createElement("select");
+  selectSeccion.id = "rec-seccion";
+  selectSeccion.className = "yw-select";
+  Object.keys(window.YW.SECCIONES).forEach(function (clave) {
+    const opcion = document.createElement("option");
+    opcion.value = clave;
+    opcion.textContent = window.YW.SECCIONES[clave].opcion || window.YW.SECCIONES[clave].etiqueta;
+    selectSeccion.appendChild(opcion);
+  });
+
+  const avisoSeccion = document.createElement("p");
+  avisoSeccion.className = "aviso-seccion";
+  avisoSeccion.hidden = true;
+
+  cajaSeccion.appendChild(etiquetaSeccion);
+  cajaSeccion.appendChild(selectSeccion);
+  cajaSeccion.appendChild(avisoSeccion);
+  panel.insertBefore(cajaSeccion, panel.firstElementChild);
+
+  const interfazSeccion = {
+    etiquetaAutor: panel.querySelector('label[for="rec-autor"]'),
+    etiquetaSinopsis: panel.querySelector('label[for="rec-sinopsis"]'),
+    camposLectura: bloqueLectura,
+    selectTipo: selectTipo,
+    selectEstado: selectEstado,
+    buscador: cajaBuscador,
+    aviso: avisoSeccion
+  };
+
+  function aplicarSeccion() {
+    const conf = window.YW.aplicarSeccion(selectSeccion.value, interfazSeccion);
+    if (!conf.anilist && buscador) buscador.vincular(null);
+    return conf;
+  }
+
+  selectSeccion.addEventListener("change", aplicarSeccion);
+  aplicarSeccion();
+
   // ---------- Datos extra al guardar ----------
   const desdeOriginal = supabaseClient.from.bind(supabaseClient);
   supabaseClient.from = function (tabla) {
@@ -114,11 +164,15 @@
       const insertarOriginal = consulta.insert.bind(consulta);
       consulta.insert = function (datos, opciones) {
         if (datos && !Array.isArray(datos) && datos.titulo) {
-          datos.tipo = selectTipo.value || null;
-          datos.estado = selectEstado.value || null;
+          const seccion = selectSeccion.value;
+          const conf = window.YW.SECCIONES[seccion] || window.YW.SECCIONES.lecturas;
+
+          datos.seccion = seccion;
+          datos.tipo = conf.conTipo ? selectTipo.value || null : conf.tipo;
+          datos.estado = conf.conTipo ? selectEstado.value || null : null;
           datos.es_18 = casilla18.checked;
 
-          const vinculada = buscador ? buscador.vinculada() : null;
+          const vinculada = buscador && conf.anilist ? buscador.vinculada() : null;
           datos.anilist_id = vinculada ? vinculada.anilistId : null;
           datos.titulos_alternativos = window.YW.anilist
             ? window.YW.anilist.parsearOtros(campoOtros.value)
@@ -135,7 +189,8 @@
     "click",
     function (evento) {
       if (panel.hidden) return;
-      if (!selectTipo.value || !selectEstado.value) {
+      const conf = window.YW.SECCIONES[selectSeccion.value] || window.YW.SECCIONES.lecturas;
+      if (conf.conTipo && (!selectTipo.value || !selectEstado.value)) {
         evento.stopImmediatePropagation();
         evento.preventDefault();
         mensaje.textContent = "Elegí el tipo de obra y el estado (en emisión o finalizado).";
@@ -147,11 +202,14 @@
 
   new MutationObserver(function () {
     if (panel.hidden) {
+      selectSeccion.value = "lecturas";
       selectTipo.value = "";
       selectEstado.value = "";
       casilla18.checked = false;
       campoOtros.value = "";
       if (buscador) buscador.vincular(null);
+      aplicarSeccion();
     }
   }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
 })();
+    
