@@ -12,7 +12,7 @@ const mensajeComentario = document.getElementById("mensaje-comentario");
 const listaComentarios = document.getElementById("lista-comentarios");
 const botonComentar = document.getElementById("boton-comentar");
 
-const ROTULOS_AUTOR = { videojuegos: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
+const ROTULOS_AUTOR = { videojuegos: "Estudio: ", novelas_visuales: "Estudio: ", anime: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
 
 let sesion = null;
 let calificacionPropia = 0;
@@ -253,4 +253,4 @@ async function iniciar() {
 }
 
 iniciar();
-                       
+    
