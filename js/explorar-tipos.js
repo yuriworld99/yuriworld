@@ -42,6 +42,7 @@
     ["videojuegos", "Videojuegos"],
     ["novelas_visuales", "Novelas visuales"],
     ["anime", "Anime y OVA"],
+    ["series_web", "Series web"],
     ["peliculas", "Películas"],
     ["doujin", "Doujin"],
     ["fanart", "Fanart"]
@@ -427,4 +428,4 @@
   pintarChips();
   actualizarBarra();
 })();
-     
+   
