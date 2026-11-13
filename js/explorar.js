@@ -10,11 +10,12 @@
   const GENEROS = ["Romance", "Drama", "Comedia", "Fantasía", "Escolar", "Slice of life", "Ciencia ficción", "Misterio", "Histórico", "Sobrenatural"];
   GENEROS.push("Romance y comedia (RomCom)", "Drama romántico", "Psicológico", "Fantasía oscura", "Suspenso", "Terror", "Acción", "Aventura", "Tragedia", "Musical", "Deporte", "Erótico");
   const COLORES_AVATAR = ["#e0529a", "#7b3fe4", "#c2418c", "#6a35c9", "#d94f8a", "#8a4fe8", "#b8387f", "#5d2fb8"];
-  const ROTULOS_AUTOR = { videojuegos: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
+  const ROTULOS_AUTOR = { videojuegos: "Estudio: ", novelas_visuales: "Estudio: ", anime: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
   const SECCIONES_EXPLORAR = [
     ["videojuegos", "Videojuegos"],
+    ["novelas_visuales", "Novelas visuales"],
+    ["anime", "Anime y OVA"],
     ["peliculas", "Películas"],
-    ["oneshot", "OneShot"],
     ["doujin", "Doujin"],
     ["fanart", "Fanart"]
   ];
@@ -640,9 +641,9 @@
     }
 
     if (pestana === "publicaciones") {
-      const posts = await buscarPublicaciones(q, 30);
+    const posts = await buscarPublicaciones(q, 30);
       return posts.length > 0
-      ? await nodosDePublicaciones(posts)
+        ? await nodosDePublicaciones(posts)
         : [crearMensaje("No encontramos publicaciones para «" + q + "».")];
     }
 
@@ -760,4 +761,3 @@
 
   cargar();
 })();
-          
