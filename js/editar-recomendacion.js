@@ -62,7 +62,7 @@
 
   const { data: rec, error } = await supabaseClient
     .from("recomendaciones")
-    .select("id, user_id, titulo, autor, sinopsis, generos, tipo, estado, es_18, portada_url, anilist_id, titulos_alternativos, seccion")
+    .select("id, user_id, titulo, autor, sinopsis, generos, tipo, estado, es_18, portada_url, anilist_id, titulos_alternativos, seccion, obra_original_id")
     .eq("id", id)
     .maybeSingle();
 
@@ -95,6 +95,23 @@
   selectSeccion.value = seccionInicial;
   const confInicial = window.YW.SECCIONES[seccionInicial] || window.YW.SECCIONES.lecturas;
 
+  const basadoEn =
+    window.YW.montarBasadoEn ? window.YW.montarBasadoEn({ idPropio: rec.id }) : null;
+  if (basadoEn) {
+    const etiquetaGeneros = formulario.querySelector(".etiqueta");
+    if (etiquetaGeneros) etiquetaGeneros.insertAdjacentElement("beforebegin", basadoEn.caja);
+    else formulario.insertBefore(basadoEn.caja, boton);
+
+    if (rec.obra_original_id) {
+      const { data: original } = await supabaseClient
+        .from("recomendaciones")
+        .select("id, titulo, tipo")
+        .eq("id", rec.obra_original_id)
+        .maybeSingle();
+      if (original) basadoEn.fijar(original);
+    }
+  }
+
   const interfazSeccion = {
     etiquetaAutor: document.getElementById("etiqueta-autor"),
     etiquetaSinopsis: document.getElementById("etiqueta-sinopsis"),
@@ -102,6 +119,7 @@
     selectTipo: selectTipo,
     selectEstado: selectEstado,
     buscador: document.getElementById("buscador-anilist"),
+    basadoEn: basadoEn ? basadoEn.caja : null,
     aviso: document.getElementById("aviso-seccion")
   };
 
@@ -244,6 +262,7 @@
     cambios.tipo = tipo;
     cambios.estado = estado;
     cambios.anilist_id = conf.anilist && vinculada ? vinculada.anilistId : null;
+    cambios.obra_original_id = conf.basadoEn !== false && basadoEn ? basadoEn.valor() : null;
 
     let rutaNueva = null;
 
@@ -342,4 +361,4 @@
     }, 1200);
   });
 })();
- 
+  
