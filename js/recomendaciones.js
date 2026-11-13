@@ -1,4 +1,4 @@
-const ROTULOS_AUTOR = { videojuegos: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
+const ROTULOS_AUTOR = { videojuegos: "Estudio: ", novelas_visuales: "Estudio: ", anime: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
 
 function crearTarjeta(rec, resumen) {
   const tarjeta = document.createElement("a");
@@ -157,8 +157,9 @@ async function cargarRecomendaciones(seccion) {
 const SECCIONES_INICIO = [
   { valor: "lecturas", etiqueta: "Lecturas" },
   { valor: "videojuegos", etiqueta: "Videojuegos" },
+  { valor: "novelas_visuales", etiqueta: "Novelas visuales" },
+  { valor: "anime", etiqueta: "Anime y OVA" },
   { valor: "peliculas", etiqueta: "Películas" },
-  { valor: "oneshot", etiqueta: "OneShot" },
   { valor: "doujin", etiqueta: "Doujin" },
   { valor: "fanart", etiqueta: "Fanart" }
 ];
