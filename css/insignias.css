@@ -28,6 +28,7 @@
 .yw-ins.tipo-videojuego { background: #2a7fd4; }
 .yw-ins.tipo-novela_visual { background: #4f46e5; }
 .yw-ins.tipo-anime { background: #0891b2; }
+.yw-ins.tipo-serie_web { background: #334155; }
 .yw-ins.tipo-pelicula { background: #8e44ad; }
 .yw-ins.tipo-oneshot { background: #16a085; }
 .yw-ins.tipo-doujin { background: #d35400; }
@@ -74,4 +75,4 @@
   background: var(--fondo-rosa-suave);
   color: var(--texto);
   font-size: 0.9rem;
-  }
+}
