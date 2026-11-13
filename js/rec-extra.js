@@ -84,6 +84,12 @@
     panel.appendChild(bloque);
   }
 
+  // ---------- "Basado en" (adaptaciones) ----------
+  const basadoEn = window.YW.montarBasadoEn ? window.YW.montarBasadoEn({}) : null;
+  if (basadoEn) {
+    panel.insertBefore(basadoEn.caja, bloque.parentNode === panel ? bloque : null);
+  }
+
   // ---------- Buscador de obras (arriba del panel) ----------
   let buscador = null;
   let cajaBuscador = null;
@@ -143,6 +149,7 @@
     selectTipo: selectTipo,
     selectEstado: selectEstado,
     buscador: cajaBuscador,
+    basadoEn: basadoEn ? basadoEn.caja : null,
     aviso: avisoSeccion
   };
 
@@ -168,6 +175,7 @@
           const conf = window.YW.SECCIONES[seccion] || window.YW.SECCIONES.lecturas;
 
           datos.seccion = seccion;
+          datos.obra_original_id = conf.basadoEn !== false && basadoEn ? basadoEn.valor() : null;
           datos.tipo = conf.conTipo ? selectTipo.value || null : conf.tipo;
           datos.estado = conf.conTipo ? selectEstado.value || null : null;
           datos.es_18 = casilla18.checked;
@@ -208,8 +216,9 @@
       casilla18.checked = false;
       campoOtros.value = "";
       if (buscador) buscador.vincular(null);
+      if (basadoEn) basadoEn.limpiar();
       aplicarSeccion();
     }
   }).observe(panel, { attributes: true, attributeFilter: ["hidden"] });
 })();
-    
+ 
