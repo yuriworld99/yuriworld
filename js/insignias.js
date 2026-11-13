@@ -8,6 +8,7 @@
     videojuego: "Videojuego",
     novela_visual: "Novela visual",
     anime: "Anime",
+    serie_web: "Serie web",
     pelicula: "Película",
     oneshot: "OneShot",
     doujin: "Doujin",
@@ -26,7 +27,7 @@
     document.head.appendChild(enlace);
   }
 
-  agregarEstilos("css/insignias.css?v=8");
+  agregarEstilos("css/insignias.css?v=9");
 
   function idDeEnlace(elemento) {
     const direccion = elemento.getAttribute("href") || "";
@@ -156,4 +157,4 @@
   programar();
   decorarDetalle();
 })();
-    
+                                                       
