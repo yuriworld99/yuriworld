@@ -14,8 +14,25 @@ const botonComentar = document.getElementById("boton-comentar");
 
 const ROTULOS_AUTOR = { videojuegos: "Estudio: ", novelas_visuales: "Estudio: ", anime: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
 
+const ETIQUETAS_TIPO = {
+  manga: "Manga",
+  manhwa: "Manhwa",
+  manhua: "Manhua",
+  webtoon: "Webtoon",
+  novela_ligera: "Novela ligera",
+  oneshot: "OneShot",
+  videojuego: "Videojuego",
+  novela_visual: "Novela visual",
+  anime: "Anime / OVA",
+  serie_web: "Serie web",
+  pelicula: "Película",
+  doujin: "Doujin",
+  fanart: "Fanart"
+};
+
 let sesion = null;
 let calificacionPropia = 0;
+let recActual = null;
 
 function mostrar(elemento, texto, tipo) {
   elemento.textContent = texto;
@@ -197,17 +214,29 @@ async function cargarRecomendacion() {
     return false;
   }
 
-  const { data: rec, error } = await supabaseClient
+  const columnas = "id, titulo, autor, sinopsis, generos, portada_url, seccion, profiles!recomendaciones_user_id_fkey(username)";
+  let { data: rec, error } = await supabaseClient
     .from("recomendaciones")
-    .select("id, titulo, autor, sinopsis, generos, portada_url, seccion, profiles!recomendaciones_user_id_fkey(username)")
+    .select(columnas + ", obra_original_id")
     .eq("id", recomendacionId)
     .maybeSingle();
+
+  if (error) {
+    const respaldo = await supabaseClient
+      .from("recomendaciones")
+      .select(columnas)
+      .eq("id", recomendacionId)
+      .maybeSingle();
+    rec = respaldo.data;
+    error = respaldo.error;
+  }
 
   if (error || !rec) {
     estado.textContent = "No encontramos esa recomendación.";
     return false;
   }
 
+  recActual = rec;
   document.title = rec.titulo + " - YuriWorld";
 
   const portada = document.getElementById("detalle-portada");
@@ -235,6 +264,108 @@ async function cargarRecomendacion() {
   return true;
 }
 
+function inyectarEstilosRelacionadas() {
+  if (document.getElementById("estilos-relacionadas")) return;
+  const estilo = document.createElement("style");
+  estilo.id = "estilos-relacionadas";
+  estilo.textContent =
+    ".rel-rotulo { margin: 14px 0 4px; font-weight: 700; }" +
+    ".rel-fila { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--borde-suave, #f0e6fb); color: inherit; text-decoration: none; }" +
+    ".rel-portada { flex-shrink: 0; width: 52px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 8px; background: var(--fondo-suave, #f3ebff); }" +
+    ".rel-info { min-width: 0; }" +
+    ".rel-info strong { display: block; color: var(--violeta-texto, #7b3fe4); overflow-wrap: anywhere; }" +
+    ".rel-info span { color: var(--texto-suave, #6d5d7d); font-size: 0.85rem; overflow-wrap: anywhere; }";
+  document.head.appendChild(estilo);
+}
+
+function crearFilaRelacionada(obra) {
+  const enlace = document.createElement("a");
+  enlace.className = "rel-fila";
+  enlace.href = "recomendacion.html?id=" + encodeURIComponent(obra.id);
+
+  if (obra.portada_url) {
+    const imagen = document.createElement("img");
+    imagen.className = "rel-portada";
+    imagen.src = obra.portada_url;
+    imagen.alt = "Portada de " + obra.titulo;
+    imagen.loading = "lazy";
+    enlace.appendChild(imagen);
+  }
+
+  const info = document.createElement("div");
+  info.className = "rel-info";
+  const titulo = document.createElement("strong");
+  titulo.textContent = obra.titulo;
+  const datos = document.createElement("span");
+  datos.textContent = [ETIQUETAS_TIPO[obra.tipo], obra.autor].filter(Boolean).join(" · ");
+  info.appendChild(titulo);
+  info.appendChild(datos);
+  enlace.appendChild(info);
+
+  return enlace;
+}
+
+async function cargarRelacionadas(rec) {
+  if (!rec) return;
+
+  const campos = "id, titulo, autor, portada_url, tipo";
+  const grupos = [];
+
+  if (rec.obra_original_id) {
+    const { data: original } = await supabaseClient
+      .from("recomendaciones")
+      .select(campos)
+      .eq("id", rec.obra_original_id)
+      .maybeSingle();
+    if (original) grupos.push({ rotulo: "Basada en", obras: [original] });
+
+    const { data: hermanas } = await supabaseClient
+      .from("recomendaciones")
+      .select(campos)
+      .eq("obra_original_id", rec.obra_original_id)
+      .neq("id", rec.id)
+      .order("created_at", { ascending: true })
+      .limit(20);
+    if (hermanas && hermanas.length > 0) {
+      grupos.push({ rotulo: "Otras adaptaciones de la misma obra", obras: hermanas });
+    }
+  }
+
+  const { data: derivadas } = await supabaseClient
+    .from("recomendaciones")
+    .select(campos)
+    .eq("obra_original_id", rec.id)
+    .order("created_at", { ascending: true })
+    .limit(30);
+  if (derivadas && derivadas.length > 0) {
+    grupos.push({ rotulo: "Adaptaciones y obras basadas en esta", obras: derivadas });
+  }
+
+  if (grupos.length === 0) return;
+
+  inyectarEstilosRelacionadas();
+
+  const bloque = document.createElement("section");
+  bloque.className = "bloque";
+  const encabezado = document.createElement("h2");
+  encabezado.textContent = "Obras relacionadas";
+  bloque.appendChild(encabezado);
+
+  grupos.forEach(function (grupo) {
+    const rotulo = document.createElement("p");
+    rotulo.className = "rel-rotulo";
+    rotulo.textContent = grupo.rotulo;
+    bloque.appendChild(rotulo);
+    grupo.obras.forEach(function (obra) {
+      bloque.appendChild(crearFilaRelacionada(obra));
+    });
+  });
+
+  const primero = contenido.querySelector(".bloque");
+  if (primero) primero.insertAdjacentElement("beforebegin", bloque);
+  else contenido.appendChild(bloque);
+}
+
 async function iniciar() {
   const { data } = await supabaseClient.auth.getSession();
   sesion = data.session;
@@ -250,7 +381,8 @@ async function iniciar() {
   cargarResumen();
   cargarCalificacionPropia();
   cargarComentarios();
+  cargarRelacionadas(recActual);
 }
 
 iniciar();
-    
+  
