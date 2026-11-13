@@ -159,6 +159,7 @@ const SECCIONES_INICIO = [
   { valor: "videojuegos", etiqueta: "Videojuegos" },
   { valor: "novelas_visuales", etiqueta: "Novelas visuales" },
   { valor: "anime", etiqueta: "Anime y OVA" },
+  { valor: "series_web", etiqueta: "Series web" },
   { valor: "peliculas", etiqueta: "Películas" },
   { valor: "doujin", etiqueta: "Doujin" },
   { valor: "fanart", etiqueta: "Fanart" }
@@ -209,4 +210,3 @@ function armarPestanasInicio() {
 
 armarPestanasInicio();
 cargarRecomendaciones("lecturas");
-  
