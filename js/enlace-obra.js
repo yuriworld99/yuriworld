@@ -23,6 +23,10 @@
       boton: "📺 Ver el anime",
       aviso: "Enlace agregado por quien recomendó el anime. YuriWorld no controla ese sitio."
     },
+    series_web: {
+      boton: "▶️ Ver la serie",
+      aviso: "Enlace agregado por quien recomendó la serie. YuriWorld no controla ese sitio."
+    },
     peliculas: {
       boton: "🎬 Ver la película",
       aviso: "Enlace agregado por quien recomendó la película. YuriWorld no controla ese sitio."
@@ -415,4 +419,4 @@
     })();
   }
 })();
-        
+      
