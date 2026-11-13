@@ -53,6 +53,14 @@ if (window.YW && window.YW.anilist) {
   });
 }
 
+const basadoEn =
+  window.YW && window.YW.montarBasadoEn ? window.YW.montarBasadoEn({}) : null;
+if (basadoEn) {
+  const etiquetaGeneros = formulario.querySelector(".etiqueta");
+  if (etiquetaGeneros) etiquetaGeneros.insertAdjacentElement("beforebegin", basadoEn.caja);
+  else formulario.insertBefore(basadoEn.caja, boton);
+}
+
 const interfazSeccion = {
   etiquetaAutor: document.getElementById("etiqueta-autor"),
   etiquetaSinopsis: document.getElementById("etiqueta-sinopsis"),
@@ -60,6 +68,7 @@ const interfazSeccion = {
   selectTipo: selectTipo,
   selectEstado: selectEstado,
   buscador: document.getElementById("buscador-anilist"),
+  basadoEn: basadoEn ? basadoEn.caja : null,
   aviso: document.getElementById("aviso-seccion")
 };
 
@@ -260,6 +269,7 @@ formulario.addEventListener("submit", async function (evento) {
       tipo: tipo,
       estado: estado,
       seccion: seccion,
+      obra_original_id: conf.basadoEn !== false && basadoEn ? basadoEn.valor() : null,
       es_18: es18,
       anilist_id: anilistId,
       titulos_alternativos: otrosTitulos,
@@ -283,7 +293,8 @@ formulario.addEventListener("submit", async function (evento) {
   formulario.reset();
   vistaPrevia.hidden = true;
   if (buscador) buscador.vincular(null);
+  if (basadoEn) basadoEn.limpiar();
   aplicarSeccion();
   boton.disabled = false;
 });
-            
+          
