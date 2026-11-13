@@ -6,6 +6,8 @@
     webtoon: "Webtoon",
     novela_ligera: "Novela ligera",
     videojuego: "Videojuego",
+    novela_visual: "Novela visual",
+    anime: "Anime",
     pelicula: "Película",
     oneshot: "OneShot",
     doujin: "Doujin",
@@ -24,7 +26,7 @@
     document.head.appendChild(enlace);
   }
 
-  agregarEstilos("css/insignias.css?v=6");
+  agregarEstilos("css/insignias.css?v=8");
 
   function idDeEnlace(elemento) {
     const direccion = elemento.getAttribute("href") || "";
@@ -154,4 +156,4 @@
   programar();
   decorarDetalle();
 })();
-        
+    
