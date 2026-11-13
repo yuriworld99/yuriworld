@@ -40,19 +40,21 @@
   const SECCIONES = [
     ["lecturas", "Lecturas"],
     ["videojuegos", "Videojuegos"],
+    ["novelas_visuales", "Novelas visuales"],
+    ["anime", "Anime y OVA"],
     ["peliculas", "Películas"],
-    ["oneshot", "OneShot"],
     ["doujin", "Doujin"],
     ["fanart", "Fanart"]
   ];
-  const ROTULOS_AUTOR = { videojuegos: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
+  const ROTULOS_AUTOR = { videojuegos: "Estudio: ", novelas_visuales: "Estudio: ", anime: "Estudio: ", peliculas: "Dirección: ", fanart: "Arte de " };
   const TIPOS = [
     ["", "Todas"],
     ["manga", "Manga"],
     ["manhwa", "Manhwa"],
     ["manhua", "Manhua"],
     ["webtoon", "Webtoon"],
-    ["novela_ligera", "Novela ligera"]
+    ["novela_ligera", "Novela ligera"],
+    ["oneshot", "OneShot"]
   ];
   const ORDENES = [
     ["recientes", "Más recientes"],
@@ -425,4 +427,4 @@
   pintarChips();
   actualizarBarra();
 })();
-        
+     
