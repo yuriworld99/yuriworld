@@ -15,6 +15,7 @@
     ["videojuegos", "Videojuegos"],
     ["novelas_visuales", "Novelas visuales"],
     ["anime", "Anime y OVA"],
+    ["series_web", "Series web"],
     ["peliculas", "Películas"],
     ["doujin", "Doujin"],
     ["fanart", "Fanart"]
@@ -640,8 +641,15 @@
         : [crearMensaje("No encontramos obras para «" + q + "».")];
     }
 
+    if (pestana === "obras") {
+      const obras = await buscarObras(q, 30);
+      return obras.length > 0
+        ? await nodosDeObras(obras)
+        : [crearMensaje("No encontramos obras para «" + q + "».")];
+    }
+
     if (pestana === "publicaciones") {
-    const posts = await buscarPublicaciones(q, 30);
+      const posts = await buscarPublicaciones(q, 30);
       return posts.length > 0
         ? await nodosDePublicaciones(posts)
         : [crearMensaje("No encontramos publicaciones para «" + q + "».")];
@@ -761,3 +769,4 @@
 
   cargar();
 })();
+  
