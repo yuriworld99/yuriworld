@@ -420,4 +420,500 @@ function abrirRecortador(archivo, opciones) {
       .from(bucket)
       .upload(ruta, blob, { contentType: "image/jpeg", cacheControl: "31536000" });
     if (error) throw error;
-    rutas.push({ bucket: buc
+rutas.push({ bucket: bucket, ruta: ruta });
+    return supabaseClient.storage.from(bucket).getPublicUrl(ruta).data.publicUrl;
+  }
+
+  async function subir(bucket, blob, rutas) {
+    const ruta = sesion.user.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 7) + ".jpg";
+    try {
+      const { data: datosActuales } = await supabaseClient.auth.getSession();
+      const token = datosActuales.session ? datosActuales.session.access_token : sesion.access_token;
+      const respuesta = await fetch(WORKER_SUBIDA + "/" + bucket + "/" + ruta, {
+        method: "PUT",
+        headers: { Authorization: "Bearer " + token, "Content-Type": "image/jpeg" },
+        body: blob
+      });
+      if (!respuesta.ok) throw new Error("Worker " + respuesta.status);
+      return R2_PUBLICO + bucket + "/" + ruta;
+    } catch (error) {
+      console.warn("Subida a R2 falló, uso Supabase:", error);
+      return subirSupabase(bucket, blob, rutas);
+    }
+  }
+
+  async function borrarAnterior(bucket, direccion) {
+    if (!direccion) return;
+    const partes = direccion.split("/" + bucket + "/");
+    if (partes.length !== 2) return;
+    await supabaseClient.storage.from(bucket).remove([decodeURIComponent(partes[1])]);
+  }
+
+  function colorDe(texto) {
+    let valor = 0;
+    for (let i = 0; i < texto.length; i++) {
+      valor = (valor * 31 + texto.charCodeAt(i)) >>> 0;
+    }
+    return PE_COLORES[valor % PE_COLORES.length];
+  }
+
+  // ---------- validaciones ----------
+  function normalizarSitio(texto) {
+    let direccion = String(texto || "").trim();
+    if (!direccion) return null;
+    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(direccion)) direccion = "https://" + direccion;
+    let url;
+    try {
+      url = new URL(direccion);
+    } catch (error) {
+      return undefined;
+    }
+    if (url.protocol !== "http:" && url.protocol !== "https:") return undefined;
+    if (!url.hostname || url.hostname.indexOf(".") === -1) return undefined;
+    if (url.href.length > 100) return undefined;
+    return url.href;
+  }
+
+  function edadDe(anio, mes, dia) {
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - anio;
+    const mesHoy = hoy.getMonth() + 1;
+    if (mesHoy < mes || (mesHoy === mes && hoy.getDate() < dia)) edad -= 1;
+    return edad;
+  }
+
+  function textoCumple(fecha, verDiaMes, verAnio) {
+    if (!fecha) return null;
+    const partes = fecha.split("-").map(Number);
+    const fechaUtc = new Date(Date.UTC(partes[0], partes[1] - 1, partes[2]));
+    if (verDiaMes === "todos" && verAnio === "todos") {
+      return new Intl.DateTimeFormat("es", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(fechaUtc);
+    }
+    if (verDiaMes === "todos") {
+      return new Intl.DateTimeFormat("es", { day: "numeric", month: "long", timeZone: "UTC" }).format(fechaUtc);
+    }
+    if (verAnio === "todos") return String(partes[0]);
+    return null;
+  }
+
+  // ---------- datos privados (fecha de nacimiento) ----------
+  let privado = { fecha_nacimiento: null, ver_dia_mes: "solo_yo", ver_anio: "solo_yo" };
+  try {
+    const { data: filaPrivada } = await supabaseClient
+      .from("perfiles_privados")
+      .select("fecha_nacimiento, ver_dia_mes, ver_anio")
+      .eq("user_id", sesion.user.id)
+      .maybeSingle();
+    if (filaPrivada) privado = filaPrivada;
+  } catch (error) {
+    console.warn("No se pudieron leer los datos privados:", error);
+  }
+
+  // ---------- pantalla de edición ----------
+  let pantalla = null;
+  let avatarNuevo = null;
+  let bannerNuevo = null;
+  let urlVistaAvatar = null;
+  let urlVistaBanner = null;
+
+  function crear(etiqueta, clase, texto) {
+    const elemento = document.createElement(etiqueta);
+    if (clase) elemento.className = clase;
+    if (texto) elemento.textContent = texto;
+    return elemento;
+  }
+
+  function crearCampo(titulo, control, maximo) {
+    const caja = crear("label", "pe-campo");
+    const rotulo = crear("span");
+    rotulo.appendChild(crear("span", "", titulo));
+    let contador = null;
+    if (maximo) {
+      contador = crear("span", "", "0/" + maximo);
+      rotulo.appendChild(contador);
+    }
+    caja.appendChild(rotulo);
+    caja.appendChild(control);
+    if (contador) {
+      const actualizar = function () {
+        contador.textContent = control.value.length + "/" + maximo;
+      };
+      control.addEventListener("input", actualizar);
+      actualizar();
+    }
+    return caja;
+  }
+
+  function abrirEdicion() {
+    peInyectarEstilos();
+
+    const nombreMostrado = perfil.nombre_visible || perfil.username || "?";
+    const bodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    pantalla = crear("div", "pe-pantalla");
+    pantalla.setAttribute("role", "dialog");
+    pantalla.setAttribute("aria-modal", "true");
+
+    // barra superior
+    const barra = crear("div", "pe-barra");
+    const botonVolver = crear("button", "pe-volver");
+    botonVolver.type = "button";
+    botonVolver.setAttribute("aria-label", "Volver");
+    botonVolver.innerHTML = PE_ICONOS.volver;
+    const titulo = crear("h2", "", "Editar perfil");
+    const botonGuardar = crear("button", "pe-guardar", "Guardar");
+    botonGuardar.type = "button";
+    botonGuardar.disabled = true;
+    barra.appendChild(botonVolver);
+    barra.appendChild(titulo);
+    barra.appendChild(botonGuardar);
+
+    const cuerpo = crear("div", "pe-cuerpo");
+
+    // banner
+    const banner = crear("div", "pe-banner");
+    if (perfil.banner_url) banner.style.backgroundImage = 'url("' + perfil.banner_url + '")';
+    const camaraBanner = crear("button", "pe-camara pe-camara-banner");
+    camaraBanner.type = "button";
+    camaraBanner.setAttribute("aria-label", "Cambiar el banner");
+    camaraBanner.innerHTML = PE_ICONOS.camara;
+    banner.appendChild(camaraBanner);
+
+    // foto de perfil
+    const filaAvatar = crear("div", "pe-avatar-fila");
+    const avatar = crear("div", "pe-avatar");
+    avatar.style.background = colorDe(nombreMostrado);
+    avatar.textContent = nombreMostrado.charAt(0).toUpperCase();
+    if (perfil.avatar_url) {
+      avatar.textContent = "";
+      avatar.style.backgroundImage = 'url("' + perfil.avatar_url + '")';
+      avatar.style.backgroundSize = "cover";
+      avatar.style.backgroundPosition = "center";
+    }
+    const camaraAvatar = crear("button", "pe-camara pe-camara-avatar");
+    camaraAvatar.type = "button";
+    camaraAvatar.setAttribute("aria-label", "Cambiar la foto de perfil");
+    camaraAvatar.innerHTML = PE_ICONOS.camara;
+    avatar.appendChild(camaraAvatar);
+    filaAvatar.appendChild(avatar);
+
+    // archivos ocultos
+    const archivoAvatar = document.createElement("input");
+    archivoAvatar.type = "file";
+    archivoAvatar.accept = "image/*";
+    archivoAvatar.hidden = true;
+    const archivoBanner = document.createElement("input");
+    archivoBanner.type = "file";
+    archivoBanner.accept = "image/*";
+    archivoBanner.hidden = true;
+
+    // campos
+    const campos = crear("div", "pe-campos");
+
+    const campoNombre = document.createElement("input");
+    campoNombre.type = "text";
+    campoNombre.maxLength = 30;
+    campoNombre.value = perfil.nombre_visible || "";
+    campoNombre.placeholder = perfil.username || "";
+    campoNombre.autocomplete = "off";
+
+    const campoBio = document.createElement("textarea");
+    campoBio.maxLength = 160;
+    campoBio.rows = 3;
+    campoBio.value = perfil.descripcion || "";
+
+    const campoUbicacion = document.createElement("input");
+    campoUbicacion.type = "text";
+    campoUbicacion.maxLength = 30;
+    campoUbicacion.value = perfil.ubicacion || "";
+    campoUbicacion.autocomplete = "off";
+
+    const campoSitio = document.createElement("input");
+    campoSitio.type = "text";
+    campoSitio.inputMode = "url";
+    campoSitio.maxLength = 100;
+    campoSitio.value = perfil.sitio_web || "";
+    campoSitio.placeholder = "https://";
+    campoSitio.autocomplete = "off";
+
+    const campoFecha = document.createElement("input");
+    campoFecha.type = "date";
+    campoFecha.min = "1900-01-01";
+    campoFecha.max = new Date().toISOString().slice(0, 10);
+    campoFecha.value = privado.fecha_nacimiento || "";
+
+    campos.appendChild(crearCampo("Nombre", campoNombre, 30));
+    campos.appendChild(crearCampo("Biografía", campoBio, 160));
+    campos.appendChild(crearCampo("Ubicación", campoUbicacion, 30));
+    campos.appendChild(crearCampo("Sitio web", campoSitio, 0));
+    campos.appendChild(crearCampo("Fecha de nacimiento", campoFecha, 0));
+
+    // visibilidad de la fecha
+    function crearSelectorVisibilidad(valor) {
+      const selector = document.createElement("select");
+      [["solo_yo", "Solo tú"], ["todos", "Todos"]].forEach(function (par) {
+        const opcion = document.createElement("option");
+        opcion.value = par[0];
+        opcion.textContent = par[1];
+        selector.appendChild(opcion);
+      });
+      selector.value = valor === "todos" ? "todos" : "solo_yo";
+      return selector;
+    }
+
+    const visibilidad = crear("div", "pe-visibilidad");
+    const lineaDiaMes = crear("label", "", "Mes y día: ");
+    const selectorDiaMes = crearSelectorVisibilidad(privado.ver_dia_mes);
+    lineaDiaMes.appendChild(selectorDiaMes);
+    const lineaAnio = crear("label", "", "Año: ");
+    const selectorAnio = crearSelectorVisibilidad(privado.ver_anio);
+    lineaAnio.appendChild(selectorAnio);
+    visibilidad.appendChild(lineaDiaMes);
+    visibilidad.appendChild(lineaAnio);
+    campos.appendChild(visibilidad);
+    campos.appendChild(
+      crear("p", "pe-nota", "Tu fecha de nacimiento es privada. Solo se muestra a las demás personas lo que elijas acá. Hay que tener 13 años o más.")
+    );
+
+    const mensaje = crear("p", "pe-mensaje");
+    campos.appendChild(mensaje);
+
+    cuerpo.appendChild(banner);
+    cuerpo.appendChild(filaAvatar);
+    cuerpo.appendChild(campos);
+
+    pantalla.appendChild(barra);
+    pantalla.appendChild(cuerpo);
+    pantalla.appendChild(archivoAvatar);
+    pantalla.appendChild(archivoBanner);
+    document.body.appendChild(pantalla);
+
+    function mostrarMensaje(texto, tipo) {
+      mensaje.textContent = texto;
+      mensaje.className = "pe-mensaje" + (tipo ? " " + tipo : "");
+    }
+
+    // ----- cambios pendientes -----
+    const inicial = {
+      nombre: campoNombre.value,
+      bio: campoBio.value,
+      ubicacion: campoUbicacion.value,
+      sitio: campoSitio.value,
+      fecha: campoFecha.value,
+      diaMes: selectorDiaMes.value,
+      anio: selectorAnio.value
+    };
+
+    function cambioCumple() {
+      return (
+        campoFecha.value !== inicial.fecha ||
+        selectorDiaMes.value !== inicial.diaMes ||
+        selectorAnio.value !== inicial.anio
+      );
+    }
+
+    function hayCambios() {
+      return (
+        !!avatarNuevo ||
+        !!bannerNuevo ||
+        campoNombre.value !== inicial.nombre ||
+        campoBio.value !== inicial.bio ||
+        campoUbicacion.value !== inicial.ubicacion ||
+        campoSitio.value !== inicial.sitio ||
+        cambioCumple()
+      );
+    }
+
+    function actualizarGuardar() {
+      botonGuardar.disabled = !hayCambios();
+    }
+
+    [campoNombre, campoBio, campoUbicacion, campoSitio, campoFecha, selectorDiaMes, selectorAnio].forEach(function (control) {
+      control.addEventListener("input", actualizarGuardar);
+      control.addEventListener("change", actualizarGuardar);
+    });
+
+    function cerrar() {
+      if (urlVistaAvatar) URL.revokeObjectURL(urlVistaAvatar);
+      if (urlVistaBanner) URL.revokeObjectURL(urlVistaBanner);
+      urlVistaAvatar = null;
+      urlVistaBanner = null;
+      avatarNuevo = null;
+      bannerNuevo = null;
+      pantalla.remove();
+      pantalla = null;
+      document.body.style.overflow = bodyOverflow;
+    }
+
+    botonVolver.addEventListener("click", function () {
+      if (hayCambios() && !confirm("¿Descartar los cambios?")) return;
+      cerrar();
+    });
+
+    // ----- fotos con recorte -----
+    async function elegirImagen(entrada, opciones, alListo) {
+      const archivo = entrada.files[0];
+      entrada.value = "";
+      if (!archivo) return;
+      if (!archivo.type.startsWith("image/")) {
+        mostrarMensaje("El archivo tiene que ser una imagen.", "error");
+        return;
+      }
+      try {
+        const blob = await abrirRecortador(archivo, opciones);
+        if (!blob) return;
+        alListo(blob);
+        mostrarMensaje("", "");
+        actualizarGuardar();
+      } catch (error) {
+        mostrarMensaje(error.message || "No se pudo procesar la imagen.", "error");
+      }
+    }
+
+    camaraAvatar.addEventListener("click", function () {
+      archivoAvatar.click();
+    });
+    camaraBanner.addEventListener("click", function () {
+      archivoBanner.click();
+    });
+
+    archivoAvatar.addEventListener("change", function () {
+      elegirImagen(
+        archivoAvatar,
+        { relacion: 1, ancho: 400, alto: 400, calidad: 0.9, titulo: "Foto de perfil" },
+        function (blob) {
+          avatarNuevo = blob;
+          if (urlVistaAvatar) URL.revokeObjectURL(urlVistaAvatar);
+          urlVistaAvatar = URL.createObjectURL(blob);
+          avatar.style.backgroundImage = 'url("' + urlVistaAvatar + '")';
+          avatar.style.backgroundSize = "cover";
+          avatar.style.backgroundPosition = "center";
+          Array.from(avatar.childNodes).forEach(function (nodo) {
+            if (nodo.nodeType === 3) avatar.removeChild(nodo);
+          });
+        }
+      );
+    });
+
+    archivoBanner.addEventListener("change", function () {
+      elegirImagen(
+        archivoBanner,
+        { relacion: 3, ancho: 1500, alto: 500, calidad: 0.85, titulo: "Banner" },
+        function (blob) {
+          if (blob.size > 2 * 1024 * 1024) {
+            mostrarMensaje("El banner pesa más de 2 MB. Elegí otra imagen o acercala un poco.", "error");
+            return;
+          }
+          bannerNuevo = blob;
+          if (urlVistaBanner) URL.revokeObjectURL(urlVistaBanner);
+          urlVistaBanner = URL.createObjectURL(blob);
+          banner.style.backgroundImage = 'url("' + urlVistaBanner + '")';
+        }
+      );
+    });
+
+    // ----- guardar -----
+    botonGuardar.addEventListener("click", async function () {
+      const nombre = campoNombre.value.trim();
+      const biografia = campoBio.value.trim();
+      const ubicacion = campoUbicacion.value.trim();
+      const sitio = normalizarSitio(campoSitio.value);
+      const fecha = campoFecha.value;
+
+      if (sitio === undefined) {
+        mostrarMensaje("El sitio web no es válido. Tiene que ser una dirección como https://sitio.com", "error");
+        return;
+      }
+
+      if (fecha) {
+        const partes = fecha.split("-").map(Number);
+        const fechaUtc = new Date(Date.UTC(partes[0], partes[1] - 1, partes[2]));
+        const valida =
+          partes.length === 3 &&
+          fechaUtc.getUTCFullYear() === partes[0] &&
+          fechaUtc.getUTCMonth() === partes[1] - 1 &&
+          fechaUtc.getUTCDate() === partes[2] &&
+          partes[0] >= 1900 &&
+          fechaUtc.getTime() <= Date.now();
+        if (!valida) {
+          mostrarMensaje("La fecha de nacimiento no es válida.", "error");
+          return;
+        }
+        if (edadDe(partes[0], partes[1], partes[2]) < 13) {
+          mostrarMensaje("YuriWorld es para personas de 13 años o más.", "error");
+          return;
+        }
+      }
+
+      botonGuardar.disabled = true;
+      mostrarMensaje("Guardando...", "");
+
+      let urlAvatar = perfil.avatar_url;
+      let urlBanner = perfil.banner_url || null;
+      const subidos = [];
+
+      try {
+        if (avatarNuevo) urlAvatar = await subir("avatares", avatarNuevo, subidos);
+        if (bannerNuevo) urlBanner = await subir("banners", bannerNuevo, subidos);
+
+        const cumplePublico = textoCumple(fecha, selectorDiaMes.value, selectorAnio.value);
+
+        if (cambioCumple()) {
+          if (!fecha) {
+            const { error: errorBorrar } = await supabaseClient
+              .from("perfiles_privados")
+              .delete()
+              .eq("user_id", sesion.user.id);
+            if (errorBorrar) throw errorBorrar;
+          } else {
+            const { error: errorPrivado } = await supabaseClient
+              .from("perfiles_privados")
+              .upsert(
+                {
+                  user_id: sesion.user.id,
+                  fecha_nacimiento: fecha,
+                  ver_dia_mes: selectorDiaMes.value,
+                  ver_anio: selectorAnio.value,
+                  actualizado: new Date().toISOString()
+                },
+                { onConflict: "user_id" }
+              );
+            if (errorPrivado) throw errorPrivado;
+          }
+        }
+
+        const cambios = {
+          avatar_url: urlAvatar,
+          descripcion: biografia || null,
+          nombre_visible: nombre || null,
+          ubicacion: ubicacion || null,
+          sitio_web: sitio,
+          cumple_publico: cumplePublico
+        };
+        if (bannerNuevo) cambios.banner_url = urlBanner;
+
+        const { error: errorPerfil } = await supabaseClient
+          .from("profiles")
+          .update(cambios)
+          .eq("id", sesion.user.id);
+        if (errorPerfil) throw errorPerfil;
+      } catch (error) {
+        for (const subido of subidos) {
+          await supabaseClient.storage.from(subido.bucket).remove([subido.ruta]);
+        }
+        mostrarMensaje("No se pudo guardar: " + (error.message || "error desconocido"), "error");
+        actualizarGuardar();
+        return;
+      }
+
+      if (avatarNuevo) await borrarAnterior("avatares", perfil.avatar_url);
+      if (bannerNuevo) await borrarAnterior("banners", perfil.banner_url);
+
+      window.location.reload();
+    });
+  }
+
+  botonEditar.addEventListener("click", abrirEdicion);
+})();
+                              
