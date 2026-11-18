@@ -33,12 +33,18 @@ const lista = document.getElementById("muro-lista");
 const botonCargarMas = document.getElementById("cargar-mas");
 const avisoFlotante = document.getElementById("aviso-flotante");
 
+// Lo que había en la comunidad cuando te fuiste (solo si volvés con "atrás").
+const memoriaComunidad = window.YW_MEMORIA ? window.YW_MEMORIA.leer("comunidad") : null;
+
 let sesion = null;
 let imagenAdjunta = null;
 let portadaAdjunta = null;
-let cantidadVisible = PAGINA;
+let cantidadVisible =
+  memoriaComunidad && Number(memoriaComunidad.cantidad) > PAGINA
+    ? Math.min(Number(memoriaComunidad.cantidad), 300)
+    : PAGINA;
 let temporizadorAviso = null;
-let soloRecomendaciones = false;
+let soloRecomendaciones = !!(memoriaComunidad && memoriaComunidad.soloRecs);
 
 function avisar(texto) {
   avisoFlotante.textContent = texto;
@@ -420,7 +426,7 @@ function crearBloqueRecomendacion(post) {
   if (enlazada) {
     const ver = document.createElement("p");
     ver.className = "rec-autor";
-    ver.style.color = "#7b3fe4";
+    ver.style.color = "var(--violeta-texto)";
     ver.style.fontWeight = "700";
     ver.textContent = "Ver y calificar →";
     info.appendChild(ver);
@@ -609,7 +615,7 @@ async function cargarMuro() {
   const faltantes = [];
   items.forEach(function (item) {
     if (item.repost_de && !originales[item.repost_de] && !faltantes.includes(item.repost_de)) {
-    faltantes.push(item.repost_de);
+      faltantes.push(item.repost_de);
     }
   });
 
@@ -864,7 +870,7 @@ async function iniciar() {
   if (sesion) {
     const { data: perfil } = await supabaseClient
       .from("profiles")
-      .select("username")
+      .select("username, nombre_visible")
       .eq("id", sesion.user.id)
       .maybeSingle();
     const miNombre = perfil ? perfil.nombre_visible || perfil.username : "usuario";
@@ -875,7 +881,15 @@ async function iniciar() {
   }
 
   await cargarMuro();
+
+  if (window.YW_MEMORIA) {
+    window.YW_MEMORIA.vigilar("comunidad", function () {
+      return { soloRecs: soloRecomendaciones, cantidad: cantidadVisible };
+    });
+    if (memoriaComunidad && memoriaComunidad.y > 0) {
+      window.YW_MEMORIA.restaurarPosicion(memoriaComunidad.y);
+    }
+  }
 }
 
 iniciar();
-                                                         
