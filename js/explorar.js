@@ -641,13 +641,6 @@
         : [crearMensaje("No encontramos obras para «" + q + "».")];
     }
 
-    if (pestana === "obras") {
-      const obras = await buscarObras(q, 30);
-      return obras.length > 0
-        ? await nodosDeObras(obras)
-        : [crearMensaje("No encontramos obras para «" + q + "».")];
-    }
-
     if (pestana === "publicaciones") {
       const posts = await buscarPublicaciones(q, 30);
       return posts.length > 0
@@ -767,6 +760,25 @@
     botonBorrar.hidden = false;
   }
 
+  const guardadoExplorar = !inicial && window.YW_MEMORIA ? window.YW_MEMORIA.leer("explorar") : null;
+  if (guardadoExplorar) {
+    pestana = guardadoExplorar.pestana || "todo";
+    consulta = guardadoExplorar.consulta || "";
+    entrada.value = consulta;
+    botonBorrar.hidden = consulta.length === 0;
+    botonesPestana.forEach(function (boton) {
+      boton.classList.toggle("activa", boton.dataset.pestana === pestana);
+    });
+  }
+
   cargar();
+
+  if (window.YW_MEMORIA) {
+    window.YW_MEMORIA.vigilar("explorar", function () {
+      return { pestana: pestana, consulta: entrada.value.trim() };
+    });
+    if (guardadoExplorar && guardadoExplorar.y > 0) {
+      window.YW_MEMORIA.restaurarPosicion(guardadoExplorar.y);
+    }
+  }
 })();
-  
