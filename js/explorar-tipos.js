@@ -69,6 +69,16 @@
   let generoActivo = "";
   let orden = "recientes";
   let mostrados = POR_PAGINA;
+  let mostradosInicial = 0;
+
+  // Lo que había en "Obras" cuando te fuiste (solo si estabas en esa pestaña).
+  let pendiente = null;
+  if (window.YW_MEMORIA) {
+    const baseExplorar = window.YW_MEMORIA.leer("explorar");
+    if (baseExplorar && baseExplorar.pestana === "obras") {
+      pendiente = window.YW_MEMORIA.leer("explorar_obras");
+    }
+  }
   let obrasActuales = [];
   let mapaResumen = {};
   let turno = 0;
@@ -386,7 +396,8 @@
     });
 
     obrasActuales = obras;
-    mostrados = POR_PAGINA;
+    mostrados = mostradosInicial || POR_PAGINA;
+    mostradosInicial = 0;
     pintarLista();
   }
 
@@ -402,12 +413,36 @@
 
   new MutationObserver(alCambiarCuerpo).observe(cuerpo, { childList: true });
 
+  function aplicarPendiente() {
+    if (!pendiente) return;
+    const guardado = pendiente;
+    pendiente = null;
+
+    if (SECCIONES.some(function (par) { return par[0] === guardado.seccion; })) {
+      seccionActiva = guardado.seccion;
+    }
+    if (seccionActiva === "lecturas" && TIPOS.some(function (par) { return par[0] === guardado.tipo; })) {
+      tipoActivo = guardado.tipo || "";
+    }
+    generoActivo = typeof guardado.genero === "string" ? guardado.genero : "";
+    if (ORDENES.some(function (par) { return par[0] === guardado.orden; })) {
+      orden = guardado.orden;
+      selectOrden.value = orden;
+    }
+    mostradosInicial = Number(guardado.mostrados) > 0 ? Math.min(Number(guardado.mostrados), 400) : 0;
+
+    pintarSecciones();
+    pintarChips();
+  }
+
   function actualizarBarra() {
     const visible = esObras();
     caja.hidden = !visible;
 
     if (visible) {
+      aplicarPendiente();
       llenarGeneros();
+      selectGenero.value = generoActivo;
     } else if (seccionActiva !== "lecturas" || tipoActivo || generoActivo) {
       seccionActiva = "lecturas";
       tipoActivo = "";
@@ -427,5 +462,16 @@
   pintarSecciones();
   pintarChips();
   actualizarBarra();
+
+  if (window.YW_MEMORIA) {
+    window.YW_MEMORIA.vigilar("explorar_obras", function () {
+      return {
+        seccion: seccionActiva,
+        tipo: tipoActivo,
+        genero: generoActivo,
+        orden: orden,
+        mostrados: mostrados
+      };
+    });
+  }
 })();
-   
