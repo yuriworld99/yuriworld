@@ -41,6 +41,14 @@ let nombreActual = "usuario";
 let temporizadorAviso = null;
 let pestanaActual = "publicaciones";
 const yaCargadas = {};
+let estadoPerfil = null;
+
+/* Cuántas publicaciones había cargadas en esa pestaña cuando te fuiste (solo la primera vez). */
+function inicialPara(nombre) {
+  if (!estadoPerfil || estadoPerfil.pestana !== nombre || estadoPerfil.usado) return 0;
+  estadoPerfil.usado = true;
+  return Number(estadoPerfil.cargados) || 0;
+}
 
 function panel(nombre) {
   return document.getElementById("panel-" + nombre);
@@ -581,6 +589,7 @@ async function construirContexto(items) {
 /* Carga de a tandas: al bajar, se piden las siguientes automáticamente. */
 async function paginar(contenedor, cfg) {
   const POR_PAGINA = cfg.porPagina || 20;
+  const primeraTanda = cfg.inicial ? Math.max(POR_PAGINA, Math.min(Number(cfg.inicial), 300)) : POR_PAGINA;
 
   if (contenedor._paginacion && contenedor._paginacion.observador) {
     contenedor._paginacion.observador.disconnect();
@@ -617,7 +626,8 @@ async function paginar(contenedor, cfg) {
     if (pag.cargando || pag.fin) return;
     pag.cargando = true;
 
-    const { data, error } = await cfg.consulta().range(pag.desde, pag.desde + POR_PAGINA - 1);
+    const tam = pag.desde === 0 ? primeraTanda : POR_PAGINA;
+    const { data, error } = await cfg.consulta().range(pag.desde, pag.desde + tam - 1);
     if (contenedor._paginacion !== pag) return;
 
     if (error) {
@@ -625,17 +635,6 @@ async function paginar(contenedor, cfg) {
       if (pag.desde === 0) {
         pag.fin = true;
         contenedor.replaceChildren(crearVacio(cfg.mensajeError));
-      } else {
-        avisar("No se pudieron cargar más.");
-      }
-      return;
-    }
-
-    if (data.length === 0) {
-      pag.cargando = false;
-      if (pag.desde === 0) {
-        pag.fin = true;
-      contenedor.replaceChildren(crearVacio(cfg.mensajeError));
       } else {
         avisar("No se pudieron cargar más.");
       }
@@ -660,7 +659,7 @@ async function paginar(contenedor, cfg) {
 
     pag.desde += data.length;
     pag.cargando = false;
-    if (data.length < POR_PAGINA) {
+    if (data.length < tam) {
       terminar();
     } else if (pag.observador) {
       pag.observador.unobserve(centinela);
@@ -690,6 +689,7 @@ async function pintarPosts(data) {
 
 async function cargarPublicaciones() {
   await paginar(panel("publicaciones"), {
+    inicial: inicialPara("publicaciones"),
     consulta: function () {
       return supabaseClient
         .from("muro_publicaciones")
@@ -707,6 +707,7 @@ async function cargarPublicaciones() {
 
 async function cargarReposts() {
   await paginar(panel("reposts"), {
+    inicial: inicialPara("reposts"),
     consulta: function () {
       return supabaseClient
         .from("muro_publicaciones")
@@ -724,6 +725,7 @@ async function cargarReposts() {
 
 async function cargarMultimedia() {
   await paginar(panel("multimedia"), {
+    inicial: inicialPara("multimedia"),
     porPagina: 30,
     claseLista: "multimedia-grilla",
     consulta: function () {
@@ -798,6 +800,7 @@ function crearRespuestaPerfil(respuesta, original, nombreAutor) {
 
 async function cargarRespuestas() {
   await paginar(panel("respuestas"), {
+    inicial: inicialPara("respuestas"),
     consulta: function () {
       return supabaseClient
         .from("respuestas")
@@ -911,6 +914,7 @@ function crearTarjetaRecomendacion(rec, resumen) {
 
 async function cargarRecomendaciones() {
   await paginar(panel("recomendaciones"), {
+    inicial: inicialPara("recomendaciones"),
     listaEsContenedor: true,
     consulta: function () {
       return supabaseClient
@@ -960,8 +964,9 @@ function mostrarPestana(nombre) {
   });
   if (!yaCargadas[nombre]) {
     yaCargadas[nombre] = true;
-    cargadores[nombre]();
+    return cargadores[nombre]();
   }
+  return Promise.resolve();
 }
 
 async function compartirPerfil() {
@@ -1089,8 +1094,27 @@ async function iniciar() {
     });
   });
 
-  mostrarPestana("publicaciones");
+  if (window.YW_MEMORIA) {
+    estadoPerfil = window.YW_MEMORIA.leer("perfil_" + perfilId);
+  }
+  const pestanaInicial =
+    estadoPerfil && PESTANAS.indexOf(estadoPerfil.pestana) !== -1 ? estadoPerfil.pestana : "publicaciones";
+  const carga = mostrarPestana(pestanaInicial);
+
+  if (window.YW_MEMORIA) {
+    window.YW_MEMORIA.vigilar("perfil_" + perfilId, function () {
+      const contenedor = panel(pestanaActual);
+      return {
+        pestana: pestanaActual,
+        cargados: contenedor && contenedor._paginacion ? contenedor._paginacion.desde : 0
+      };
+    });
+    if (estadoPerfil && estadoPerfil.y > 0) {
+      carga.then(function () {
+        window.YW_MEMORIA.restaurarPosicion(estadoPerfil.y);
+      });
+    }
+  }
 }
 
 iniciar();
-        
