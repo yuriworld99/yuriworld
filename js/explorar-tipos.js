@@ -172,6 +172,7 @@
     chip.textContent = par[1];
     chip.addEventListener("click", function () {
       if (seccionActiva === par[0]) return;
+      mostradosInicial = 0;
       seccionActiva = par[0];
       tipoActivo = "";
       pintarSecciones();
@@ -188,6 +189,7 @@
     chip.dataset.tipo = par[0];
     chip.textContent = par[1];
     chip.addEventListener("click", function () {
+      mostradosInicial = 0;
       tipoActivo = par[0];
       pintarChips();
       cargarObras();
@@ -196,6 +198,7 @@
   });
 
   selectGenero.addEventListener("change", function () {
+    mostradosInicial = 0;
     generoActivo = selectGenero.value;
     cargarObras();
   });
@@ -397,7 +400,6 @@
 
     obrasActuales = obras;
     mostrados = mostradosInicial || POR_PAGINA;
-    mostradosInicial = 0;
     pintarLista();
   }
 
@@ -475,3 +477,4 @@
     });
   }
 })();
+    
