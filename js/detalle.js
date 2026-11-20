@@ -366,6 +366,44 @@ async function cargarRelacionadas(rec) {
   else contenido.appendChild(bloque);
 }
 
+/* "← Volver": si hay una página anterior de YuriWorld, vuelve a ella de verdad
+   (así conserva la posición y los filtros) y el texto dice a dónde vas. */
+(function () {
+  const enlace = document.querySelector(".enlace-volver");
+  if (!enlace || enlace.dataset.ywVolver) return;
+
+  const ETIQUETAS = {
+    "index.html": "← Volver al inicio",
+    "explorar.html": "← Volver a Explorar",
+    "foro.html": "← Volver a la comunidad",
+    "perfil.html": "← Volver al perfil",
+    "biblioteca.html": "← Volver a la biblioteca",
+    "autor.html": "← Volver a las obras del autor",
+    "notificaciones.html": "← Volver a las notificaciones",
+    "publicacion.html": "← Volver a la publicación",
+    "recomendacion.html": "← Volver a la obra anterior"
+  };
+
+  function ultimoSegmento(ruta) {
+    const segmento = ruta.split("/").filter(Boolean).pop() || "";
+    return /\.html$/i.test(segmento) ? segmento : "index.html";
+  }
+
+  try {
+    if (!document.referrer || window.history.length < 2) return;
+    const anterior = new URL(document.referrer);
+    if (anterior.origin !== window.location.origin || anterior.href === window.location.href) return;
+
+    enlace.textContent = ETIQUETAS[ultimoSegmento(anterior.pathname)] || "← Volver";
+    enlace.dataset.ywVolver = "1";
+    enlace.addEventListener("click", function (evento) {
+      if (evento.button > 0 || evento.ctrlKey || evento.metaKey || evento.shiftKey) return;
+      evento.preventDefault();
+      window.history.back();
+    });
+  } catch (error) {}
+})();
+
 async function iniciar() {
   const { data } = await supabaseClient.auth.getSession();
   sesion = data.session;
