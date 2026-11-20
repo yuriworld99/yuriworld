@@ -165,9 +165,91 @@ const SECCIONES_INICIO = [
   { valor: "fanart", etiqueta: "Fanart" }
 ];
 
+/* ---------- Recordar dónde estabas al volver atrás ---------- */
+const CLAVE_ESTADO_INICIO = "yw_catalogo_estado";
+
+function leerEstadoInicio() {
+  try {
+    const crudo = sessionStorage.getItem(CLAVE_ESTADO_INICIO);
+    if (!crudo) return null;
+    const estado = JSON.parse(crudo);
+    if (!estado || Date.now() - estado.t > 30 * 60 * 1000) return null;
+    return estado;
+  } catch (error) {
+    return null;
+  }
+}
+
+function guardarEstadoInicio() {
+  try {
+    const activa = document.querySelector(".sec-pestana.activa");
+    sessionStorage.setItem(
+      CLAVE_ESTADO_INICIO,
+      JSON.stringify({
+        seccion: activa ? activa.dataset.seccion : "lecturas",
+        y: Math.round(window.scrollY),
+        t: Date.now()
+      })
+    );
+  } catch (error) {}
+}
+
+function volvioConAtras() {
+  try {
+    const navegacion = performance.getEntriesByType("navigation")[0];
+    if (navegacion) return navegacion.type === "back_forward";
+    return !!(performance.navigation && performance.navigation.type === 2);
+  } catch (error) {
+    return false;
+  }
+}
+
+/* Vuelve a la posición guardada. Insiste unos segundos porque el contenido
+   termina de acomodarse después de cargar; se detiene si la persona toca la pantalla. */
+function restaurarPosicion(y) {
+  const raiz = document.documentElement;
+  const comportamientoOriginal = raiz.style.scrollBehavior;
+  raiz.style.scrollBehavior = "auto";
+
+  let interactuo = false;
+  function parar() {
+    interactuo = true;
+  }
+  ["touchstart", "wheel", "mousedown", "keydown"].forEach(function (nombre) {
+    window.addEventListener(nombre, parar, { passive: true, once: true });
+  });
+
+  let intentos = 0;
+  let estables = 0;
+
+  const reloj = setInterval(function () {
+    intentos += 1;
+    if (interactuo || intentos > 30) {
+      clearInterval(reloj);
+      raiz.style.scrollBehavior = comportamientoOriginal;
+      return;
+    }
+
+    const maximo = Math.max(0, raiz.scrollHeight - window.innerHeight);
+    const objetivo = Math.min(y, maximo);
+    window.scrollTo(0, objetivo);
+
+    if (Math.abs(window.scrollY - objetivo) <= 2 && objetivo >= y - 2) {
+      estables += 1;
+    } else {
+      estables = 0;
+    }
+
+    if (estables >= 8) {
+      clearInterval(reloj);
+      raiz.style.scrollBehavior = comportamientoOriginal;
+    }
+  }, 150);
+}
+
 function armarPestanasInicio() {
   const lista = document.getElementById("lista-recomendaciones");
-  if (!lista || document.querySelector(".sec-pestanas")) return;
+  if (!lista || document.querySelector(".sec-pestanas")) return null;
 
   const titulo = document.getElementById("recomendaciones");
   const textoTituloInicial = titulo ? titulo.textContent : "";
@@ -188,13 +270,11 @@ function armarPestanasInicio() {
   lista.insertAdjacentElement("beforebegin", nav);
   document.body.dataset.seccion = "lecturas";
 
-  nav.addEventListener("click", function (evento) {
-    const boton = evento.target.closest(".sec-pestana");
-    if (!boton || boton.classList.contains("activa")) return;
+  function activar(valor) {
+    const boton = nav.querySelector('.sec-pestana[data-seccion="' + valor + '"]');
+    if (!boton) return Promise.resolve();
 
-    const valor = boton.dataset.seccion;
     document.body.dataset.seccion = valor;
-
     nav.querySelectorAll(".sec-pestana").forEach(function (otro) {
       otro.classList.toggle("activa", otro === boton);
     });
@@ -204,9 +284,41 @@ function armarPestanasInicio() {
         valor === "lecturas" ? textoTituloInicial : "Últimos en " + boton.textContent;
     }
 
-    cargarRecomendaciones(valor);
+    return cargarRecomendaciones(valor);
+  }
+
+  nav.addEventListener("click", function (evento) {
+    const boton = evento.target.closest(".sec-pestana");
+    if (!boton || boton.classList.contains("activa")) return;
+    activar(boton.dataset.seccion);
   });
+
+  return activar;
 }
 
-armarPestanasInicio();
-cargarRecomendaciones("lecturas");
+const activarSeccionInicio = armarPestanasInicio();
+
+if (document.getElementById("lista-recomendaciones")) {
+  const estadoGuardado = volvioConAtras() ? leerEstadoInicio() : null;
+
+  // Yo me encargo de volver a la posición (el navegador no puede: la lista se carga después).
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+
+  window.addEventListener("pagehide", guardarEstadoInicio);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") guardarEstadoInicio();
+  });
+
+  let carga;
+  if (activarSeccionInicio && estadoGuardado && estadoGuardado.seccion !== "lecturas") {
+    carga = activarSeccionInicio(estadoGuardado.seccion);
+  } else {
+    carga = cargarRecomendaciones("lecturas");
+  }
+
+  if (estadoGuardado && estadoGuardado.y > 0) {
+    carga.then(function () {
+      restaurarPosicion(estadoGuardado.y);
+    });
+  }
+}
