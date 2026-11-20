@@ -129,26 +129,63 @@
     }
   }
 
-  /* Enlaces "← Volver ...": si veníamos de esa misma página, vuelven atrás de verdad
-     (así conservan la posición en lugar de abrir la página de cero). */
+  /* Enlaces "← Volver": si hay una página anterior de YuriWorld, vuelven a ella de verdad
+     (así conservan la posición y los filtros) y el texto dice a dónde vas. */
+  const ETIQUETAS_VOLVER = {
+    "index.html": "← Volver al inicio",
+    "explorar.html": "← Volver a Explorar",
+    "foro.html": "← Volver a la comunidad",
+    "perfil.html": "← Volver al perfil",
+    "biblioteca.html": "← Volver a la biblioteca",
+    "autor.html": "← Volver a las obras del autor",
+    "notificaciones.html": "← Volver a las notificaciones",
+    "publicacion.html": "← Volver a la publicación",
+    "recomendacion.html": "← Volver a la obra anterior"
+  };
+
   function ultimoSegmento(ruta) {
     const segmento = ruta.split("/").filter(Boolean).pop() || "";
     return /\.html$/i.test(segmento) ? segmento : "index.html";
   }
 
-  document.addEventListener("click", function (evento) {
-    if (evento.defaultPrevented || evento.button > 0 || evento.ctrlKey || evento.metaKey || evento.shiftKey) return;
-    const enlace = evento.target && evento.target.closest ? evento.target.closest("a.enlace-volver") : null;
-    if (!enlace) return;
-
+  function volverDesde(enlace, opciones) {
+    if (enlace.dataset.ywVolver) return;
     try {
       if (!document.referrer || window.history.length < 2) return;
       const anterior = new URL(document.referrer);
-      const destino = new URL(enlace.href, window.location.href);
-      if (anterior.origin !== window.location.origin || destino.origin !== window.location.origin) return;
-      if (ultimoSegmento(anterior.pathname) !== ultimoSegmento(destino.pathname)) return;
-      evento.preventDefault();
-      window.history.back();
+      if (anterior.origin !== window.location.origin || anterior.href === window.location.href) return;
+      const paginaAnterior = ultimoSegmento(anterior.pathname);
+
+      if (opciones.cambiarTexto) {
+        enlace.textContent = ETIQUETAS_VOLVER[paginaAnterior] || "← Volver";
+      }
+      enlace.dataset.ywVolver = "1";
+
+      enlace.addEventListener("click", function (evento) {
+        if (evento.button > 0 || evento.ctrlKey || evento.metaKey || evento.shiftKey) return;
+        if (!opciones.cambiarTexto) {
+          // este enlace ya dice a dónde va: solo vuelve atrás si venías de esa misma página
+          const destino = new URL(enlace.href, window.location.href);
+          if (ultimoSegmento(destino.pathname) !== paginaAnterior) return;
+        }
+        evento.preventDefault();
+        window.history.back();
+      });
     } catch (error) {}
-  });
+  }
+
+  function configurarVolver() {
+    document.querySelectorAll("a.enlace-volver").forEach(function (enlace) {
+      volverDesde(enlace, { cambiarTexto: true });
+    });
+    const volverBiblioteca = document.getElementById("bib-volver");
+    if (volverBiblioteca) volverDesde(volverBiblioteca, { cambiarTexto: false });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", configurarVolver);
+  } else {
+    configurarVolver();
+  }
 })();
+    
