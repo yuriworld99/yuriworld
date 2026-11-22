@@ -41,6 +41,12 @@
     return;
   }
 
+  // Si volvés con "atrás", la lista (Leyendo, Completadas…) queda como estaba.
+  const memoria = window.YW_MEMORIA ? window.YW_MEMORIA.leer("biblioteca_" + id) : null;
+  if (memoria && PESTANAS.some(function (par) { return par[0] === memoria.activa; })) {
+    activa = memoria.activa;
+  }
+
   esMia = id === miId;
   volver.href = "perfil.html?id=" + encodeURIComponent(id);
 
@@ -158,4 +164,14 @@
   }
 
   pintar();
+
+  if (window.YW_MEMORIA) {
+    window.YW_MEMORIA.vigilar("biblioteca_" + id, function () {
+      return { activa: activa };
+    });
+    if (memoria && memoria.y > 0) {
+      window.YW_MEMORIA.restaurarPosicion(memoria.y);
+    }
+  }
 })();
+    
