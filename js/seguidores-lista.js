@@ -17,6 +17,12 @@
     return;
   }
 
+  // Si volvés con "atrás", queda la pestaña en la que estabas (Seguidores o Siguiendo).
+  const memoria = window.YW_MEMORIA ? window.YW_MEMORIA.leer("seguidores_" + perfilId) : null;
+  if (memoria && (memoria.tipo === "seguidores" || memoria.tipo === "siguiendo")) {
+    tipo = memoria.tipo;
+  }
+
   const { data: datosSesion } = await supabaseClient.auth.getSession();
   const sesionId = datosSesion.session ? datosSesion.session.user.id : null;
 
@@ -196,5 +202,15 @@
   });
 
   pintarPestanas();
-  cargar();
+  await cargar();
+
+  if (window.YW_MEMORIA) {
+    window.YW_MEMORIA.vigilar("seguidores_" + perfilId, function () {
+      return { tipo: tipo };
+    });
+    if (memoria && memoria.y > 0) {
+      window.YW_MEMORIA.restaurarPosicion(memoria.y);
+    }
+  }
 })();
+      
