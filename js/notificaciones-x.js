@@ -17,6 +17,15 @@
 
   let filtroActual = "todas";
 
+  // Si volvés con "atrás", la pestaña (Todas / Comentarios / Seguidores) queda como estaba.
+  const memoria = window.YW_MEMORIA ? window.YW_MEMORIA.leer("notificaciones") : null;
+  if (memoria && Object.prototype.hasOwnProperty.call(FILTROS, memoria.filtro)) {
+    filtroActual = memoria.filtro;
+    pestanas.forEach(function (otra) {
+      otra.classList.toggle("activa", otra.dataset.filtro === filtroActual);
+    });
+  }
+
   const { data: datosSesion } = await supabaseClient.auth.getSession();
   const sesion = datosSesion.session;
 
@@ -427,5 +436,15 @@
     cargar();
   });
 
-  cargar();
+  await cargar();
+
+  if (window.YW_MEMORIA) {
+    window.YW_MEMORIA.vigilar("notificaciones", function () {
+      return { filtro: filtroActual };
+    });
+    if (memoria && memoria.y > 0) {
+      window.YW_MEMORIA.restaurarPosicion(memoria.y);
+    }
+  }
 })();
+      
