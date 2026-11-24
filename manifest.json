@@ -1,10 +1,10 @@
 {
-  "id": "/yuriworld/",
+  "id": "/",
   "name": "YuriWorld",
   "short_name": "YuriWorld",
   "description": "Comunidad de manga Yuri/GL, manhwa y webtoon GL.",
-  "start_url": "/yuriworld/index.html",
-  "scope": "/yuriworld/",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#0a0612",
   "theme_color": "#7b3fe4",
