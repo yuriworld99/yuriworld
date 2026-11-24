@@ -52,7 +52,7 @@ formulario.addEventListener("submit", async function (evento) {
     password: password,
     options: {
       data: { username: username },
-      emailRedirectTo: "https://yuriworld99.github.io/yuriworld/iniciar-sesion.html"
+      emailRedirectTo: "https://www.yuriworld.org/iniciar-sesion.html"
     }
   });
 
