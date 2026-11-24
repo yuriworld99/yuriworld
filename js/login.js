@@ -27,7 +27,7 @@ function mostrarBotonReenviar(email) {
     const { error } = await supabaseClient.auth.resend({
       type: "signup",
       email: email,
-      options: { emailRedirectTo: "https://yuriworld99.github.io/yuriworld/iniciar-sesion.html" }
+      options: { emailRedirectTo: "https://www.yuriworld.org/iniciar-sesion.html" }
     });
     if (error) {
       mostrarMensaje("No se pudo reenviar el email. Esperá un minuto y probá de nuevo.", "error");
