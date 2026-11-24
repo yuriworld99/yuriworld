@@ -49,7 +49,7 @@
       mostrar("Enviando...", "");
 
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://yuriworld99.github.io/yuriworld/nueva-contrasena.html"
+        redirectTo: "https://www.yuriworld.org/nueva-contrasena.html"
       });
 
       boton.disabled = false;
