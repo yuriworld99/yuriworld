@@ -412,7 +412,7 @@ function abrirRecortador(archivo, opciones) {
   botonEditar.hidden = false;
 
   const WORKER_SUBIDA = "https://subir-img.yuriworld-avisos.workers.dev";
-  const R2_PUBLICO = "https://pub-c643606c6a4545f18f9677fe2dca68ee.r2.dev/";
+  const R2_PUBLICO = "https://img.yuriworld.org/";
 
   async function subirSupabase(bucket, blob, rutas) {
     const ruta = sesion.user.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 7) + ".jpg";
@@ -420,7 +420,7 @@ function abrirRecortador(archivo, opciones) {
       .from(bucket)
       .upload(ruta, blob, { contentType: "image/jpeg", cacheControl: "31536000" });
     if (error) throw error;
-rutas.push({ bucket: bucket, ruta: ruta });
+    rutas.push({ bucket: bucket, ruta: ruta });
     return supabaseClient.storage.from(bucket).getPublicUrl(ruta).data.publicUrl;
   }
 
@@ -916,4 +916,4 @@ rutas.push({ bucket: bucket, ruta: ruta });
 
   botonEditar.addEventListener("click", abrirEdicion);
 })();
-                              
+        
