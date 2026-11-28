@@ -134,7 +134,7 @@ async function subirArchivo(bucket, blob, registro) {
   const ruta =
     sesion.user.id + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
   const workerSubida = "https://subir-img.yuriworld-avisos.workers.dev";
-  const publicoR2 = "https://pub-c643606c6a4545f18f9677fe2dca68ee.r2.dev/";
+  const publicoR2 = "https://img.yuriworld.org/";
   try {
     const { data: actual } = await supabaseClient.auth.getSession();
     const token = actual.session ? actual.session.access_token : sesion.access_token;
@@ -602,7 +602,7 @@ async function cargarMuro() {
     vacio.textContent = soloRecomendaciones
       ? "Todavía no hay recomendaciones en la comunidad."
       : "Todavía no hay publicaciones. ¡Sé la primera persona en publicar!";
-    lista.replaceChildren(vacio);
+  lista.replaceChildren(vacio);
     botonCargarMas.hidden = true;
     return;
   }
@@ -893,3 +893,4 @@ async function iniciar() {
 }
 
 iniciar();
+          
