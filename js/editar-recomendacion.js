@@ -16,7 +16,7 @@
   const TIPOS_PERMITIDOS = ["image/jpeg", "image/png", "image/webp"];
   const TAMANO_MAXIMO = 2 * 1024 * 1024;
   const WORKER_SUBIDA = "https://subir-img.yuriworld-avisos.workers.dev";
-  const R2_PUBLICO = "https://pub-c643606c6a4545f18f9677fe2dca68ee.r2.dev/";
+  const R2_PUBLICO = "https://img.yuriworld.org/";
 
   async function comprimirImagen(archivo, anchoMax, calidad) {
     const bmp = await createImageBitmap(archivo);
@@ -361,4 +361,4 @@
     }, 1200);
   });
 })();
-  
+            
